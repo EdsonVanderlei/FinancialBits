@@ -1,3 +1,9 @@
+import { UuidUtils } from "../utils/uuid/uuid.utils";
+
 export class Entity {
-	constructor(public id: string | null) {}
+  public id: string;
+
+  constructor() {
+    this.id = UuidUtils.generate();
+  }
 }
