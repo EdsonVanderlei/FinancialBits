@@ -1,7 +1,6 @@
 import { GenericRepository } from "../GenericRepository";
 import { IUserRepository } from "../interfaces/iUserRepository";
 import { User } from "../../domain/entities/user";
-import { UuidUtils } from "../../utils/uuid/uuid.utils";
 
 export class UserRepository
   extends GenericRepository<User>

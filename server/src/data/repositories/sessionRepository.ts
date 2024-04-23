@@ -1,5 +1,5 @@
 import { GenericRepository } from "../GenericRepository";
-import { ISessionRepository } from "../interfaces/ISessionRepository";
+import { ISessionRepository } from "../interfaces/iSessionRepository";
 import { Session } from "../../domain/entities/session";
 
 export class SessionInMemoryRepository
