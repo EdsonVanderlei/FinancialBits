@@ -1,4 +1,4 @@
-import { GenerateTokensUseCase, GenerateTokensUseCaseRequest } from './generate-tokens-use-case';
+import { GenerateTokensUseCase, GenerateTokensUseCaseRequest } from './generate-tokens.use-case';
 
 const getRequest = (replace?: {
 	refreshToken?: string;
@@ -12,7 +12,7 @@ const getRequest = (replace?: {
 		},
 	} as GenerateTokensUseCaseRequest);
 
-describe('GenerateTokensUseCase tests', () => {
+describe('GenerateTokensUseCase', () => {
 	test('generate', () => {
 		const useCase = new GenerateTokensUseCase('accessSecret', 'refreshSecret');
 		const result = useCase.exec(getRequest());

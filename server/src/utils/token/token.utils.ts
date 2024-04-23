@@ -6,11 +6,6 @@ export abstract class TokenUtils {
 		try {
 			return sign(payload, secretKey, options);
 		} catch (e: any) {
-			e.message = e.message && e.message.toString();
-			e.message = e.message.includes('secretOrPrivateKey')
-				? e.message.replace('secretOrPrivateKey', 'secretKey')
-				: e.message;
-
 			throw new ServerError(e.message ?? 'internal server error', 500);
 		}
 	}
@@ -18,7 +13,6 @@ export abstract class TokenUtils {
 		try {
 			return verify(token, secretKey) as JwtPayload;
 		} catch (e: any) {
-			console.log(e);
 			throw new ServerError(e.message ?? 'internal server error', 500);
 		}
 	}

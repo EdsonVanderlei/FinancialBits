@@ -1,12 +1,12 @@
 import { ServerError } from '../../core/server-error';
 import { User } from '../../entities/user';
-import { SessionInMemoryRepository } from '../../repositories/session-in-memory-repository';
-import { UserInMemoryRepository } from '../../repositories/user-in-memory-repository';
+import { SessionInMemoryRepository } from '../../repositories/session-in-memory.repository';
+import { UserInMemoryRepository } from '../../repositories/user-in-memory.repository';
+import { SessionService } from '../../services/session.service';
+import { UserService } from '../../services/user.service';
 import { PasswordUtils } from '../../utils/password/password.utils';
-import { FindUserUseCase } from '../find-user/find-user-use-case';
-import { GenerateTokensUseCase } from '../generate-tokens/generate-tokens-use-case';
-import { SaveSessionUseCase } from '../save-session/save-session-use-case';
-import { LoginUseCase } from './login-use-case';
+import { GenerateTokensUseCase } from '../generate-tokens/generate-tokens.use-case';
+import { LoginUserUseCase } from './login-user.use-case';
 
 const getUser = async (hashPassword: boolean) => {
 	const user = {
@@ -23,16 +23,16 @@ const getUseCase = async (user?: Omit<User, 'id'>) => {
 	const userRepository = new UserInMemoryRepository();
 	const sessionRepository = new SessionInMemoryRepository();
 
-	const findUserUseCase = new FindUserUseCase(userRepository);
+	const userService = new UserService(userRepository);
+	const sessionService = new SessionService(sessionRepository);
 	const generateTokensUseCase = new GenerateTokensUseCase('accessSecret', 'refreshSecret');
-	const saveSessionUseCase = new SaveSessionUseCase(sessionRepository);
 
 	if (!!user) await userRepository.create(user);
 
-	return new LoginUseCase(findUserUseCase, generateTokensUseCase, saveSessionUseCase);
+	return new LoginUserUseCase(userService, sessionService, generateTokensUseCase);
 };
 
-describe('LoginUseCase tests', () => {
+describe('LoginUserUseCase', () => {
 	test('exec', async () => {
 		const user = await getUser(true);
 		const useCase = await getUseCase(user);
@@ -44,7 +44,6 @@ describe('LoginUseCase tests', () => {
 
 		expect(result).toBeTruthy();
 	});
-
 	test('invalid credentials', async () => {
 		const user = await getUser(true);
 		const useCase = await getUseCase(user);

@@ -1,10 +1,10 @@
 import { User } from '../../entities/user';
-import { SessionInMemoryRepository } from '../../repositories/session-in-memory-repository';
-import { UserInMemoryRepository } from '../../repositories/user-in-memory-repository';
+import { SessionInMemoryRepository } from '../../repositories/session-in-memory.repository';
+import { UserInMemoryRepository } from '../../repositories/user-in-memory.repository';
+import { SessionService } from '../../services/session.service';
+import { UserService } from '../../services/user.service';
 import { PasswordUtils } from '../../utils/password/password.utils';
-import { DeleteSessionUseCase } from '../delete-session/delete-session-use-case';
-import { FindUserUseCase } from '../find-user/find-user-use-case';
-import { LogoutUseCase } from './logout-use-case';
+import { LogoutUserUseCase } from './logout-user.use-case';
 
 const getUser = async (hashPassword: boolean) => {
 	const user = {
@@ -21,8 +21,8 @@ const getUseCase = async (user?: Omit<User, 'id'>) => {
 	const userRepository = new UserInMemoryRepository();
 	const sessionRepository = new SessionInMemoryRepository();
 
-	const findUserUseCase = new FindUserUseCase(userRepository);
-	const deleteSessionUseCase = new DeleteSessionUseCase(sessionRepository);
+	const userService = new UserService(userRepository);
+	const sessionService = new SessionService(sessionRepository);
 
 	if (!!user) {
 		const result = await userRepository.create(user);
@@ -32,10 +32,10 @@ const getUseCase = async (user?: Omit<User, 'id'>) => {
 		});
 	}
 
-	return new LogoutUseCase(findUserUseCase, deleteSessionUseCase);
+	return new LogoutUserUseCase(userService, sessionService);
 };
 
-describe('LogoutUseCase tests', () => {
+describe('LogoutUserUseCase', () => {
 	test('exec', async () => {
 		const user = await getUser(true);
 		const useCase = await getUseCase(user);

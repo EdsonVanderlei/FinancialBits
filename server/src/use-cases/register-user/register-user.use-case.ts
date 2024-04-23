@@ -1,33 +1,33 @@
 import { UseCase } from '../../core/use-case';
 import { User } from '../../entities/user';
-import { CreateUserUseCase } from '../create-user/create-user-use-case';
+import { SessionService } from '../../services/session.service';
+import { UserService } from '../../services/user.service';
 import {
-  GenerateTokensUseCase,
-  GenerateTokensUseCaseResponse,
-} from '../generate-tokens/generate-tokens-use-case';
-import { SaveSessionUseCase } from '../save-session/save-session-use-case';
+	GenerateTokensUseCase,
+	GenerateTokensUseCaseResponse,
+} from '../generate-tokens/generate-tokens.use-case';
 
-export type RegisterUseCaseRequest = {
+export type RegisterUserUseCaseRequest = {
 	email: string;
 	password: string;
 	firstName: string;
 	lastName?: string;
 };
 
-export type RegisterUseCaseResponse = {
+export type RegisterUserUseCaseResponse = {
 	user: Omit<User, 'id' | 'password'>;
 	tokens: GenerateTokensUseCaseResponse;
 };
 
-export class RegisterUseCase implements UseCase {
+export class RegisterUserUseCase implements UseCase {
 	constructor(
-		private createUserUseCase: CreateUserUseCase,
-		private generateTokensUseCase: GenerateTokensUseCase,
-		private saveSessionUseCase: SaveSessionUseCase
+		private userService: UserService,
+		private sessionService: SessionService,
+		private generateTokensUseCase: GenerateTokensUseCase
 	) {}
 
-	async exec(request: RegisterUseCaseRequest): Promise<RegisterUseCaseResponse> {
-		const user = await this.createUserUseCase.exec({
+	async exec(request: RegisterUserUseCaseRequest): Promise<RegisterUserUseCaseResponse> {
+		const user = await this.userService.save({
 			email: request.email,
 			password: request.password,
 			firstName: request.firstName,
@@ -38,7 +38,7 @@ export class RegisterUseCase implements UseCase {
 			payload: { userId: user.id!, userEmail: user.email },
 		});
 
-		await this.saveSessionUseCase.exec({
+		await this.sessionService.save({
 			userId: user.id!,
 			refreshToken: tokens.refresh,
 		});

@@ -1,6 +1,6 @@
 import { ValidationUtils } from './validation.utils';
 
-describe('ValidationUtils tests', () => {
+describe('ValidationUtils', () => {
 	test('valid email', () => {
 		const email = 'test@test.com';
 		expect(ValidationUtils.email(email)).toBe(true);

@@ -1,6 +1,6 @@
 import { Session } from '../entities/session';
 import { ValidationUtils } from '../utils/validation/validation.utils';
-import { SessionInMemoryRepository } from './session-in-memory-repository';
+import { SessionInMemoryRepository } from './session-in-memory.repository';
 
 const getSession = (replace?: Partial<Session>) =>
 	({
@@ -10,7 +10,7 @@ const getSession = (replace?: Partial<Session>) =>
 		...replace,
 	} as Session);
 
-describe('SessionInMemoryRepository tests', () => {
+describe('SessionInMemoryRepository', () => {
 	test('findAll', async () => {
 		const repository = new SessionInMemoryRepository();
 		const session = await repository.create(getSession());

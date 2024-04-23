@@ -1,6 +1,6 @@
 import { User } from '../entities/user';
 import { ValidationUtils } from '../utils/validation/validation.utils';
-import { UserInMemoryRepository } from './user-in-memory-repository';
+import { UserInMemoryRepository } from './user-in-memory.repository';
 
 const getUser = (replace?: Partial<User>) =>
 	({
@@ -11,7 +11,7 @@ const getUser = (replace?: Partial<User>) =>
 		...replace,
 	} as User);
 
-describe('UserInMemoryRepository tests', () => {
+describe('UserInMemoryRepository', () => {
 	test('findAll', async () => {
 		const repository = new UserInMemoryRepository();
 		const user = await repository.create(getUser());

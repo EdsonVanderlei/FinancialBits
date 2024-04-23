@@ -1,6 +1,6 @@
 import { PasswordUtils } from './password.utils';
 
-describe('PasswordUtils tests', () => {
+describe('PasswordUtils', () => {
 	test('hash', async () => {
 		const password = 'abc123';
 		const hashed = await PasswordUtils.hash(password);

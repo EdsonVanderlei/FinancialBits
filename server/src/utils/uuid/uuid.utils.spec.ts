@@ -1,7 +1,7 @@
 import { ValidationUtils } from '../validation/validation.utils';
 import { UuidUtils } from './uuid.utils';
 
-describe('UuidUtils tests', () => {
+describe('UuidUtils', () => {
 	test('generate', () => {
 		const uuid = UuidUtils.generate();
 		const result = ValidationUtils.uuid(uuid);

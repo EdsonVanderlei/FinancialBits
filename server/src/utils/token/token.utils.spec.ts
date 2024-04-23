@@ -1,7 +1,7 @@
 import { ValidationUtils } from '../validation/validation.utils';
 import { TokenUtils } from './token.utils';
 
-describe('TokenUtils tests', () => {
+describe('TokenUtils', () => {
 	test('generate valid', async () => {
 		const secret = 'secret';
 		const payload = { email: 'johndoe@test.com' };
@@ -14,7 +14,7 @@ describe('TokenUtils tests', () => {
 		const payload = { email: 'johndoe@test.com' };
 
 		expect(() => TokenUtils.generate(payload, '')).toThrow({
-			message: 'secretKey must have a value',
+			message: 'secretOrPrivateKey must have a value',
 		} as Error);
 	});
 
