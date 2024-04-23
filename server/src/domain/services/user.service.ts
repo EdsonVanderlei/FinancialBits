@@ -1,11 +1,11 @@
-import { Repository } from "../../data/interfaces/irepository";
 import { ServerError } from "../../core/server-error";
 import { User } from "../entities/user";
 import { PasswordUtils } from "../../utils/password/password.utils";
 import { ValidationUtils } from "../../utils/validation/validation.utils";
+import { IUserRepository } from "../../data/interfaces/iUserRepository";
 
 export class UserService {
-  constructor(private userRepository: Repository<User>) {}
+  constructor(private userRepository: IUserRepository) {}
 
   async findOne(where: Partial<Pick<User, "id" | "email">>) {
     if (!where.id && !where.email) {
@@ -29,7 +29,7 @@ export class UserService {
   }
 
   async save(
-    user: Omit<User, "id"> & Partial<Pick<User, "id">>,
+    user: User,
     hashPassword: boolean = true
   ): Promise<Omit<User, "password">> {
     if (!ValidationUtils.minLength(user.password, 4)) {
@@ -44,40 +44,20 @@ export class UserService {
       throw new ServerError("email already in use", 400);
     }
 
-    if (user.id && !(await this.userRepository.exists({ id: user.id }))) {
-      throw new ServerError("user not found", 404);
-    }
-
     if (hashPassword) {
       user.password = await PasswordUtils.hash(user.password);
     }
 
     let result: User | null;
-    if (user.id) {
-      result = await this.userRepository.update({
-        id: user.id,
-        email: user.email,
-        password: user.password,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      });
+    if (await this.userRepository.exists({ id: user.id })) {
+      result = await this.userRepository.update(user);
     } else {
-      result = await this.userRepository.create({
-        email: user.email,
-        password: user.password,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      });
+      result = await this.userRepository.create(user);
     }
 
     if (!result) {
       throw new ServerError("couldn't create the user", 500);
     }
-    return {
-      id: result.id,
-      email: result.email,
-      firstName: result.firstName,
-      lastName: result.lastName,
-    };
+    return result;
   }
 }

@@ -26,19 +26,14 @@ export class UserRepository
       return null;
     }
 
-    this._values.splice(this._values.indexOf(user), 1);
+    const [removed] = this._values.splice(this._values.indexOf(user), 1);
 
-    const newUser = new User(
-      value.email,
-      value.password,
-      value.firstName,
-      value.birthDate,
-      value.phone,
-      value.lastName
-    );
-    this._values.push(newUser);
-
-    return newUser;
+    Object.entries(value).forEach(([key, value]) => {
+      if (key == "id") return;
+      removed[key as keyof User] = value;
+    });
+    this._values.push(removed);
+    return removed;
   }
 
   async delete(where: Partial<User>) {
