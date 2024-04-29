@@ -1,9 +1,7 @@
-import { User } from '../../entities/user';
-import { SessionInMemoryRepository } from '../../repositories/session-in-memory.repository';
-import { UserInMemoryRepository } from '../../repositories/user-in-memory.repository';
-import { SessionService } from '../../services/session.service';
-import { UserService } from '../../services/user.service';
-import { PasswordUtils } from '../../utils/password/password.utils';
+import { User } from '../../domain/entities/user/user';
+import { SessionInMemoryRepository } from '../../domain/repositories/in-memory/session/session-in-memory.repository';
+import { UserInMemoryRepository } from '../../domain/repositories/in-memory/user/user-in-memory.repository';
+import { PasswordUtils } from '../../shared/utils/password/password.utils';
 import { LogoutUserUseCase } from './logout-user.use-case';
 
 const getUser = async (hashPassword: boolean) => {
@@ -14,15 +12,12 @@ const getUser = async (hashPassword: boolean) => {
 		lastName: 'Doe',
 	};
 	if (hashPassword) user.password = await PasswordUtils.hash(user.password);
-	return user;
+	return user as User;
 };
 
 const getUseCase = async (user?: Omit<User, 'id'>) => {
 	const userRepository = new UserInMemoryRepository();
 	const sessionRepository = new SessionInMemoryRepository();
-
-	const userService = new UserService(userRepository);
-	const sessionService = new SessionService(sessionRepository);
 
 	if (!!user) {
 		const result = await userRepository.create(user);
@@ -32,16 +27,27 @@ const getUseCase = async (user?: Omit<User, 'id'>) => {
 		});
 	}
 
-	return new LogoutUserUseCase(userService, sessionService);
+	return new LogoutUserUseCase(userRepository, sessionRepository);
 };
 
 describe('LogoutUserUseCase', () => {
 	test('exec', async () => {
-		const user = await getUser(true);
-		const useCase = await getUseCase(user);
+		const userRepository = new UserInMemoryRepository();
+		const sessionRepository = new SessionInMemoryRepository();
+		const useCase = new LogoutUserUseCase(userRepository, sessionRepository);
 
-		const result = await useCase.exec({ email: user.email });
+		const user = await userRepository.create({
+			email: 'john@doe.com',
+			password: 'abc123',
+			firstName: 'John',
+			lastName: 'Doe',
+		});
 
-		expect(result).toBeTruthy();
+		await sessionRepository.create({ refreshToken: 'token', userId: user.id! });
+		await useCase.exec({ email: user.email });
+
+		const result = await sessionRepository.exists({ userId: user.id! });
+		
+		expect(result).toBe(false);
 	});
 });

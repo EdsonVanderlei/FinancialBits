@@ -1,43 +1,33 @@
-import { ServerError } from '../../core/server-error';
-import { UseCase } from '../../core/use-case';
-import { TokenUtils } from '../../utils/token/token.utils';
-import { ValidationUtils } from '../../utils/validation/validation.utils';
+import { AppError } from '../../shared/classes/app-error';
+import { TokenUtils } from '../../shared/utils/token/token.utils';
+import { ValidationUtils } from '../../shared/utils/validation/validation.utils';
+import {
+	GenerateTokensUseCaseInput,
+	GenerateTokensUseCaseOutput,
+} from './generate-tokens.use-case-io';
 
-export type GenerateTokensUseCaseRequest = {
-	refreshToken?: string;
-	accessExpiresIn?: string;
-	payload: { userId: string; userEmail: string };
-};
+export class GenerateTokensUseCase {
+	constructor(private accessSecretKey: string, private refreshSecretKey: string) {}
 
-export type GenerateTokensUseCaseResponse = {
-	access: string;
-	refresh: string;
-};
-
-export class GenerateTokensUseCase implements UseCase {
-	constructor(private accessSecret: string, private refreshSecret: string) {}
-
-	exec(request: GenerateTokensUseCaseRequest) {
-		if (!ValidationUtils.uuid(request.payload.userId)) {
-			throw new ServerError('invalid user identifier', 400);
-		}
-
-		if (!ValidationUtils.email(request.payload.userEmail)) {
-			throw new ServerError('invalid user email', 400);
+	exec(request: GenerateTokensUseCaseInput): GenerateTokensUseCaseOutput {
+		if (!ValidationUtils.uuid(request.payload.sub)) {
+			throw new AppError('Invalid user identifier', 500);
 		}
 
 		if (request.refreshToken && !ValidationUtils.jwt(request.refreshToken)) {
-			throw new ServerError('invalid refresh token', 400);
+			throw new AppError('Invalid refresh token', 500);
 		}
 
-		const access = TokenUtils.generate(request.payload, this.accessSecret, {
+		const access = TokenUtils.generate(request.payload, this.accessSecretKey, {
 			expiresIn: request.accessExpiresIn ?? '30m',
 		});
 
-		const refresh =
-			request.refreshToken ?? TokenUtils.generate(request.payload, this.refreshSecret);
+		let refresh = request.refreshToken;
+		if (!refresh) {
+			refresh = TokenUtils.generate(request.payload, this.refreshSecretKey);
+		}
 
-		if (!access || !refresh) throw new ServerError('internal server error', 500);
+		if (!access || !refresh) throw new AppError("Couldn't generate tokens", 500);
 
 		return { access, refresh };
 	}

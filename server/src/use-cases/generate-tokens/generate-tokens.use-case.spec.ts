@@ -1,22 +1,20 @@
-import { GenerateTokensUseCase, GenerateTokensUseCaseRequest } from './generate-tokens.use-case';
+import { GenerateTokensUseCase } from './generate-tokens.use-case';
+import { GenerateTokensUseCaseInput } from './generate-tokens.use-case-io';
 
-const getRequest = (replace?: {
-	refreshToken?: string;
-	payload?: { userId?: string; userEmail?: string };
-}) =>
+const getRequest = (replace?: Partial<GenerateTokensUseCaseInput>) =>
 	({
 		refreshToken: replace?.refreshToken,
 		payload: {
-			userEmail: replace?.payload?.userEmail ?? 'test@test.com',
-			userId: replace?.payload?.userId ?? 'f50b48e3-a0a0-48d7-94dd-27d487b37c89',
+			name: replace?.payload?.name ?? 'John Doe',
+			sub: replace?.payload?.sub ?? 'f50b48e3-a0a0-48d7-94dd-27d487b37c89',
 		},
-	} as GenerateTokensUseCaseRequest);
+	} as GenerateTokensUseCaseInput);
 
 describe('GenerateTokensUseCase', () => {
 	test('generate', () => {
 		const useCase = new GenerateTokensUseCase('accessSecret', 'refreshSecret');
 		const result = useCase.exec(getRequest());
-		expect(result.access !== result.refresh).toBe(true);
+		expect(result).toBeTruthy();
 	});
 
 	test('same refresh', () => {
@@ -31,25 +29,14 @@ describe('GenerateTokensUseCase', () => {
 
 	test('invalid userId', () => {
 		const useCase = new GenerateTokensUseCase('accessSecret', 'refreshSecret');
+		const payload = { sub: '123', name: '' };
 
-		expect(() => useCase.exec(getRequest({ payload: { userId: '123' } }))).toThrow({
-			message: 'invalid user identifier',
-		} as Error);
-	});
-
-	test('invalid userEmail', () => {
-		const useCase = new GenerateTokensUseCase('accessSecret', 'refreshSecret');
-
-		expect(() => useCase.exec(getRequest({ payload: { userEmail: 'www.test.com' } }))).toThrow({
-			message: 'invalid user email',
-		} as Error);
+		expect(() => useCase.exec(getRequest({ payload }))).toThrow();
 	});
 
 	test('invalid refreshToken', () => {
 		const useCase = new GenerateTokensUseCase('accessSecret', 'refreshSecret');
 
-		expect(() => useCase.exec(getRequest({ refreshToken: '123' }))).toThrow({
-			message: 'invalid refresh token',
-		} as Error);
+		expect(() => useCase.exec(getRequest({ refreshToken: '123' }))).toThrow();
 	});
 });

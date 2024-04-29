@@ -1,46 +1,46 @@
-import { ServerError } from '../../core/server-error';
-import { UseCase } from '../../core/use-case';
-import { User } from '../../entities/user';
-import { SessionService } from '../../services/session.service';
-import { UserService } from '../../services/user.service';
-import { PasswordUtils } from '../../utils/password/password.utils';
-import {
-	GenerateTokensUseCase,
-	GenerateTokensUseCaseResponse,
-} from '../generate-tokens/generate-tokens.use-case';
+import { AppError } from '../../shared/classes/app-error';
+import { Repository } from '../../domain/repositories/repository';
+import { Session } from '../../domain/entities/session/session';
+import { User } from '../../domain/entities/user/user';
+import { PasswordUtils } from '../../shared/utils/password/password.utils';
+import { GenerateTokensUseCase } from '../generate-tokens/generate-tokens.use-case';
+import { LoginUserUseCaseInput, LoginUserUseCaseOutput } from './login-user.use-case-io';
 
-export type LoginUserUseCaseRequest = {
-	email: string;
-	password: string;
-};
-
-export type LoginUserUseCaseResponse = {
-	user: Omit<User, 'id' | 'password'>;
-	tokens: GenerateTokensUseCaseResponse;
-};
-
-export class LoginUserUseCase implements UseCase {
+export class LoginUserUseCase {
 	constructor(
-		private userService: UserService,
-		private sessionService: SessionService,
+		private userRepository: Repository<User>,
+		private sessionRepository: Repository<Session>,
 		private generateTokensUseCase: GenerateTokensUseCase
 	) {}
 
-	async exec(request: LoginUserUseCaseRequest): Promise<LoginUserUseCaseResponse> {
-		const user = await this.userService.findOne({ email: request.email });
-
-		if (!(await PasswordUtils.validate(request.password, user.password))) {
-			throw new ServerError('invalid credentials', 400);
+	async exec(request: LoginUserUseCaseInput): Promise<LoginUserUseCaseOutput> {
+		let user: User | null;
+		try {
+			user = await this.userRepository.findOne({ email: request.email ?? '' });
+			if (!user || !(await PasswordUtils.validate(request.password, user.password))) {
+				throw Error();
+			}
+		} catch (e) {
+			throw new AppError('Invalid credentials', 400);
 		}
 
 		const tokens = this.generateTokensUseCase.exec({
-			payload: { userId: user.id!, userEmail: user.email },
+			payload: { sub: user.id!, name: user.email },
 		});
 
-		await this.sessionService.save({
-			userId: user.id!,
-			refreshToken: tokens.refresh,
-		});
+		const session = await this.sessionRepository.findOne({ userId: user.id! });
+		if (session) {
+			await this.sessionRepository.update({
+				id: session.id,
+				userId: user.id!,
+				refreshToken: tokens.refresh,
+			});
+		} else {
+			await this.sessionRepository.create({
+				userId: user.id!,
+				refreshToken: tokens.refresh,
+			});
+		}
 
 		return {
 			tokens,

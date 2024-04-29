@@ -1,32 +1,30 @@
-import { ServerError } from '../../core/server-error';
-import { UseCase } from '../../core/use-case';
-import { TokenUtils } from '../../utils/token/token.utils';
-import { ValidationUtils } from '../../utils/validation/validation.utils';
+import { AppError } from '../../shared/classes/app-error';
+import { TokenUtils } from '../../shared/utils/token/token.utils';
+import { ValidationUtils } from '../../shared/utils/validation/validation.utils';
+import { GenerateTokensUseCase } from '../generate-tokens/generate-tokens.use-case';
 import {
-	GenerateTokensUseCase,
-	GenerateTokensUseCaseResponse,
-} from '../generate-tokens/generate-tokens.use-case';
+	RefreshTokenUseCaseInput,
+	RefreshTokenUseCaseOutput,
+} from './refresh-token.use-case-io';
 
-export type RefreshTokenUseCaseRequest = { refreshToken: string };
-
-export type RefreshTokenUseCaseResponse = GenerateTokensUseCaseResponse;
-
-export class RefreshTokenUseCase implements UseCase {
+export class RefreshTokenUseCase {
 	constructor(
-		private refreshSecret: string,
+		private refreshSecretKey: string,
 		private generateTokensUseCase: GenerateTokensUseCase
 	) {}
 
-	async exec(request: RefreshTokenUseCaseRequest): Promise<RefreshTokenUseCaseResponse> {
-		if (!ValidationUtils.jwt(request.refreshToken)) { 
-			throw new ServerError('invalid refresh token', 400);
+	async exec(request: RefreshTokenUseCaseInput): Promise<RefreshTokenUseCaseOutput> {
+		if (!ValidationUtils.jwt(request.refreshToken)) {
+			throw new AppError('Invalid refresh token', 400);
 		}
 
-		const payload = TokenUtils.decode(request.refreshToken, this.refreshSecret);
+		TokenUtils.verify(request.refreshToken, this.refreshSecretKey);
+
+		const payload = TokenUtils.decode(request.refreshToken);
 
 		const tokens = this.generateTokensUseCase.exec({
 			refreshToken: request.refreshToken,
-			payload: { userId: payload.userId, userEmail: payload.userEmail },
+			payload: { sub: payload!.sub!, name: payload!.name },
 		});
 
 		return tokens;
