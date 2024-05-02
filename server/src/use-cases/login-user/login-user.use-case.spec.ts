@@ -1,49 +1,67 @@
+import { Email } from '../../domain/data-objects/email/email';
+import { Password } from '../../domain/data-objects/password/password';
 import { User } from '../../domain/entities/user/user';
 import { SessionInMemoryRepository } from '../../domain/repositories/in-memory/session/session-in-memory.repository';
 import { UserInMemoryRepository } from '../../domain/repositories/in-memory/user/user-in-memory.repository';
-import { PasswordUtils } from '../../shared/utils/password/password.utils';
-import { GenerateTokensUseCase } from '../generate-tokens/generate-tokens.use-case';
+import { AppError } from '../../shared/classes/app-error';
 import { LoginUserUseCase } from './login-user.use-case';
 
-const getUser = async (hashPassword: boolean) => {
-	const user = {
-		email: 'john@doe.com',
-		password: 'abc123',
-		firstName: 'John',
-		lastName: 'Doe',
-	};
-	if (hashPassword) user.password = await PasswordUtils.hash(user.password);
-	return user as User;
-};
-
-const getUseCase = async (user?: Omit<User, 'id'>) => {
-	const userRepository = new UserInMemoryRepository();
-	const sessionRepository = new SessionInMemoryRepository();
-	const generateTokensUseCase = new GenerateTokensUseCase('accessSecret', 'refreshSecret');
-
-	if (!!user) await userRepository.create(user);
-
-	return new LoginUserUseCase(userRepository, sessionRepository, generateTokensUseCase);
-};
-
 describe('LoginUserUseCase', () => {
+	let user: User;
+	const password = 'abc123';
+	let useCase: LoginUserUseCase;
+	let userRepository: UserInMemoryRepository;
+
+	beforeEach(() => {
+		userRepository = new UserInMemoryRepository();
+		const sessionRepository = new SessionInMemoryRepository();
+
+		user = User.create({
+			email: new Email('john@doe.com'),
+			password: new Password(password),
+			firstName: 'John',
+			lastName: 'Doe',
+		});
+
+		useCase = new LoginUserUseCase('accessSecret', 'refreshSecret', userRepository, sessionRepository);
+	});
+
 	test('exec', async () => {
-		const user = await getUser(true);
-		const useCase = await getUseCase(user);
+		await userRepository.create(user);
 
 		const result = await useCase.exec({
-			email: 'john@doe.com',
-			password: 'abc123',
+			email: user.email.value,
+			password,
 		});
 
 		expect(result).toBeTruthy();
 	});
-	test('invalid credentials', async () => {
-		const user = await getUser(true);
-		const useCase = await getUseCase(user);
 
-		useCase.exec({ email: 'john@doe.com', password: 'abc1234' }).catch(e => {
-			expect(e).toBeInstanceOf(Error);
+	test('invalid email', async () => {
+		await userRepository.create(user);
+
+		useCase.exec({ email: 'johndoe@test.com', password: password }).catch(e => {
+			expect(e).toBeInstanceOf(AppError);
+			expect(e.statusCode).toEqual(400);
+			expect(e.message).toEqual('Invalid credentials');
+		});
+	});
+
+	test('invalid password', async () => {
+		await userRepository.create(user);
+
+		useCase.exec({ email: user.email.value, password: '123456' }).catch(e => {
+			expect(e).toBeInstanceOf(AppError);
+			expect(e.statusCode).toEqual(400);
+			expect(e.message).toEqual('Invalid credentials');
+		});
+	});
+
+	test('user not found', async () => {
+		useCase.exec({ email: user.email.value, password: user.password.value }).catch(e => {
+			expect(e).toBeInstanceOf(AppError);
+			expect(e.statusCode).toEqual(400);
+			expect(e.message).toEqual('Invalid credentials');
 		});
 	});
 });

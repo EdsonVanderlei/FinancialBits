@@ -1,29 +1,31 @@
-import { AppError } from '../../shared/classes/app-error';
-import { Repository } from '../../domain/repositories/repository';
+import { Email } from '../../domain/data-objects/email/email';
+import { JWT } from '../../domain/data-objects/jwt/jwt';
+import { Password } from '../../domain/data-objects/password/password';
 import { Session } from '../../domain/entities/session/session';
 import { User } from '../../domain/entities/user/user';
-import { UserValidation } from '../../domain/validation/user/user-validation';
-import { PasswordUtils } from '../../shared/utils/password/password.utils';
-import { GenerateTokensUseCase } from '../generate-tokens/generate-tokens.use-case';
+import { Repository } from '../../domain/repositories/repository';
+import { AppError } from '../../shared/classes/app-error';
 import { RegisterUserUseCaseInput, RegisterUserUseCaseOutput } from './register-user.use-case-io';
 
 export class RegisterUserUseCase {
 	constructor(
+		private accessSecretKey: string,
+		private refreshSecretKey: string,
 		private userRepository: Repository<User>,
-		private sessionRepository: Repository<Session>,
-		private generateTokensUseCase: GenerateTokensUseCase
+		private sessionRepository: Repository<Session>
 	) {}
 
 	async exec(request: RegisterUserUseCaseInput): Promise<RegisterUserUseCaseOutput> {
-		let user = new User(null, request.email, request.password, request.firstName, request.lastName);
-
-		UserValidation.validate(user);
+		let user = User.create({
+			email: new Email(request.email),
+			password: new Password(request.password),
+			firstName: request.firstName,
+			lastName: request.lastName,
+		});
 
 		if (await this.userRepository.exists({ email: user.email })) {
 			throw new AppError('Email already in use', 404);
 		}
-
-		user.password = await PasswordUtils.hash(user.password);
 
 		user = await this.userRepository.create({
 			email: user.email,
@@ -32,18 +34,21 @@ export class RegisterUserUseCase {
 			lastName: user.lastName,
 		});
 
-		const tokens = this.generateTokensUseCase.exec({
-			payload: { name: user.fullName ?? '', sub: user.id! },
-		});
+		const payload = { sub: user.id!.value, name: user.fullName };
+		const refreshToken = JWT.generate(payload, this.refreshSecretKey);
+		const accessToken = JWT.generate(payload, this.accessSecretKey, { expiresIn: '5m' });
 
 		await this.sessionRepository.create({
 			userId: user.id!,
-			refreshToken: tokens.refresh,
+			refreshToken: refreshToken,
 		});
 
 		return {
-			tokens,
-			user: { email: user.email, firstName: user.firstName, lastName: user.lastName },
+			tokens: {
+				access: accessToken.value,
+				refresh: refreshToken.value,
+			},
+			user: { email: user.email.value, firstName: user.firstName, lastName: user.lastName },
 		};
 	}
 }

@@ -1,16 +1,20 @@
-import { Repository } from '../../domain/repositories/repository';
-import { Session } from '../../domain/entities/session/session';
-import { User } from '../../domain/entities/user/user';
-import { LogoutUserUseCaseInput, LogoutUserUseCaseOutput } from './logout-user.use-case-io';
+import { Email } from '../../domain/data-objects/email/email';
+import { SessionRepository } from '../../domain/repositories/session-repository';
+import { UserRepository } from '../../domain/repositories/user-repository';
+import {
+	LogoutUserUseCaseInput,
+	LogoutUserUseCaseOutput,
+} from './logout-user.use-case-io';
 
 export class LogoutUserUseCase {
 	constructor(
-		private userRepository: Repository<User>,
-		private sessionRepository: Repository<Session>
+		private userRepository: UserRepository,
+		private sessionRepository: SessionRepository
 	) {}
 
 	async exec(request: LogoutUserUseCaseInput): Promise<LogoutUserUseCaseOutput> {
-		const user = await this.userRepository.findOne({ email: request.email });
-		await this.sessionRepository.delete({ userId: user?.id ?? '' });
+		const user = await this.userRepository.findOne({ email: new Email(request.email) });
+		if (!user) return;
+		await this.sessionRepository.delete({ userId: user.id });
 	}
 }

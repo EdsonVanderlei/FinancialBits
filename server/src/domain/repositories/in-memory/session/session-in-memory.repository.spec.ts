@@ -1,70 +1,62 @@
-import { Session } from '../../../entities/session/session';
-import { ValidationUtils } from '../../../../shared/utils/validation/validation.utils';
-import { SessionInMemoryRepository } from './session-in-memory.repository';
-import { JWT } from '../../../data-objects/jwt/jwt';
 import { UUID } from '../../../data-objects/uuid/uuid';
+import { Session } from '../../../entities/session/session';
+import { LoadSessionProps } from '../../../types/session/load-session-props';
+import { SessionInMemoryRepository } from './session-in-memory.repository';
 
-const getSession = (replace?: Partial<Session>) =>
+const getSession = (replace?: Partial<LoadSessionProps>) =>
 	({
-		userId: new UUID('4aa7a4ad-bbff-458f-93a7-8f1e32e47c1c'),
-		refreshToken: new JWT(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
-		),
+		userId: '9fa68838-b06b-4c7a-b577-b59d059c2775',
+		refreshToken:
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
 		...replace,
-	} as Session);
+	} as LoadSessionProps);
 
 describe('SessionInMemoryRepository', () => {
-	test('findAll', async () => {
-		const repository = new SessionInMemoryRepository();
-		const session = await repository.create(getSession());
-		const sessions = await repository.findAll();
+	let repository: SessionInMemoryRepository;
 
-		expect(sessions).toContainEqual(session);
+	beforeEach(() => {
+		repository = new SessionInMemoryRepository();
 	});
 
-	test('findByUserId', async () => {
-		const repository = new SessionInMemoryRepository();
+	test('findAll', async () => {
 		const session = await repository.create(getSession());
-		const result = await repository.findOne({ userId: session.userId });
 
-		expect(result).toEqual(session);
+		expect(await repository.findAll()).toContainEqual(session);
+	});
+
+	test('findById', async () => {
+		const session = await repository.create(getSession());
+
+		expect(await repository.findOne({ id: session.id })).toEqual(session);
+		expect(await repository.findOne({ id: new UUID('', false) })).toBeFalsy();
 	});
 
 	test('create', async () => {
-		const repository = new SessionInMemoryRepository();
 		const session = await repository.create(getSession());
-		const validUuid = ValidationUtils.uuid(session.id?.value);
-		console.log(session)
 
 		expect(session).toBeInstanceOf(Session);
-		expect(validUuid).toBe(true);
 	});
 
 	test('update', async () => {
-		const repository = new SessionInMemoryRepository();
 		const session = await repository.create(getSession());
 
-		const accessToken =
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYmMxMjMiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.JO69ZGV8Pb7V3J7_O-fySk8Qh8ZSUI8mpOVusW7dTiU';
-		const result = await repository.update(
-			getSession({ refreshToken: new JWT(accessToken), id: session.id })
+		const newsession = await repository.update(
+			getSession({
+				userId: new UUID('9a5b560b-5035-45b2-935e-0422fb5e7059'),
+				id: session.id,
+			})
 		);
-		const sessions = await repository.findAll();
 
-		expect(result?.id === session.id).toBe(true);
-		expect(result?.refreshToken.value).toEqual(accessToken);
-
-		expect(sessions).toContainEqual(result);
-		expect(sessions).not.toContainEqual(session);
+		expect(newsession?.userId.value).toEqual('9a5b560b-5035-45b2-935e-0422fb5e7059');
+		expect(newsession?.id?.value === session.id?.value).toBe(true);
+		expect(await repository.findAll()).not.toContainEqual(session);
 	});
 
 	test('delete', async () => {
-		const repository = new SessionInMemoryRepository();
 		const session = await repository.create(getSession());
 		const { deleteCount } = await repository.delete({ id: session.id });
-		const sessions = await repository.findAll();
 
 		expect(deleteCount).toEqual(1);
-		expect(sessions).not.toContainEqual(session);
+		expect(await repository.findAll()).not.toContainEqual(session);
 	});
 });

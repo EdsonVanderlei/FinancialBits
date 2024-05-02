@@ -1,32 +1,22 @@
-import { AppError } from '../../shared/classes/app-error';
-import { TokenUtils } from '../../shared/utils/token/token.utils';
-import { ValidationUtils } from '../../shared/utils/validation/validation.utils';
-import { GenerateTokensUseCase } from '../generate-tokens/generate-tokens.use-case';
-import {
-	RefreshTokenUseCaseInput,
-	RefreshTokenUseCaseOutput,
-} from './refresh-token.use-case-io';
+import { JWT } from '../../domain/data-objects/jwt/jwt';
+import { RefreshTokenUseCaseInput, RefreshTokenUseCaseOutput } from './refresh-token.use-case-io';
 
 export class RefreshTokenUseCase {
-	constructor(
-		private refreshSecretKey: string,
-		private generateTokensUseCase: GenerateTokensUseCase
-	) {}
+	constructor(private accessSecretKey: string, private refreshSecretKey: string) {}
 
 	async exec(request: RefreshTokenUseCaseInput): Promise<RefreshTokenUseCaseOutput> {
-		if (!ValidationUtils.jwt(request.refreshToken)) {
-			throw new AppError('Invalid refresh token', 400);
-		}
+		const refreshToken = new JWT(request.refreshToken);
 
-		TokenUtils.verify(request.refreshToken, this.refreshSecretKey);
+		refreshToken.verify(this.refreshSecretKey);
 
-		const payload = TokenUtils.decode(request.refreshToken);
-
-		const tokens = this.generateTokensUseCase.exec({
-			refreshToken: request.refreshToken,
-			payload: { sub: payload!.sub!, name: payload!.name },
+		const payload = refreshToken.payload;
+		const accessToken = JWT.generate({ sub: payload!.sub!, name: payload!.name }, this.accessSecretKey, {
+			expiresIn: '10m',
 		});
 
-		return tokens;
+		return {
+			refresh: refreshToken.value,
+			access: accessToken.value,
+		};
 	}
 }

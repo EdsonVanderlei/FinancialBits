@@ -1,7 +1,4 @@
-export type LoginUserUseCaseInput = {
-	email: string;
-	password: string;
-};
+export type LoginUserUseCaseInput = { email: string; password: string };
 
 export type LoginUserUseCaseOutput = {
 	tokens: { access: string; refresh: string };

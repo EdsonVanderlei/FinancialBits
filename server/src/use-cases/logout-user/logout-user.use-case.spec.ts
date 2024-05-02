@@ -1,34 +1,9 @@
-import { User } from '../../domain/entities/user/user';
+import { Email } from '../../domain/data-objects/email/email';
+import { JWT } from '../../domain/data-objects/jwt/jwt';
+import { Password } from '../../domain/data-objects/password/password';
 import { SessionInMemoryRepository } from '../../domain/repositories/in-memory/session/session-in-memory.repository';
 import { UserInMemoryRepository } from '../../domain/repositories/in-memory/user/user-in-memory.repository';
-import { PasswordUtils } from '../../shared/utils/password/password.utils';
 import { LogoutUserUseCase } from './logout-user.use-case';
-
-const getUser = async (hashPassword: boolean) => {
-	const user = {
-		email: 'john@doe.com',
-		password: 'abc123',
-		firstName: 'John',
-		lastName: 'Doe',
-	};
-	if (hashPassword) user.password = await PasswordUtils.hash(user.password);
-	return user as User;
-};
-
-const getUseCase = async (user?: Omit<User, 'id'>) => {
-	const userRepository = new UserInMemoryRepository();
-	const sessionRepository = new SessionInMemoryRepository();
-
-	if (!!user) {
-		const result = await userRepository.create(user);
-		await sessionRepository.create({
-			userId: result.id!,
-			refreshToken: 'refreshToken',
-		});
-	}
-
-	return new LogoutUserUseCase(userRepository, sessionRepository);
-};
 
 describe('LogoutUserUseCase', () => {
 	test('exec', async () => {
@@ -37,17 +12,21 @@ describe('LogoutUserUseCase', () => {
 		const useCase = new LogoutUserUseCase(userRepository, sessionRepository);
 
 		const user = await userRepository.create({
-			email: 'john@doe.com',
-			password: 'abc123',
+			email: new Email('john@doe.com'),
+			password: new Password('abc123'),
 			firstName: 'John',
 			lastName: 'Doe',
 		});
+		await sessionRepository.create({
+			refreshToken: new JWT(
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+			),
+			userId: user.id!,
+		});
 
-		await sessionRepository.create({ refreshToken: 'token', userId: user.id! });
-		await useCase.exec({ email: user.email });
-
+		await useCase.exec({ email: user.email.value });
 		const result = await sessionRepository.exists({ userId: user.id! });
-		
+
 		expect(result).toBe(false);
 	});
 });

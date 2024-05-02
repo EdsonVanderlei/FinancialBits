@@ -2,14 +2,13 @@ import { Request, Response } from 'express';
 import { Session } from '../../domain/entities/session/session';
 import { User } from '../../domain/entities/user/user';
 import { Repository } from '../../domain/repositories/repository';
-import { Controller } from '../decorators/controller.decorator';
-import { Route } from '../decorators/route.decorator';
-import { HttpMethodEnum } from '../enums/http-method.enum';
-import { GenerateTokensUseCase } from '../../use-cases/generate-tokens/generate-tokens.use-case';
 import { LoginUserUseCase } from '../../use-cases/login-user/login-user.use-case';
 import { LogoutUserUseCase } from '../../use-cases/logout-user/logout-user.use-case';
 import { RefreshTokenUseCase } from '../../use-cases/refresh-token/refresh-token.use-case';
 import { RegisterUserUseCase } from '../../use-cases/register-user/register-user.use-case';
+import { Controller } from '../decorators/controller.decorator';
+import { Route } from '../decorators/route.decorator';
+import { HttpMethodEnum } from '../enums/http-method.enum';
 
 @Controller('/auth')
 export class AuthController {
@@ -22,22 +21,20 @@ export class AuthController {
 		tokenSecrets: { access: string; refresh: string },
 		repositories: { user: Repository<User>; session: Repository<Session> }
 	) {
-		const generateTokensUseCase = new GenerateTokensUseCase(
-			tokenSecrets.access,
-			tokenSecrets.refresh
-		);
 		this.loginUserUseCase = new LoginUserUseCase(
+			tokenSecrets.access,
+			tokenSecrets.refresh,
 			repositories.user,
-			repositories.session,
-			generateTokensUseCase
+			repositories.session
 		);
 		this.logoutUserUseCase = new LogoutUserUseCase(repositories.user, repositories.session);
 		this.registerUserUseCase = new RegisterUserUseCase(
+			tokenSecrets.access,
+			tokenSecrets.refresh,
 			repositories.user,
-			repositories.session,
-			generateTokensUseCase
+			repositories.session
 		);
-		this.refreshTokenUseCase = new RefreshTokenUseCase(tokenSecrets.refresh, generateTokensUseCase);
+		this.refreshTokenUseCase = new RefreshTokenUseCase(tokenSecrets.access, tokenSecrets.refresh);
 	}
 
 	@Route(HttpMethodEnum.POST, '/login')
@@ -55,7 +52,7 @@ export class AuthController {
 
 		await this.logoutUserUseCase.exec({ email });
 
-		return res.status(200).json({message: 'Session successfully ended'});
+		return res.status(200).json({ message: 'Session successfully ended' });
 	}
 
 	@Route(HttpMethodEnum.POST, '/register')

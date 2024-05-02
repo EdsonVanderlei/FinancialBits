@@ -4,21 +4,33 @@ import { UUID } from '../../data-objects/uuid/uuid';
 import { User } from './user';
 
 describe('User', () => {
-	test('create', () => {
-		const input = {
-			email: 'email@test.com',
-			password: '12345',
-			firstName: 'John',
-			lastName: 'Doe',
-			fullName: 'John Doe',
-		};
+	let input: {
+		id: string;
+		email: string;
+		password: string;
+		firstName: string;
+		lastName: string;
+		fullName: string;
+	};
+	beforeAll(
+		() =>
+			(input = {
+				id: '2b558e4f-d281-4b54-9710-50c52c647e5d',
+				email: 'email@test.com',
+				password: 'abc123',
+				firstName: 'John',
+				lastName: 'Doe',
+				fullName: 'John Doe',
+			})
+	);
 
-		const user = User.create(
-			input.email,
-			input.password,
-			input.firstName,
-			input.lastName
-		);
+	test('create', () => {
+		const user = User.create({
+			email: new Email(input.email),
+			password: new Password(input.password),
+			firstName: input.firstName,
+			lastName: input.lastName,
+		});
 
 		expect(input.email === user.email.value).toBeTruthy();
 		expect(input.password === user.password.value).toBeFalsy();
@@ -26,23 +38,14 @@ describe('User', () => {
 		expect(input.lastName === user.lastName).toBeTruthy();
 		expect(input.fullName === user.fullName).toBeTruthy();
 	});
-	test('restore', () => {
-		const input = {
-			id: '2b558e4f-d281-4b54-9710-50c52c647e5d',
-			email: 'email@test.com',
-			password: '123',
-			firstName: 'John',
-			lastName: 'Doe',
-			fullName: 'John Doe',
-		};
-
-		const user = User.restore(
-			new UUID(input.id, false),
-			new Email(input.email, false),
-			new Password(input.password, false, false),
-			input.firstName,
-			input.lastName
-		);
+	test('load', () => {
+		const user = User.load({
+			id: new UUID(input.id),
+			email: new Email(input.email),
+			password: new Password(input.password, true, false),
+			firstName: input.firstName,
+			lastName: input.lastName,
+		});
 
 		expect(input.id === user.id?.value).toBeTruthy();
 		expect(input.email === user.email.value).toBeTruthy();
@@ -52,13 +55,11 @@ describe('User', () => {
 		expect(input.fullName === user.fullName).toBeTruthy();
 	});
 	test('fullName', () => {
-		const input = {
-			email: 'email@test.com',
-			password: '12345',
-			firstName: 'John',
-		};
-
-		const user = User.create(input.email, input.password, input.firstName);
+		const user = User.create({
+			email: new Email(input.email),
+			password: new Password(input.password),
+			firstName: input.firstName,
+		});
 
 		expect(input.email === user.email.value).toBeTruthy();
 		expect(input.password === user.password.value).toBeFalsy();

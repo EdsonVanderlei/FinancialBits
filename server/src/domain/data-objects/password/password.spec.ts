@@ -39,4 +39,18 @@ describe('Password', () => {
 		const password = new Password(input, false, false);
 		expect(input === password.value).toBeTruthy();
 	});
+
+	test('compare valid', () => {
+		const input = 'abc123';
+		const password = new Password(input, false, true);
+
+		expect(password.compare(input)).toBeTruthy();
+	});
+
+	test('compare invalid', () => {
+		const input = 'abc123';
+		const password = new Password(input, false, true);
+
+		expect(password.compare('123')).toBeFalsy();
+	});
 });

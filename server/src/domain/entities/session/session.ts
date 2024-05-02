@@ -1,5 +1,7 @@
 import { JWT } from '../../data-objects/jwt/jwt';
 import { UUID } from '../../data-objects/uuid/uuid';
+import { CreateSessionProps } from '../../types/session/create-session-props';
+import { LoadSessionProps } from '../../types/session/load-session-props';
 import { Entity } from '../entity';
 
 export class Session extends Entity {
@@ -10,19 +12,19 @@ export class Session extends Entity {
 		super();
 	}
 
-	static create(userId: string, refreshToken: string) {
+	static create(props: CreateSessionProps) {
 		const session = new Session();
 		session.id = new UUID();
-		session.userId = new UUID(userId);
-		session.refreshToken = new JWT(refreshToken);
+		session.userId = props.userId;
+		session.refreshToken = props.refreshToken;
 		return session;
 	}
 
-	static restore(id: UUID, userId: UUID, refreshToken: JWT) {
+	static load(props: LoadSessionProps) {
 		const session = new Session();
-		session.id = id;
-		session.userId = userId;
-		session.refreshToken = refreshToken;
+		session.id = props.id;
+		session.userId = props.userId;
+		session.refreshToken = props.refreshToken;
 		return session;
 	}
 }

@@ -26,4 +26,35 @@ describe('JWT', () => {
 		expect(jwt.value).toEqual(input);
 		expect(ValidationUtils.jwt(jwt.value)).toBeFalsy();
 	});
+	test('generate', () => {
+		const secretKey = 'secretKey';
+		const payload = { john: 'doe' };
+		const token = JWT.generate(payload, secretKey);
+
+		expect(ValidationUtils.jwt(token.value)).toBeTruthy();
+	});
+	test('payload', () => {
+		const secretKey = 'secretKey';
+		const payload = { john: 'doe' };
+		const token = JWT.generate(payload, secretKey);
+
+		expect(token.payload!.john).toBe('doe');
+	});
+	test('verify valid', () => {
+		const secretKey = 'secretKey';
+		const payload = { john: 'doe' };
+		const token = JWT.generate(payload, secretKey);
+
+		expect(token.verify(secretKey)!.john).toBe('doe');
+	});
+	test('verify invalid', () => {
+		const secretKey = 'secretKey';
+		const payload = { john: 'doe' };
+		const token = JWT.generate(payload, secretKey);
+		
+		expect(() => token.verify('secret')).toThrow({
+			statusCode: 500,
+			message: 'invalid signature',
+		} as AppError);
+	});
 });

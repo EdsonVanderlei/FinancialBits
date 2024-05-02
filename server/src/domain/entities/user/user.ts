@@ -1,6 +1,8 @@
 import { Email } from '../../data-objects/email/email';
 import { Password } from '../../data-objects/password/password';
 import { UUID } from '../../data-objects/uuid/uuid';
+import { CreateUserProps } from '../../types/user/create-user-props';
+import { LoadUserProps } from '../../types/user/load-user-props';
 import { Entity } from '../entity';
 
 export class User extends Entity {
@@ -17,33 +19,27 @@ export class User extends Entity {
 		super();
 	}
 
-	static create(email: string, password: string, firstName: string, lastName?: string) {
+	static create(props: CreateUserProps) {
 		const user = new User();
-
 		user.id = new UUID();
-		user.email = new Email(email);
-		user.password = new Password(password);
-		user.firstName = firstName;
-		user.lastName = lastName;
-
+		user.email = props.email;
+		user.password = props.password;
+		user.firstName = props.firstName;
+		user.lastName = props.lastName;
 		return user;
 	}
 
-	static restore(
-		id: UUID,
-		email: Email,
-		password: Password,
-		firstName: string,
-		lastName?: string
-	) {
+	static load(props: LoadUserProps) {
 		const user = new User();
-
-		user.id = id;
-		user.email = email;
-		user.password = password;
-		user.firstName = firstName;
-		user.lastName = lastName;
-
+		user.id = props.id;
+		user.email = props.email;
+		user.password = props.password;
+		user.firstName = props.firstName;
+		user.lastName = props.lastName;
 		return user;
+	}
+
+	public comparePassword(target: string) {
+		return this.password.compare(target);
 	}
 }

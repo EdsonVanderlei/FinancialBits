@@ -15,6 +15,7 @@ export class Password extends DataObject<string> {
 		if (validate) this.validate();
 		if (hash) this.value = PasswordUtils.hash(this.value);
 	}
+
 	public validate() {
 		if (!ValidationUtils.minLength(this.value, this.minLength)) {
 			throw new AppError('Password length must be greater than 4', 400);
@@ -23,5 +24,9 @@ export class Password extends DataObject<string> {
 		if (!ValidationUtils.maxLength(this.value, this.maxLength)) {
 			throw new AppError('Password length must be lower than 16', 400);
 		}
+	}
+
+	public compare(target: string) {
+		return PasswordUtils.compare(target, this.value);
 	}
 }
