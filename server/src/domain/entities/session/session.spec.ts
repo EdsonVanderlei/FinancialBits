@@ -28,6 +28,7 @@ describe('Session', () => {
 			id: new UUID(input.id),
 			userId: new UUID(input.userId),
 			refreshToken: new JWT(input.refreshToken),
+			createdAt: 0
 		});
 
 		expect(input.id === session.id?.value).toBeTruthy();

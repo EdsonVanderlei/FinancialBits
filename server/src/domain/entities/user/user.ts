@@ -10,6 +10,8 @@ export class User extends Entity {
 	public password!: Password;
 	public firstName!: string;
 	public lastName?: string;
+	public createdAt!: number;
+	public updatedAt?: number;
 
 	public get fullName() {
 		return `${this.firstName}${this.lastName ? ' ' + this.lastName : ''}`;
@@ -26,6 +28,7 @@ export class User extends Entity {
 		user.password = props.password;
 		user.firstName = props.firstName;
 		user.lastName = props.lastName;
+		user.createdAt = new Date().getTime();
 		return user;
 	}
 
@@ -36,6 +39,8 @@ export class User extends Entity {
 		user.password = props.password;
 		user.firstName = props.firstName;
 		user.lastName = props.lastName;
+		user.createdAt = props.createdAt;
+		user.updatedAt = props.updatedAt;
 		return user;
 	}
 

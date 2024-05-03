@@ -7,9 +7,13 @@ export class SessionInMemoryRepository implements SessionRepository {
 	protected _sessions: Session[] = [];
 
 	private filterWhere = (where: Partial<LoadSessionProps>) => (session: Session) =>
-		Object.entries(where).every(
-			entry => session[entry[0] as keyof Session]?.value === entry[1].value
-		);
+		Object.entries(where).every(entry => {
+			const sessionProp = session[entry[0] as keyof Session];
+			if (typeof sessionProp === 'object') {
+				return sessionProp.value === (entry[1] as any).value;
+			}
+			return sessionProp === entry[1];
+		});
 
 	async exists(where: Partial<LoadSessionProps>) {
 		return !!(await this.findOne(where));

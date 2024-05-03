@@ -7,6 +7,8 @@ import { Entity } from '../entity';
 export class Session extends Entity {
 	public userId!: UUID;
 	public refreshToken!: JWT;
+	public createdAt!: number;
+	public updatedAt?: number;
 
 	private constructor() {
 		super();
@@ -17,6 +19,7 @@ export class Session extends Entity {
 		session.id = new UUID();
 		session.userId = props.userId;
 		session.refreshToken = props.refreshToken;
+		session.createdAt = new Date().getTime();
 		return session;
 	}
 
@@ -25,6 +28,8 @@ export class Session extends Entity {
 		session.id = props.id;
 		session.userId = props.userId;
 		session.refreshToken = props.refreshToken;
+		session.createdAt = props.createdAt;
+		session.updatedAt = props.updatedAt;
 		return session;
 	}
 }

@@ -5,4 +5,6 @@ export type LoadSessionProps = {
 	id: UUID;
 	userId: UUID;
 	refreshToken: JWT;
+	createdAt: number;
+	updatedAt?: number;
 };

@@ -8,4 +8,6 @@ export type LoadUserProps = {
 	password: Password;
 	firstName: string;
 	lastName?: string;
+	createdAt: number;
+	updatedAt?: number;
 };

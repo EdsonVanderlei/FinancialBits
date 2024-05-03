@@ -45,6 +45,7 @@ describe('User', () => {
 			password: new Password(input.password, true, false),
 			firstName: input.firstName,
 			lastName: input.lastName,
+			createdAt: 0
 		});
 
 		expect(input.id === user.id?.value).toBeTruthy();

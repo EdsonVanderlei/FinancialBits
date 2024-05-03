@@ -35,6 +35,7 @@ export class LoginUserUseCase {
 				id: session.id!,
 				userId: user.id!,
 				refreshToken: tokens.refresh,
+				createdAt: session.createdAt
 			});
 		} else {
 			await this.sessionRepository.create({
