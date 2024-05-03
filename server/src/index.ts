@@ -6,18 +6,14 @@ import { AuthController } from './infra/controllers/auth.controller';
 
 configDotenv();
 const port = parseInt(process.env.PORT!);
-const accessSecret = process.env.ACCESS_TOKEN_SECRET!;
-const refreshSecret = process.env.REFRESH_TOKEN_SECRET!;
+const accessSecretKey = process.env.ACCESS_TOKEN_SECRET!;
+const refreshSecretKey = process.env.REFRESH_TOKEN_SECRET!;
 
 const server = new App(port);
 
 const userRepository = new UserInMemoryRepository();
 const sessionRepository = new SessionInMemoryRepository();
 
-server.setController(
-	AuthController,
-	{ access: accessSecret, refresh: refreshSecret },
-	{ user: userRepository, session: sessionRepository }
-);
+server.setController(new AuthController(accessSecretKey, refreshSecretKey, userRepository, sessionRepository));
 
 server.listen();

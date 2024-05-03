@@ -21,12 +21,11 @@ export class App {
 		this.app.use(express.json());
 	}
 
-	public setController<T extends Object>(controller: new (...args: any) => T, ...args: any[]) {
+	public setController<T extends Object>(instance: T) {
+		const controller = instance.constructor;
 		if (this.controllers.has(controller.name)) {
 			throw new AppError(`Duplicate controller: ${controller.name}`, 500);
 		}
-
-		const instance = new controller(...args);
 		this.controllers.set(controller.name, instance);
 
 		const prefix: string = Reflect.get(controller, 'prefix');
@@ -42,7 +41,6 @@ export class App {
 					if (!route.isAsync) {
 						return controllerInstance[fn](req, res, next);
 					}
-
 					return controllerInstance[fn](req, res, next).catch((err: any) => next(err));
 				}
 			);
@@ -52,9 +50,6 @@ export class App {
 	public listen(callback?: () => void) {
 		this.app.use(ExpressUtils.globalErrorHandler());
 
-		this.app.listen(
-			this.port,
-			callback ?? (() => console.log(`Server running at http://localhost:${this.port}`))
-		);
+		this.app.listen(this.port, callback ?? (() => console.log(`Server running at http://localhost:${this.port}`)));
 	}
 }
