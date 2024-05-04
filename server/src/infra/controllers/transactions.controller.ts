@@ -6,16 +6,22 @@ import { LoadTransactionsUseCase } from '../../use-cases/transactions/load-trans
 import { Controller } from '../decorators/controller.decorator';
 import { Route } from '../decorators/route.decorator';
 import { HttpMethodEnum } from '../enums/http-method.enum';
+import {
+	CreateTransactionUseCaseInput,
+	CreateTransactionUseCaseOutput,
+} from '../../use-cases/transactions/create-transaction/create-transaction.use-case-io';
+import {
+	LoadTransactionsUseCaseInput,
+	LoadTransactionsUseCaseOutput,
+} from '../../use-cases/transactions/load-transactions/load-transactions.use-case-io';
+import { UseCase } from '../../use-cases/use-case';
 
 @Controller('/transactions')
 export class TransactionsController {
-	private loadTransactionsUseCase: LoadTransactionsUseCase;
-	private createTransactionUseCase: CreateTransactionUseCase;
-
-	constructor(userRepository: UserRepository, transactionRepository: TransactionRepository) {
-		this.loadTransactionsUseCase = new LoadTransactionsUseCase(transactionRepository);
-		this.createTransactionUseCase = new CreateTransactionUseCase(userRepository, transactionRepository);
-	}
+	constructor(
+		private loadTransactionsUseCase: UseCase<LoadTransactionsUseCaseInput, LoadTransactionsUseCaseOutput>,
+		private createTransactionUseCase: UseCase<CreateTransactionUseCaseInput, CreateTransactionUseCaseOutput>
+	) {}
 
 	@Route(HttpMethodEnum.GET, '/')
 	public async load(req: Request, res: Response) {
@@ -26,8 +32,8 @@ export class TransactionsController {
 
 	@Route(HttpMethodEnum.POST, '/')
 	public async create(req: Request, res: Response) {
-		const { value, date, userId } = req.body;
-		const transaction = await this.createTransactionUseCase.exec({ value, date, userId });
+		const { value, date, description, userId } = req.body;
+		const transaction = await this.createTransactionUseCase.exec({ value, date, description, userId });
 		return res.status(201).json(transaction);
 	}
 }

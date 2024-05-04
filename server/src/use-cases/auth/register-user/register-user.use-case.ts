@@ -5,9 +5,10 @@ import { Session } from '../../../domain/entities/session/session';
 import { User } from '../../../domain/entities/user/user';
 import { Repository } from '../../../domain/repositories/repository';
 import { AppError } from '../../../shared/classes/app-error';
+import { UseCase } from '../../use-case';
 import { RegisterUserUseCaseInput, RegisterUserUseCaseOutput } from './register-user.use-case-io';
 
-export class RegisterUserUseCase {
+export class RegisterUserUseCase implements UseCase<RegisterUserUseCaseInput, RegisterUserUseCaseOutput> {
 	constructor(
 		private accessSecretKey: string,
 		private refreshSecretKey: string,

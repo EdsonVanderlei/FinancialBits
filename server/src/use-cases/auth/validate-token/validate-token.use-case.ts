@@ -2,8 +2,9 @@ import { JwtPayload } from 'jsonwebtoken';
 import { JWT } from '../../../domain/data-objects/jwt/jwt';
 import { AppError } from '../../../shared/classes/app-error';
 import { ValidateTokenUseCaseInput, ValidateTokenUseCaseOutput } from './validate-token.use-case-io';
+import { UseCase } from '../../use-case';
 
-export class ValidateTokenUseCase {
+export class ValidateTokenUseCase implements UseCase<ValidateTokenUseCaseInput, ValidateTokenUseCaseOutput> {
 	constructor(private accessSecretKey: string) {}
 
 	exec(request: ValidateTokenUseCaseInput): ValidateTokenUseCaseOutput {

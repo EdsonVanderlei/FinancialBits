@@ -1,37 +1,30 @@
 import { Request, Response } from 'express';
-import { SessionRepository } from '../../domain/repositories/session-repository';
-import { UserRepository } from '../../domain/repositories/user-repository';
-import { LoginUserUseCase } from '../../use-cases/auth/login-user/login-user.use-case';
-import { LogoutUserUseCase } from '../../use-cases/auth/logout-user/logout-user.use-case';
-import { RefreshTokenUseCase } from '../../use-cases/auth/refresh-token/refresh-token.use-case';
-import { RegisterUserUseCase } from '../../use-cases/auth/register-user/register-user.use-case';
+import { LoginUserUseCaseInput, LoginUserUseCaseOutput } from '../../use-cases/auth/login-user/login-user.use-case-io';
+import {
+	LogoutUserUseCaseInput,
+	LogoutUserUseCaseOutput,
+} from '../../use-cases/auth/logout-user/logout-user.use-case-io';
+import {
+	RefreshTokenUseCaseInput,
+	RefreshTokenUseCaseOutput,
+} from '../../use-cases/auth/refresh-token/refresh-token.use-case-io';
+import {
+	RegisterUserUseCaseInput,
+	RegisterUserUseCaseOutput,
+} from '../../use-cases/auth/register-user/register-user.use-case-io';
+import { UseCase } from '../../use-cases/use-case';
 import { Controller } from '../decorators/controller.decorator';
 import { Route } from '../decorators/route.decorator';
 import { HttpMethodEnum } from '../enums/http-method.enum';
 
 @Controller('/auth')
 export class AuthController {
-	private loginUserUseCase: LoginUserUseCase;
-	private logoutUserUseCase: LogoutUserUseCase;
-	private registerUserUseCase: RegisterUserUseCase;
-	private refreshTokenUseCase: RefreshTokenUseCase;
-
 	constructor(
-		accessSecretKey: string,
-		refreshSecretKey: string,
-		userRepository: UserRepository,
-		sessionRepository: SessionRepository
-	) {
-		this.loginUserUseCase = new LoginUserUseCase(accessSecretKey, refreshSecretKey, userRepository, sessionRepository);
-		this.logoutUserUseCase = new LogoutUserUseCase(userRepository, sessionRepository);
-		this.registerUserUseCase = new RegisterUserUseCase(
-			accessSecretKey,
-			refreshSecretKey,
-			userRepository,
-			sessionRepository
-		);
-		this.refreshTokenUseCase = new RefreshTokenUseCase(accessSecretKey, refreshSecretKey);
-	}
+		private loginUserUseCase: UseCase<LoginUserUseCaseInput, LoginUserUseCaseOutput>,
+		private logoutUserUseCase: UseCase<LogoutUserUseCaseInput, LogoutUserUseCaseOutput>,
+		private registerUserUseCase: UseCase<RegisterUserUseCaseInput, RegisterUserUseCaseOutput>,
+		private refreshTokenUseCase: UseCase<RefreshTokenUseCaseInput, RefreshTokenUseCaseOutput>
+	) {}
 
 	@Route(HttpMethodEnum.POST, '/login')
 	public async login(req: Request, res: Response) {

@@ -1,11 +1,14 @@
 import { UUID } from '../../../domain/data-objects/uuid/uuid';
 import { UserRepository } from '../../../domain/repositories/user-repository';
 import { AppError } from '../../../shared/classes/app-error';
+import { UseCase } from '../../use-case';
 import { Transaction } from './../../../domain/entities/transaction/transaction';
 import { TransactionRepository } from './../../../domain/repositories/transaction-repository';
 import { CreateTransactionUseCaseInput, CreateTransactionUseCaseOutput } from './create-transaction.use-case-io';
 
-export class CreateTransactionUseCase {
+export class CreateTransactionUseCase
+	implements UseCase<CreateTransactionUseCaseInput, CreateTransactionUseCaseOutput>
+{
 	constructor(private userRepository: UserRepository, private transactionRepository: TransactionRepository) {}
 
 	async exec(request: CreateTransactionUseCaseInput): Promise<CreateTransactionUseCaseOutput> {
@@ -27,13 +30,13 @@ export class CreateTransactionUseCase {
 			description: request.description,
 			userId: new UUID(request.userId),
 		});
-		
+
 		if (!(await this.userRepository.exists({ id: transaction.userId }))) {
 			throw new AppError("The user doesn't exist", 404);
 		}
-		
+
 		transaction = await this.transactionRepository.create(transaction);
-		
+
 		return {
 			date: transaction.date,
 			value: transaction.value,

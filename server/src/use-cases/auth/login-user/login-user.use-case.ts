@@ -1,12 +1,13 @@
 import { Email } from '../../../domain/data-objects/email/email';
+import { JWT } from '../../../domain/data-objects/jwt/jwt';
 import { User } from '../../../domain/entities/user/user';
 import { SessionRepository } from '../../../domain/repositories/session-repository';
 import { UserRepository } from '../../../domain/repositories/user-repository';
 import { AppError } from '../../../shared/classes/app-error';
-import { JWT } from '../../../domain/data-objects/jwt/jwt';
+import { UseCase } from '../../use-case';
 import { LoginUserUseCaseInput, LoginUserUseCaseOutput } from './login-user.use-case-io';
 
-export class LoginUserUseCase {
+export class LoginUserUseCase implements UseCase<LoginUserUseCaseInput, LoginUserUseCaseOutput> {
 	constructor(
 		private accessSecretKey: string,
 		private refreshSecretKey: string,
