@@ -6,6 +6,7 @@ describe('Transaction', () => {
 		id: 'c346567b-7e86-4c07-9b48-c8339b86adc2',
 		value: 100,
 		date: 1714790615,
+		description: "test transaction",
 		userId: '523b53d3-9d8d-47f9-8247-7c40c6076335',
 		createdAt: 0,
 	};
@@ -14,9 +15,10 @@ describe('Transaction', () => {
 		const transaction = Transaction.create({
 			date: input.date,
 			value: input.value,
+			description: input.description,
 			userId: new UUID(input.userId),
 		});
-
+		
 		expect(input.value === transaction.value).toBeTruthy();
 		expect(input.userId === transaction.userId.value).toBeTruthy();
 	});
@@ -25,6 +27,7 @@ describe('Transaction', () => {
 			id: new UUID(input.id),
 			date: input.date,
 			value: input.value,
+			description: input.description,
 			userId: new UUID(input.userId),
 			createdAt: input.createdAt,
 		});

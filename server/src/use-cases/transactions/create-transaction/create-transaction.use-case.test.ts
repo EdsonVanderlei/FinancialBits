@@ -24,6 +24,7 @@ describe('CreateTransactionUseCase', () => {
 		const transaction = await createTransactionUseCase.exec({
 			date: 1714790615,
 			value: 100,
+			description: 'description',
 			userId: savedUser.id!.value,
 		});
 
@@ -33,28 +34,31 @@ describe('CreateTransactionUseCase', () => {
 		createTransactionUseCase.exec({
 			date: 1714790615,
 			value: 0,
+			description: 'description',
 			userId: user.id!.value,
 		}).catch(e => {
 			expect(e).toBeInstanceOf(AppError);
 			expect(e.statusCode).toBe(400);
-			expect(e.message).toBe('The transaction value must be different from 0');
+			expect(e.message).toBe('Transaction value must be different from 0');
 		});
 	});
 	test('invalid date', () => {
 		createTransactionUseCase.exec({
 			date: 0,
 			value: 100,
+			description: 'description',
 			userId: user.id!.value,
 		}).catch(e => {
 			expect(e).toBeInstanceOf(AppError);
 			expect(e.statusCode).toBe(400);
-			expect(e.message).toBe('The transaction date is invalid');
+			expect(e.message).toBe('Transaction date is invalid');
 		});
 	});
 	test('user not found', () => {
 		createTransactionUseCase.exec({
 			date: 1714790615,
 			value: 100,
+			description: 'description',
 			userId: user.id!.value,
 		}).catch(e => {
 			expect(e).toBeInstanceOf(AppError);

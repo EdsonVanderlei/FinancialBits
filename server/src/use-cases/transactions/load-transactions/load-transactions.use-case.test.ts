@@ -15,6 +15,7 @@ describe('LoadTransactionsUseCase', () => {
 			Transaction.create({
 				date: 0,
 				value: 100,
+				description: 'description',
 				userId: userId,
 			})
 		);
@@ -22,6 +23,7 @@ describe('LoadTransactionsUseCase', () => {
 			Transaction.create({
 				date: 10,
 				value: -50,
+				description: 'description',
 				userId: new UUID('6cdeebc8-0ef8-4b93-95dc-f52b28824fbb'),
 			})
 		);
