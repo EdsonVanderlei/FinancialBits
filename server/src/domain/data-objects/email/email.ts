@@ -1,5 +1,4 @@
 import { AppError } from '../../../shared/classes/app-error';
-import { ValidationUtils } from '../../../shared/utils/validation/validation.utils';
 import { DataObject } from '../data-object';
 
 export class Email extends DataObject<string> {
@@ -9,7 +8,8 @@ export class Email extends DataObject<string> {
 	}
 
 	public validate() {
-		if (!ValidationUtils.email(this.value)) {
+		const regExp = new RegExp(/[\w-\.]+@([\w-]+\.)+[\w-]{2,4}/);
+		if (!regExp.test(this.value)) {
 			throw new AppError('Invalid email', 400);
 		}
 	}

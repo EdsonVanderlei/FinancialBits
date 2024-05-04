@@ -1,5 +1,5 @@
 import cors from 'cors';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { AppError } from '../shared/classes/app-error';
 import { RouteDefinition } from './types/route-definition';
 import { ExpressUtils } from '../shared/utils/express/express.utils';
@@ -21,7 +21,10 @@ export class App {
 		this.app.use(express.json());
 	}
 
-	public setController<T extends Object>(instance: T) {
+	public setController<T extends Object>(
+		instance: T,
+		middlewares: ((req: Request, res: Response, next: NextFunction) => unknown)[] = []
+	) {
 		const controller = instance.constructor;
 		if (this.controllers.has(controller.name)) {
 			throw new AppError(`Duplicate controller: ${controller.name}`, 500);
@@ -34,6 +37,7 @@ export class App {
 		routes.forEach(route => {
 			this.app[route.httpMethod](
 				prefix + route.path,
+				...middlewares,
 				async (req: express.Request, res: express.Response, next: express.NextFunction) => {
 					const controllerInstance = this.controllers.get(controller.name);
 					const fn = route.methodName as keyof T;

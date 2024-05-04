@@ -1,19 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
-import { ErrorUtils } from '../error/error.utils';
+import { AppError } from '../../classes/app-error';
 
 export abstract class ExpressUtils {
 	static globalErrorHandler() {
 		return (err: Error, req: Request, res: Response, next: NextFunction) => {
-			const error = ErrorUtils.handleError(err);
+			let error: AppError;
+			if (err instanceof AppError && err.statusCode && err.statusCode !== 500) {
+				error = new AppError(err.message, err.statusCode);
+			} else {
+				error = new AppError('Internal server error', 500);
+			}
 			return res.status(error.statusCode).json({ message: error.message });
-		};
-	}
-
-	static asyncErrorHandler(
-		func: (req: Request, res: Response, next: NextFunction) => Promise<unknown>
-	) {
-		return (req: Request, res: Response, next: NextFunction) => {
-			func(req, res, next).catch(err => next(err));
 		};
 	}
 }

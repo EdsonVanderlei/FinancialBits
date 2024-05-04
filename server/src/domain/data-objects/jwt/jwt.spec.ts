@@ -1,5 +1,5 @@
 import { AppError } from '../../../shared/classes/app-error';
-import { ValidationUtils } from '../../../shared/utils/validation/validation.utils';
+import { JWTUtils } from '../../../shared/utils/jwt/jwt.utils';
 import { JWT } from './jwt';
 
 describe('JWT', () => {
@@ -9,7 +9,7 @@ describe('JWT', () => {
 		const jwt = new JWT(input);
 
 		expect(jwt.value).toEqual(input);
-		expect(ValidationUtils.jwt(jwt.value)).toBeTruthy();
+		expect(JWTUtils.regex(jwt.value)).toBeTruthy();
 	});
 	test('invalid', () => {
 		const input = 'abc';
@@ -24,14 +24,14 @@ describe('JWT', () => {
 		const jwt = new JWT(input, false);
 
 		expect(jwt.value).toEqual(input);
-		expect(ValidationUtils.jwt(jwt.value)).toBeFalsy();
+		expect(JWTUtils.regex(jwt.value)).toBeFalsy();
 	});
 	test('generate', () => {
 		const secretKey = 'secretKey';
 		const payload = { sub: 'john', name: 'doe' };
 		const token = JWT.generate(payload, secretKey);
 
-		expect(ValidationUtils.jwt(token.value)).toBeTruthy();
+		expect(JWTUtils.regex(token.value)).toBeTruthy();
 	});
 	test('payload', () => {
 		const secretKey = 'secretKey';

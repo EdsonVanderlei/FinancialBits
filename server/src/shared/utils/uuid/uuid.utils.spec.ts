@@ -1,12 +1,18 @@
-import { ValidationUtils } from '../validation/validation.utils';
 import { UuidUtils } from './uuid.utils';
 
 describe('UuidUtils', () => {
+	test('valid regex', () => {
+		const uuid = 'eb269a09-be09-4cf5-8a6f-34d8981e2460';
+		expect(UuidUtils.regex(uuid)).toBeTruthy();
+	});
+	test('invalid regex', () => {
+		const uuid = 'abc123';
+		expect(UuidUtils.regex(uuid)).toBeFalsy();
+	});
+
 	test('generate', () => {
 		const uuid = UuidUtils.generate();
-		const result = ValidationUtils.uuid(uuid);
-
-		expect(result).toBe(true);
+		expect(uuid).toBeDefined();
 	});
 
 	test('valid', () => {

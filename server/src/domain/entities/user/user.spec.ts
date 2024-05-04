@@ -4,25 +4,15 @@ import { UUID } from '../../data-objects/uuid/uuid';
 import { User } from './user';
 
 describe('User', () => {
-	let input: {
-		id: string;
-		email: string;
-		password: string;
-		firstName: string;
-		lastName: string;
-		fullName: string;
+	const input = {
+		id: '2b558e4f-d281-4b54-9710-50c52c647e5d',
+		email: 'email@test.com',
+		password: 'abc123',
+		firstName: 'John',
+		lastName: 'Doe',
+		fullName: 'John Doe',
+		createdAt: 0,
 	};
-	beforeAll(
-		() =>
-			(input = {
-				id: '2b558e4f-d281-4b54-9710-50c52c647e5d',
-				email: 'email@test.com',
-				password: 'abc123',
-				firstName: 'John',
-				lastName: 'Doe',
-				fullName: 'John Doe',
-			})
-	);
 
 	test('create', () => {
 		const user = User.create({
@@ -45,7 +35,7 @@ describe('User', () => {
 			password: new Password(input.password, true, false),
 			firstName: input.firstName,
 			lastName: input.lastName,
-			createdAt: 0
+			createdAt: input.createdAt,
 		});
 
 		expect(input.id === user.id?.value).toBeTruthy();
@@ -54,6 +44,7 @@ describe('User', () => {
 		expect(input.firstName === user.firstName).toBeTruthy();
 		expect(input.lastName === user.lastName).toBeTruthy();
 		expect(input.fullName === user.fullName).toBeTruthy();
+		expect(input.createdAt === user.createdAt).toBeTruthy();
 	});
 	test('fullName', () => {
 		const user = User.create({

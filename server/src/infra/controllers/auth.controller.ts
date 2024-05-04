@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { SessionRepository } from '../../domain/repositories/session-repository';
 import { UserRepository } from '../../domain/repositories/user-repository';
-import { LoginUserUseCase } from '../../use-cases/login-user/login-user.use-case';
-import { LogoutUserUseCase } from '../../use-cases/logout-user/logout-user.use-case';
-import { RefreshTokenUseCase } from '../../use-cases/refresh-token/refresh-token.use-case';
-import { RegisterUserUseCase } from '../../use-cases/register-user/register-user.use-case';
+import { LoginUserUseCase } from '../../use-cases/auth/login-user/login-user.use-case';
+import { LogoutUserUseCase } from '../../use-cases/auth/logout-user/logout-user.use-case';
+import { RefreshTokenUseCase } from '../../use-cases/auth/refresh-token/refresh-token.use-case';
+import { RegisterUserUseCase } from '../../use-cases/auth/register-user/register-user.use-case';
 import { Controller } from '../decorators/controller.decorator';
 import { Route } from '../decorators/route.decorator';
 import { HttpMethodEnum } from '../enums/http-method.enum';

@@ -1,5 +1,5 @@
 import { AppError } from '../../../shared/classes/app-error';
-import { ValidationUtils } from '../../../shared/utils/validation/validation.utils';
+import { NumberUtils } from '../../../shared/utils/number/number.utils';
 import { Password } from './password';
 
 describe('Password', () => {
@@ -25,8 +25,8 @@ describe('Password', () => {
 	test('skip validation', () => {
 		const input = 'abc123';
 		const password = new Password(input, false);
-		expect(ValidationUtils.minLength(password.value, 5)).toBeTruthy();
-		expect(ValidationUtils.maxLength(password.value, 15)).toBeFalsy();
+		expect(NumberUtils.min(password.value.length, 5)).toBeTruthy();
+		expect(NumberUtils.max(password.value.length, 15)).toBeFalsy();
 	});
 	test('hash', () => {
 		const input = 'abc123';

@@ -1,5 +1,5 @@
 import { AppError } from '../../../shared/classes/app-error';
-import { ValidationUtils } from '../../../shared/utils/validation/validation.utils';
+import { UuidUtils } from '../../../shared/utils/uuid/uuid.utils';
 import { UUID } from './uuid';
 
 describe('UUID', () => {
@@ -7,7 +7,7 @@ describe('UUID', () => {
 		const input = 'b3b1af0c-3679-476f-b4f8-a41668b5b2c0';
 		const uuid = new UUID(input);
 		expect(uuid.value).toEqual(input);
-		expect(ValidationUtils.uuid(uuid.value)).toBeTruthy();
+		expect(UuidUtils.regex(uuid.value)).toBeTruthy();
 	});
 	test('invalid', () => {
 		const input = 'b3b1af0c-a41668b5b2c0';
@@ -20,6 +20,6 @@ describe('UUID', () => {
 		const input = 'b3b1af0c-3679-a41668b5b2c0';
 		const uuid = new UUID(input, false);
 		expect(uuid.value).toEqual(input);
-		expect(ValidationUtils.uuid(uuid.value)).toBeFalsy();
+		expect(UuidUtils.regex(uuid.value)).toBeFalsy();
 	});
 });

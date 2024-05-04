@@ -1,5 +1,4 @@
 import { AppError } from '../../../shared/classes/app-error';
-import { ValidationUtils } from '../../../shared/utils/validation/validation.utils';
 import { Email } from './email';
 
 describe('Email', () => {
@@ -8,7 +7,6 @@ describe('Email', () => {
 		const email = new Email(input);
 
 		expect(email.value).toEqual(input);
-		expect(ValidationUtils.email(email.value)).toBeTruthy();
 	});
 	test('invalid', () => {
 		const input = 'abc';
@@ -23,6 +21,5 @@ describe('Email', () => {
 		const uuid = new Email(input, false);
 
 		expect(uuid.value).toEqual(input);
-		expect(ValidationUtils.email(uuid.value)).toBeFalsy();
 	});
 });
