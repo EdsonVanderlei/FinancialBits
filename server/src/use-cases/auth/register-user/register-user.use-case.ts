@@ -28,12 +28,7 @@ export class RegisterUserUseCase implements UseCase<RegisterUserUseCaseInput, Re
 			throw new AppError('Email already in use', 404);
 		}
 
-		user = await this.userRepository.create({
-			email: user.email,
-			password: user.password,
-			firstName: user.firstName,
-			lastName: user.lastName,
-		});
+		user = await this.userRepository.create(user);
 
 		const payload = { sub: user.id!.value, name: user.fullName };
 		const refreshToken = JWT.generate(payload, this.refreshSecretKey);
@@ -43,6 +38,8 @@ export class RegisterUserUseCase implements UseCase<RegisterUserUseCaseInput, Re
 			userId: user.id!,
 			refreshToken: refreshToken,
 		});
+
+		console.log(await this.userRepository.findAll());
 
 		return {
 			tokens: {

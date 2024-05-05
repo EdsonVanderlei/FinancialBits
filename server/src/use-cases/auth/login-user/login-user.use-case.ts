@@ -1,8 +1,8 @@
 import { Email } from '../../../domain/data-objects/email/email';
 import { JWT } from '../../../domain/data-objects/jwt/jwt';
+import { Session } from '../../../domain/entities/session/session';
 import { User } from '../../../domain/entities/user/user';
-import { SessionRepository } from '../../../domain/repositories/session-repository';
-import { UserRepository } from '../../../domain/repositories/user-repository';
+import { Repository } from '../../../domain/repositories/repository';
 import { AppError } from '../../../shared/classes/app-error';
 import { UseCase } from '../../use-case';
 import { LoginUserUseCaseInput, LoginUserUseCaseOutput } from './login-user.use-case-io';
@@ -11,8 +11,8 @@ export class LoginUserUseCase implements UseCase<LoginUserUseCaseInput, LoginUse
 	constructor(
 		private accessSecretKey: string,
 		private refreshSecretKey: string,
-		private userRepository: UserRepository,
-		private sessionRepository: SessionRepository
+		private userRepository: Repository<User>,
+		private sessionRepository: Repository<Session>
 	) {}
 
 	async exec(request: LoginUserUseCaseInput): Promise<LoginUserUseCaseOutput> {
@@ -28,7 +28,7 @@ export class LoginUserUseCase implements UseCase<LoginUserUseCaseInput, LoginUse
 
 		const payload = { sub: user.id!.value, name: user.fullName };
 		const tokens = {
-			access: JWT.generate(payload, this.accessSecretKey, { expiresIn: '5m' }),
+			access: JWT.generate(payload, this.accessSecretKey, { expiresIn: '24h' }),
 			refresh: session?.refreshToken ?? JWT.generate(payload, this.refreshSecretKey),
 		};
 

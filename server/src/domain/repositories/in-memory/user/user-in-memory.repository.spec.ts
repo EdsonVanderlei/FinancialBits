@@ -1,61 +1,99 @@
 import { Email } from '../../../data-objects/email/email';
+import { Password } from '../../../data-objects/password/password';
 import { UUID } from '../../../data-objects/uuid/uuid';
 import { User } from '../../../entities/user/user';
-import { LoadUserProps } from '../../../types/user/load-user-props';
 import { UserInMemoryRepository } from './user-in-memory.repository';
-
-const getUser = (replace?: Partial<LoadUserProps>) =>
-	({
-		email: 'johndoe@test.com',
-		password: 'abc123',
-		firstName: 'John',
-		lastName: 'Doe',
-		...replace,
-	} as LoadUserProps);
 
 describe('UserInMemoryRepository', () => {
 	let repository: UserInMemoryRepository;
-
-	beforeEach(() => {
-		repository = new UserInMemoryRepository();
+	const input = User.create({
+		email: new Email('user@test.com'),
+		password: new Password('abc123'),
+		firstName: 'John',
 	});
+
+	beforeEach(() => (repository = new UserInMemoryRepository()));
 
 	test('findAll', async () => {
-		const user = await repository.create(getUser());
+		await repository.create(input);
+		const result = await repository.findAll();
 
-		expect(await repository.findAll()).toContainEqual(user);
+		expect(result).toContainEqual(input);
 	});
+	test('findAll where', async () => {
+		const input2 = { ...input, id: new UUID() };
+		await repository.create(input);
+		await repository.create(input2);
+		const result = await repository.findAll({ id: input2.id });
 
-	test('findById', async () => {
-		const user = await repository.create(getUser());
-
-		expect(await repository.findOne({ id: user.id })).toEqual(user);
-		expect(await repository.findOne({ id: new UUID('', false) })).toBeFalsy();
+		expect(result).toContainEqual(input2);
+		expect(result).not.toContainEqual(input);
 	});
+	test('findOne', async () => {
+		await repository.create(input);
+		const result = await repository.findOne({ id: input.id });
 
+		expect(result).toEqual(input);
+	});
+	test('findOne null', async () => {
+		const result = await repository.findOne({ id: input.id });
+
+		expect(result).toEqual(null);
+	});
+	test('exists true', async () => {
+		await repository.create(input);
+		const result = await repository.exists({ id: input.id });
+
+		expect(result).toBeTruthy();
+	});
+	test('exists false', async () => {
+		const result = await repository.findOne({ id: input.id });
+
+		expect(result).toBeFalsy();
+	});
 	test('create', async () => {
-		const user = await repository.create(getUser());
+		const result = await repository.create(input);
+		const quantity = (await repository.findAll()).length;
 
-		expect(user).toBeInstanceOf(User);
+		expect(result).toEqual(input);
+		expect(quantity).toEqual(1);
 	});
-
 	test('update', async () => {
-		const user = await repository.create(getUser());
+		await repository.create(input);
+		const result = await repository.update(input.id!, { ...input, lastName: 'Doe' });
+		const quantity = (await repository.findAll()).length;
 
-		const newUser = await repository.update(
-			getUser({ email: new Email('john@test.com'), id: user.id })
-		);
-
-		expect(newUser?.email.value).toEqual('john@test.com');
-		expect(newUser?.id?.value === user.id?.value).toBe(true);
-		expect(await repository.findAll()).not.toContainEqual(user);
+		expect(quantity).toEqual(1);
+		expect(result?.id).toEqual(input.id);
+		expect(result?.email).toEqual(input.email);
+		expect(result?.password).toEqual(input.password);
+		expect(result?.firstName).toEqual(input.firstName);
+		expect(result?.lastName).not.toEqual(input.lastName);
+		expect(result?.fullName).not.toEqual(input.fullName);
+		expect(result?.createdAt).toEqual(input.createdAt);
+		expect(result?.updatedAt).toEqual(input.updatedAt);
 	});
+	test('update null', async () => {
+		const result = await repository.update(input.id!, { ...input, lastName: 'Doe' });
+		const quantity = (await repository.findAll()).length;
 
-	test('delete', async () => {
-		const user = await repository.create(getUser());
-		const { deleteCount } = await repository.delete({ id: user.id });
+		expect(quantity).toEqual(0);
+		expect(result).toEqual(null);
+	});
+	test('delete 1', async () => {
+		await repository.create(input);
+		const result = await repository.delete({ id: input.id });
+		const quantity = (await repository.findAll()).length;
 
-		expect(deleteCount).toEqual(1);
-		expect(await repository.findAll()).not.toContainEqual(user);
+		expect(result.deleteCount).toEqual(1);
+		expect(quantity).toEqual(0);
+	});
+	test('delete 0', async () => {
+		await repository.create(input);
+		const result = await repository.delete({ id: new UUID() });
+		const quantity = (await repository.findAll()).length;
+
+		expect(result.deleteCount).toEqual(0);
+		expect(quantity).toEqual(1);
 	});
 });

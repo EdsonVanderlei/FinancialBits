@@ -1,15 +1,15 @@
 import { UUID } from '../../../domain/data-objects/uuid/uuid';
-import { UserRepository } from '../../../domain/repositories/user-repository';
+import { User } from '../../../domain/entities/user/user';
+import { Repository } from '../../../domain/repositories/repository';
 import { AppError } from '../../../shared/classes/app-error';
 import { UseCase } from '../../use-case';
 import { Transaction } from './../../../domain/entities/transaction/transaction';
-import { TransactionRepository } from './../../../domain/repositories/transaction-repository';
 import { CreateTransactionUseCaseInput, CreateTransactionUseCaseOutput } from './create-transaction.use-case-io';
 
 export class CreateTransactionUseCase
 	implements UseCase<CreateTransactionUseCaseInput, CreateTransactionUseCaseOutput>
 {
-	constructor(private userRepository: UserRepository, private transactionRepository: TransactionRepository) {}
+	constructor(private userRepository: Repository<User>, private transactionRepository: Repository<Transaction>) {}
 
 	async exec(request: CreateTransactionUseCaseInput): Promise<CreateTransactionUseCaseOutput> {
 		if (request.value === 0) {

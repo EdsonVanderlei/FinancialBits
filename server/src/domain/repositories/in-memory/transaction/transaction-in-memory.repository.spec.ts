@@ -1,60 +1,97 @@
-import { UUID } from "../../../data-objects/uuid/uuid";
-import { Transaction } from "../../../entities/transaction/transaction";
-import { LoadTransactionProps } from "../../../types/transaction/load-transaction-props";
-import { TransactionInMemoryRepository } from "./transaction-in-memory.repository";
-
-const getTransaction = (replace?: Partial<LoadTransactionProps>) =>
-	({
-		id: 'cdddcff3-270a-40cd-8888-9a18b80e8e6e',
-		value: 100,
-		userId: '0c72141c-7c6c-4450-bedd-d5afca3aff61',
-		createdAt: 0,
-		...replace,
-	} as LoadTransactionProps);
+import { UUID } from '../../../data-objects/uuid/uuid';
+import { Transaction } from '../../../entities/transaction/transaction';
+import { TransactionInMemoryRepository } from './transaction-in-memory.repository';
 
 describe('TransactionInMemoryRepository', () => {
 	let repository: TransactionInMemoryRepository;
-
-	beforeEach(() => {
-		repository = new TransactionInMemoryRepository();
+	const input = Transaction.create({
+		value: 100,
+		date: 1714918053,
+		description: 'description',
+		userId: new UUID(),
 	});
+
+	beforeEach(() => (repository = new TransactionInMemoryRepository()));
 
 	test('findAll', async () => {
-		const transaction = await repository.create(getTransaction());
+		await repository.create(input);
+		const result = await repository.findAll();
 
-		expect(await repository.findAll()).toContainEqual(transaction);
+		expect(result).toContainEqual(input);
 	});
+	test('findAll where', async () => {
+		const input2 = { ...input, id: new UUID() };
+		await repository.create(input);
+		await repository.create(input2);
+		const result = await repository.findAll({ id: input2.id });
 
-	test('findById', async () => {
-		const transaction = await repository.create(getTransaction());
-
-		expect(await repository.findOne({ id: transaction.id })).toEqual(transaction);
-		expect(await repository.findOne({ id: new UUID('', false) })).toBeFalsy();
+		expect(result).toContainEqual(input2);
+		expect(result).not.toContainEqual(input);
 	});
+	test('findOne', async () => {
+		await repository.create(input);
+		const result = await repository.findOne({ id: input.id });
 
+		expect(result).toEqual(input);
+	});
+	test('findOne null', async () => {
+		const result = await repository.findOne({ id: input.id });
+
+		expect(result).toEqual(null);
+	});
+	test('exists true', async () => {
+		await repository.create(input);
+		const result = await repository.exists({ id: input.id });
+
+		expect(result).toBeTruthy();
+	});
+	test('exists false', async () => {
+		const result = await repository.findOne({ id: input.id });
+
+		expect(result).toBeFalsy();
+	});
 	test('create', async () => {
-		const transaction = await repository.create(getTransaction());
+		const result = await repository.create(input);
+		const quantity = (await repository.findAll()).length;
 
-		expect(transaction).toBeInstanceOf(Transaction);
+		expect(result).toEqual(input);
+		expect(quantity).toEqual(1);
 	});
-
 	test('update', async () => {
-		const transaction = await repository.create(getTransaction());
+		await repository.create(input);
+		const result = await repository.update(input.id!, { ...input, userId: new UUID() });
+		const quantity = (await repository.findAll()).length;
 
-		const newTransaction = await repository.update(
-			getTransaction({ value: 50, id: transaction.id })
-		);
-
-		expect(newTransaction?.value).toEqual(50);
-		expect(newTransaction?.id?.value === transaction.id?.value).toBe(true);
-		expect(await repository.findAll()).not.toContainEqual(transaction);
+		expect(quantity).toEqual(1);
+		expect(result?.id).toEqual(input.id);
+		expect(result?.date).toEqual(input.date);
+		expect(result?.value).toEqual(input.value);
+		expect(result?.description).toEqual(input.description);
+		expect(result?.userId).not.toEqual(input.userId);
+		expect(result?.createdAt).toEqual(input.createdAt);
+		expect(result?.updatedAt).toEqual(input.updatedAt);
 	});
+	test('update null', async () => {
+		const result = await repository.update(input.id!, { ...input, userId: new UUID() });
+		const quantity = (await repository.findAll()).length;
 
-	test('delete', async () => {
-		const user = await repository.create(getTransaction());
-		const { deleteCount } = await repository.delete({ id: user.id });
+		expect(quantity).toEqual(0);
+		expect(result).toEqual(null);
+	});
+	test('delete 1', async () => {
+		await repository.create(input);
+		const result = await repository.delete({ id: input.id });
+		const quantity = (await repository.findAll()).length;
 
-		expect(deleteCount).toEqual(1);
-		expect(await repository.findAll()).not.toContainEqual(user);
+		expect(result.deleteCount).toEqual(1);
+		expect(quantity).toEqual(0);
+	});
+	test('delete 0', async () => {
+		await repository.create(input);
+		const result = await repository.delete({ id: new UUID() });
+		const quantity = (await repository.findAll()).length;
+
+		expect(result.deleteCount).toEqual(0);
+		expect(quantity).toEqual(1);
 	});
 });

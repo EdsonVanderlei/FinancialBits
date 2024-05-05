@@ -1,11 +1,4 @@
 import { Request, Response } from 'express';
-import { TransactionRepository } from '../../domain/repositories/transaction-repository';
-import { UserRepository } from '../../domain/repositories/user-repository';
-import { CreateTransactionUseCase } from '../../use-cases/transactions/create-transaction/create-transaction.use-case';
-import { LoadTransactionsUseCase } from '../../use-cases/transactions/load-transactions/load-transactions.use-case';
-import { Controller } from '../decorators/controller.decorator';
-import { Route } from '../decorators/route.decorator';
-import { HttpMethodEnum } from '../enums/http-method.enum';
 import {
 	CreateTransactionUseCaseInput,
 	CreateTransactionUseCaseOutput,
@@ -15,6 +8,9 @@ import {
 	LoadTransactionsUseCaseOutput,
 } from '../../use-cases/transactions/load-transactions/load-transactions.use-case-io';
 import { UseCase } from '../../use-cases/use-case';
+import { Controller } from '../decorators/controller.decorator';
+import { Route } from '../decorators/route.decorator';
+import { HttpMethodEnum } from '../enums/http-method.enum';
 
 @Controller('/transactions')
 export class TransactionsController {

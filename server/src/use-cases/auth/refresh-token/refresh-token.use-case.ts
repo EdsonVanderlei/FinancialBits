@@ -12,7 +12,7 @@ export class RefreshTokenUseCase implements UseCase<RefreshTokenUseCaseInput, Re
 
 		const payload = refreshToken.payload;
 		const accessToken = JWT.generate({ sub: payload!.sub!, name: payload!.name }, this.accessSecretKey, {
-			expiresIn: '10m',
+			expiresIn: '24h',
 		});
 
 		return {
