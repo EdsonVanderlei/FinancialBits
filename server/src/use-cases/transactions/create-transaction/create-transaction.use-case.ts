@@ -37,7 +37,12 @@ export class CreateTransactionUseCase
 
 		transaction = await this.transactionRepository.create(transaction);
 
+		if (!transaction) {
+			throw new AppError("Couldn't save the transaction", 500);
+		}
+
 		return {
+			id: transaction.id!.value,
 			date: transaction.date,
 			value: transaction.value,
 			description: transaction.description,
