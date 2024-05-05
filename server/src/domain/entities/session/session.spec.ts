@@ -28,7 +28,7 @@ describe('Session', () => {
 			createdAt: input.createdAt,
 		});
 
-		expect(input.id === session.id?.value).toBeTruthy();
+		expect(input.id === session.id.value).toBeTruthy();
 		expect(input.userId === session.userId.value).toBeTruthy();
 		expect(input.refreshToken === session.refreshToken.value).toBeTruthy();
 		expect(input.createdAt === session.createdAt).toBeTruthy();

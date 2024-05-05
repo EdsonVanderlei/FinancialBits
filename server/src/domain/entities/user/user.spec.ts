@@ -38,7 +38,7 @@ describe('User', () => {
 			createdAt: input.createdAt,
 		});
 
-		expect(input.id === user.id?.value).toBeTruthy();
+		expect(input.id === user.id.value).toBeTruthy();
 		expect(input.email === user.email.value).toBeTruthy();
 		expect(input.password === user.password.value).toBeTruthy();
 		expect(input.firstName === user.firstName).toBeTruthy();
