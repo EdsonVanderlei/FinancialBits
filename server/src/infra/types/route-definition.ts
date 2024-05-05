@@ -1,4 +1,9 @@
-import { HttpMethodEnum } from '../enums/http-method.enum';
+export const enum HttpMethodEnum {
+	GET = 'get',
+	POST = 'post',
+	PUT = 'put',
+	DELETE = 'delete',
+}
 
 export type RouteDefinition = {
 	path: string;

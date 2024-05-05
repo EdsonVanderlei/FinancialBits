@@ -1,5 +1,4 @@
-import { HttpMethodEnum } from '../enums/http-method.enum';
-import { RouteDefinition } from '../types/route-definition';
+import { HttpMethodEnum, RouteDefinition } from '../types/route-definition';
 
 export const Route = (
 	httpMethod: HttpMethodEnum,

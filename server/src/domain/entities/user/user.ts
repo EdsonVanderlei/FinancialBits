@@ -1,8 +1,6 @@
 import { Email } from '../../data-objects/email/email';
 import { Password } from '../../data-objects/password/password';
 import { UUID } from '../../data-objects/uuid/uuid';
-import { CreateUserProps } from '../../types/user/create-user-props';
-import { LoadUserProps } from '../../types/user/load-user-props';
 import { Entity } from '../entity';
 
 export class User extends Entity {
@@ -21,7 +19,7 @@ export class User extends Entity {
 		super();
 	}
 
-	static create(props: CreateUserProps) {
+	static create(props: { email: Email; password: Password; firstName: string; lastName?: string }) {
 		const user = new User();
 		user.id = new UUID();
 		user.email = props.email;
@@ -32,7 +30,15 @@ export class User extends Entity {
 		return user;
 	}
 
-	static load(props: LoadUserProps) {
+	static load(props: {
+		id: UUID;
+		email: Email;
+		password: Password;
+		firstName: string;
+		createdAt: number;
+		lastName?: string;
+		updatedAt?: number;
+	}) {
 		const user = new User();
 		user.id = props.id;
 		user.email = props.email;

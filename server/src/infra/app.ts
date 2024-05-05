@@ -1,8 +1,8 @@
 import cors from 'cors';
-import express, { Request, Response, NextFunction } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { AppError } from '../shared/classes/app-error';
+import { errorMiddleware } from './middlewares/error.middleware';
 import { RouteDefinition } from './types/route-definition';
-import { ExpressUtils } from '../shared/utils/express/express.utils';
 
 export class App {
 	private port: number;
@@ -52,7 +52,7 @@ export class App {
 	}
 
 	public listen(callback?: () => void) {
-		this.app.use(ExpressUtils.globalErrorHandler());
+		this.app.use(errorMiddleware);
 
 		this.app.listen(this.port, callback ?? (() => console.log(`Server running at http://localhost:${this.port}`)));
 	}

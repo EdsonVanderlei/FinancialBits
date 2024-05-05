@@ -15,7 +15,7 @@ import {
 import { UseCase } from '../../use-cases/use-case';
 import { Controller } from '../decorators/controller.decorator';
 import { Route } from '../decorators/route.decorator';
-import { HttpMethodEnum } from '../enums/http-method.enum';
+import { HttpMethodEnum } from '../types/route-definition';
 
 @Controller('/auth')
 export class AuthController {

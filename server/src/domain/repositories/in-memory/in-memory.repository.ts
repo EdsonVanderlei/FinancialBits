@@ -1,3 +1,4 @@
+import { DataObject } from '../../data-objects/data-object';
 import { UUID } from '../../data-objects/uuid/uuid';
 import { Entity } from '../../entities/entity';
 import { Repository } from '../repository';
@@ -5,7 +6,15 @@ import { Repository } from '../repository';
 export abstract class InMemoryRepository<T extends Entity> implements Repository<T> {
 	protected _values: T[] = [];
 
-	protected abstract _filterWhere: (where: Partial<T>) => (value: T) => boolean;
+	protected _filterWhere = (where: Partial<T>) => (value: T) => {
+		return Object.entries(where).every(entry => {
+			const prop = value[entry[0] as keyof T];
+			if (prop instanceof DataObject) {
+				return prop.value === (entry[1] as any).value;
+			}
+			return prop === entry[1];
+		});
+	};
 
 	async exists(where: Partial<T>) {
 		return !!(await this.findOne(where));

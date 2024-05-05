@@ -1,16 +1,15 @@
+import { NextFunction, Request, Response } from 'express';
 import { JWT } from '../../domain/data-objects/jwt/jwt';
 import { AppError } from '../../shared/classes/app-error';
-import { ValidateTokenUseCase } from './../../use-cases/auth/validate-token/validate-token.use-case';
-import { Request, Response, NextFunction } from 'express';
+import {
+	ValidateTokenUseCaseInput,
+	ValidateTokenUseCaseOutput,
+} from '../../use-cases/auth/validate-token/validate-token.use-case-io';
+import { UseCase } from '../../use-cases/use-case';
 
-export class AuthMiddleware {
-	private validateTokenUseCase: ValidateTokenUseCase;
-
-	constructor(accessSecretKey: string) {
-		this.validateTokenUseCase = new ValidateTokenUseCase(accessSecretKey);
-	}
-
-	public exec = (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware =
+	(validateTokenUseCase: UseCase<ValidateTokenUseCaseInput, ValidateTokenUseCaseOutput>) =>
+	(req: Request, res: Response, next: NextFunction) => {
 		let token: JWT;
 		try {
 			let tokenHeader = !!req.headers && req.headers.authorization;
@@ -19,9 +18,8 @@ export class AuthMiddleware {
 			throw new AppError(e.message ?? 'Unauthorized', 401);
 		}
 
-		const payload = this.validateTokenUseCase.exec({ accessToken: token.value });
+		const payload = validateTokenUseCase.exec({ accessToken: token.value }) as ValidateTokenUseCaseOutput;
 		req.body = { ...req.body, userFullname: payload.userFullname, userId: payload.userId };
-		
+
 		next();
 	};
-}
