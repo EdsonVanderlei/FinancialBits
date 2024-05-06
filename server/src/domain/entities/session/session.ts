@@ -17,7 +17,6 @@ export class Session extends Entity {
 		session.id = new UUID();
 		session.userId = props.userId;
 		session.refreshToken = props.refreshToken;
-		session.createdAt = new Date().getTime();
 		return session;
 	}
 

@@ -39,7 +39,7 @@ export class UpdateTransactionUseCase
 				description: request.description,
 				userId: transaction.userId,
 				createdAt: transaction.createdAt,
-				updatedAt: new Date().getTime(),
+				updatedAt: transaction.updatedAt,
 			})
 		);
 

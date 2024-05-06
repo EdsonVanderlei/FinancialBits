@@ -23,18 +23,18 @@ export class CreateTransactionUseCase
 		if (!request.description) {
 			throw new AppError('Transaction description is required', 400);
 		}
-
+		
 		let transaction = Transaction.create({
 			date: request.date,
 			value: request.value,
 			description: request.description,
 			userId: new UUID(request.userId),
 		});
-
+		
 		if (!(await this.userRepository.exists({ id: transaction.userId }))) {
 			throw new AppError("The user doesn't exist", 404);
 		}
-
+		
 		transaction = await this.transactionRepository.create(transaction);
 
 		if (!transaction) {

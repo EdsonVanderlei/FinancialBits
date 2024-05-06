@@ -15,6 +15,10 @@ import { CreateTransactionUseCase } from './use-cases/transactions/create-transa
 import { DeleteTransactionUseCase } from './use-cases/transactions/delete-transaction/delete-transaction.use-case';
 import { LoadTransactionsUseCase } from './use-cases/transactions/load-transactions/load-transactions.use-case';
 import { UpdateTransactionUseCase } from './use-cases/transactions/update-transaction/update-transaction.use-case';
+import { UserKnexRespository } from './domain/repositories/knex/user/user-knex.repository';
+import * as config from '../knexfile';
+import knex from 'knex';
+import { TransactionKnexRespository } from './domain/repositories/knex/transaction/transaction-knex.repository';
 
 configDotenv();
 const port = parseInt(process.env.PORT!);
@@ -22,10 +26,11 @@ const accessSecretKey = process.env.ACCESS_TOKEN_SECRET!;
 const refreshSecretKey = process.env.REFRESH_TOKEN_SECRET!;
 
 const server = new App(port);
+const knexInstance = knex((config as any).development);
 
-const userRepository = new UserInMemoryRepository();
+const userRepository = new UserKnexRespository(knexInstance, 'users');
 const sessionRepository = new SessionInMemoryRepository();
-const transactionRepository = new TransactionInMemoryRepository();
+const transactionRepository = new TransactionKnexRespository(knexInstance, 'transactions');
 
 const loginUserUseCase = new LoginUserUseCase(accessSecretKey, refreshSecretKey, userRepository, sessionRepository);
 const logoutUserUseCase = new LogoutUserUseCase(userRepository, sessionRepository);

@@ -39,8 +39,6 @@ export class RegisterUserUseCase implements UseCase<RegisterUserUseCaseInput, Re
 			refreshToken: refreshToken,
 		});
 
-		console.log(await this.userRepository.findAll());
-
 		return {
 			tokens: {
 				access: accessToken.value,

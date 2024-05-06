@@ -26,7 +26,6 @@ export class User extends Entity {
 		user.password = props.password;
 		user.firstName = props.firstName;
 		user.lastName = props.lastName;
-		user.createdAt = new Date().getTime();
 		return user;
 	}
 

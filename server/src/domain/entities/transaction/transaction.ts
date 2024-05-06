@@ -20,7 +20,6 @@ export class Transaction extends Entity {
 		transaction.value = props.value;
 		transaction.description = props.description;
 		transaction.userId = props.userId;
-		transaction.createdAt = new Date().getTime();
 		return transaction;
 	}
 
