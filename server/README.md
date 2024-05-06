@@ -14,12 +14,16 @@
 	export const config = {
 		development: {
 			client: 'sqlite3',
-			connection: { filename: './database/dev.sqlite3' },
+			connection: {
+ 				filename: './folder/database.sqlite3'
+ 			},
 		},
 		development_test: {
 			client: 'sqlite3',
-			connection: { filename: './database/dev.test.sqlite3'},
-		} as Knex.Config,
+			connection: {
+ 				filename: './folder/database.test.sqlite3'
+ 			},
+		}
 	};
 	
 	module.exports = config;
