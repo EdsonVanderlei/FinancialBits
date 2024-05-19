@@ -2,14 +2,14 @@ import { Email } from '../../data-objects/email/email';
 import { Password } from '../../data-objects/password/password';
 import { UUID } from '../../data-objects/uuid/uuid';
 import { Entity } from '../entity';
+import { Timestamps } from './../../data-objects/timestamps/timestamps';
 
 export class User extends Entity {
 	public email!: Email;
 	public password!: Password;
 	public firstName!: string;
 	public lastName?: string;
-	public createdAt!: number;
-	public updatedAt?: number;
+	public timestamps!: Timestamps;
 
 	public get fullName() {
 		return `${this.firstName}${this.lastName ? ' ' + this.lastName : ''}`;
@@ -26,6 +26,7 @@ export class User extends Entity {
 		user.password = props.password;
 		user.firstName = props.firstName;
 		user.lastName = props.lastName;
+		user.timestamps = new Timestamps();
 		return user;
 	}
 
@@ -34,9 +35,8 @@ export class User extends Entity {
 		email: Email;
 		password: Password;
 		firstName: string;
-		createdAt: number;
 		lastName?: string;
-		updatedAt?: number;
+		timestamps: Timestamps;
 	}) {
 		const user = new User();
 		user.id = props.id;
@@ -44,8 +44,7 @@ export class User extends Entity {
 		user.password = props.password;
 		user.firstName = props.firstName;
 		user.lastName = props.lastName;
-		user.createdAt = props.createdAt;
-		user.updatedAt = props.updatedAt;
+		user.timestamps = props.timestamps;
 		return user;
 	}
 

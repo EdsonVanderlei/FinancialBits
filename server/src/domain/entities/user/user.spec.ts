@@ -1,5 +1,6 @@
 import { Email } from '../../data-objects/email/email';
 import { Password } from '../../data-objects/password/password';
+import { Timestamps } from '../../data-objects/timestamps/timestamps';
 import { UUID } from '../../data-objects/uuid/uuid';
 import { User } from './user';
 
@@ -13,7 +14,6 @@ describe('User', () => {
 		fullName: 'John Doe',
 		createdAt: 0,
 	};
-
 	test('create', () => {
 		const user = User.create({
 			email: new Email(input.email),
@@ -22,40 +22,28 @@ describe('User', () => {
 			lastName: input.lastName,
 		});
 
-		expect(input.email === user.email.value).toBeTruthy();
-		expect(input.password === user.password.value).toBeFalsy();
-		expect(input.firstName === user.firstName).toBeTruthy();
-		expect(input.lastName === user.lastName).toBeTruthy();
-		expect(input.fullName === user.fullName).toBeTruthy();
+		expect(input.email).toEqual(user.email.value);
+		expect(input.password).toEqual(user.password.value);
+		expect(input.firstName).toEqual(user.firstName);
+		expect(input.lastName).toEqual(user.lastName);
+		expect(input.fullName).toEqual(user.fullName);
 	});
 	test('load', () => {
 		const user = User.load({
 			id: new UUID(input.id),
 			email: new Email(input.email),
-			password: new Password(input.password, true, false),
-			firstName: input.firstName,
-			lastName: input.lastName,
-			createdAt: input.createdAt,
-		});
-
-		expect(input.id === user.id.value).toBeTruthy();
-		expect(input.email === user.email.value).toBeTruthy();
-		expect(input.password === user.password.value).toBeTruthy();
-		expect(input.firstName === user.firstName).toBeTruthy();
-		expect(input.lastName === user.lastName).toBeTruthy();
-		expect(input.fullName === user.fullName).toBeTruthy();
-		expect(input.createdAt === user.createdAt).toBeTruthy();
-	});
-	test('fullName', () => {
-		const user = User.create({
-			email: new Email(input.email),
 			password: new Password(input.password),
 			firstName: input.firstName,
+			lastName: input.lastName,
+			timestamps: new Timestamps(input.createdAt),
 		});
 
-		expect(input.email === user.email.value).toBeTruthy();
-		expect(input.password === user.password.value).toBeFalsy();
-		expect(input.firstName === user.firstName).toBeTruthy();
-		expect(input.firstName === user.fullName).toBeTruthy();
+		expect(input.id).toEqual(user.id.value);
+		expect(input.email).toEqual(user.email.value);
+		expect(input.password).toEqual(user.password.value);
+		expect(input.firstName).toEqual(user.firstName);
+		expect(input.lastName).toEqual(user.lastName);
+		expect(input.fullName).toEqual(user.fullName);
+		expect(input.createdAt).toEqual(user.timestamps.value.createdAt);
 	});
 });

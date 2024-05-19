@@ -1,12 +1,13 @@
+import { Timestamps } from '../../data-objects/timestamps/timestamps';
 import { UUID } from '../../data-objects/uuid/uuid';
 import { Transaction } from './transaction';
 
 describe('Transaction', () => {
 	const input = {
 		id: 'c346567b-7e86-4c07-9b48-c8339b86adc2',
-		value: 100,
 		date: 1714790615,
-		description: "test transaction",
+		value: 100,
+		description: 'test transaction',
 		userId: '523b53d3-9d8d-47f9-8247-7c40c6076335',
 		createdAt: 0,
 	};
@@ -18,9 +19,11 @@ describe('Transaction', () => {
 			description: input.description,
 			userId: new UUID(input.userId),
 		});
-		
-		expect(input.value === transaction.value).toBeTruthy();
-		expect(input.userId === transaction.userId.value).toBeTruthy();
+
+		expect(input.date).toEqual(transaction.date);
+		expect(input.value).toEqual(transaction.value);
+		expect(input.description).toEqual(transaction.description);
+		expect(input.userId).toEqual(transaction.userId.value);
 	});
 	test('load', () => {
 		const transaction = Transaction.load({
@@ -29,12 +32,14 @@ describe('Transaction', () => {
 			value: input.value,
 			description: input.description,
 			userId: new UUID(input.userId),
-			createdAt: input.createdAt,
+			timestamps: new Timestamps(input.createdAt),
 		});
 
-		expect(input.id === transaction.id!.value).toBeTruthy();
-		expect(input.value === transaction.value).toBeTruthy();
-		expect(input.userId === transaction.userId.value).toBeTruthy();
-		expect(input.createdAt === transaction.createdAt).toBeTruthy();
+		expect(input.id).toEqual(transaction.id.value);
+		expect(input.date).toEqual(transaction.date);
+		expect(input.value).toEqual(transaction.value);
+		expect(input.description).toEqual(transaction.description);
+		expect(input.userId).toEqual(transaction.userId.value);
+		expect(input.createdAt).toEqual(transaction.timestamps.value.createdAt);
 	});
 });

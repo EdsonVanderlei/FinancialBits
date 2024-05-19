@@ -1,3 +1,4 @@
+import { Timestamps } from './../../data-objects/timestamps/timestamps';
 import { UUID } from '../../data-objects/uuid/uuid';
 import { Entity } from '../entity';
 
@@ -6,8 +7,7 @@ export class Transaction extends Entity {
 	public value!: number;
 	public description!: string;
 	public userId!: UUID;
-	public createdAt!: number;
-	public updatedAt?: number;
+	public timestamps!: Timestamps;
 
 	private constructor() {
 		super();
@@ -20,6 +20,7 @@ export class Transaction extends Entity {
 		transaction.value = props.value;
 		transaction.description = props.description;
 		transaction.userId = props.userId;
+		transaction.timestamps = new Timestamps();
 		return transaction;
 	}
 
@@ -29,8 +30,7 @@ export class Transaction extends Entity {
 		value: number;
 		description: string;
 		userId: UUID;
-		createdAt: number;
-		updatedAt?: number;
+		timestamps: Timestamps;
 	}) {
 		const transaction = new Transaction();
 		transaction.id = props.id;
@@ -38,8 +38,7 @@ export class Transaction extends Entity {
 		transaction.value = props.value;
 		transaction.description = props.description;
 		transaction.userId = props.userId;
-		transaction.createdAt = props.createdAt;
-		transaction.updatedAt = props.updatedAt;
+		transaction.timestamps = props.timestamps;
 		return transaction;
 	}
 }

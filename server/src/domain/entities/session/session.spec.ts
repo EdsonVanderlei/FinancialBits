@@ -1,4 +1,5 @@
 import { JWT } from '../../data-objects/jwt/jwt';
+import { Timestamps } from '../../data-objects/timestamps/timestamps';
 import { UUID } from '../../data-objects/uuid/uuid';
 import { Session } from './session';
 
@@ -17,20 +18,20 @@ describe('Session', () => {
 			refreshToken: new JWT(input.refreshToken),
 		});
 
-		expect(input.userId === session.userId.value).toBeTruthy();
-		expect(input.refreshToken === session.refreshToken.value).toBeTruthy();
+		expect(input.userId).toEqual(session.userId.value);
+		expect(input.refreshToken).toEqual(session.refreshToken.value);
 	});
 	test('load', () => {
 		const session = Session.load({
 			id: new UUID(input.id),
 			userId: new UUID(input.userId),
 			refreshToken: new JWT(input.refreshToken),
-			createdAt: input.createdAt,
+			timestamps: new Timestamps(input.createdAt),
 		});
 
-		expect(input.id === session.id.value).toBeTruthy();
-		expect(input.userId === session.userId.value).toBeTruthy();
-		expect(input.refreshToken === session.refreshToken.value).toBeTruthy();
-		expect(input.createdAt === session.createdAt).toBeTruthy();
+		expect(input.id).toEqual(session.id.value);
+		expect(input.userId).toEqual(session.userId.value);
+		expect(input.refreshToken).toEqual(session.refreshToken.value);
+		expect(input.createdAt).toEqual(session.timestamps.value.createdAt);
 	});
 });

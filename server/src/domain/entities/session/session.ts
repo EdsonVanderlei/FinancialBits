@@ -1,3 +1,4 @@
+import { Timestamps } from './../../data-objects/timestamps/timestamps';
 import { JWT } from '../../data-objects/jwt/jwt';
 import { UUID } from '../../data-objects/uuid/uuid';
 import { Entity } from '../entity';
@@ -5,8 +6,7 @@ import { Entity } from '../entity';
 export class Session extends Entity {
 	public userId!: UUID;
 	public refreshToken!: JWT;
-	public createdAt!: number;
-	public updatedAt?: number;
+	public timestamps!: Timestamps;
 
 	private constructor() {
 		super();
@@ -17,16 +17,16 @@ export class Session extends Entity {
 		session.id = new UUID();
 		session.userId = props.userId;
 		session.refreshToken = props.refreshToken;
+		session.timestamps = new Timestamps();
 		return session;
 	}
 
-	static load(props: { id: UUID; userId: UUID; refreshToken: JWT; createdAt: number; updatedAt?: number }) {
+	static load(props: { id: UUID; userId: UUID; refreshToken: JWT; timestamps: Timestamps }) {
 		const session = new Session();
 		session.id = props.id;
 		session.userId = props.userId;
 		session.refreshToken = props.refreshToken;
-		session.createdAt = props.createdAt;
-		session.updatedAt = props.updatedAt;
+		session.timestamps = props.timestamps;
 		return session;
 	}
 }
