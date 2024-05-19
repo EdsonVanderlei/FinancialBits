@@ -4,27 +4,23 @@ import { PasswordUtils } from '../../../shared/utils/password/password.utils';
 import { DataObject } from '../data-object';
 
 export class Password extends DataObject<string> {
-	constructor(
-		value: string,
-		validate: boolean = true,
-		hash: boolean = true,
-		private minLength: number = 5,
-		private maxLength: number = 15
-	) {
+	constructor(value: string) {
 		super(value);
-		if (validate) this.validate();
-		if (hash) this.value = PasswordUtils.hash(this.value);
 	}
 
-	public validate() {
-		const result = NumberUtils.minMax(this.value.length, this.minLength, this.maxLength);
-		if (result < 0) {
+	public validate(minLength: number = 5, maxLength: number = 15) {
+		const minMaxRes = NumberUtils.minMax(this.value.length, minLength, maxLength);
+		if (minMaxRes < 0) {
 			throw new AppError('Password length must be greater than 4', 400);
 		}
 
-		if (result > 0) {
+		if (minMaxRes > 0) {
 			throw new AppError('Password length must be lower than 16', 400);
 		}
+	}
+
+	public hash() {
+		this.value = PasswordUtils.hash(this.value);
 	}
 
 	public compare(target: string) {

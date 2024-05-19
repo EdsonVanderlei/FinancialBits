@@ -2,9 +2,8 @@ import { AppError } from '../../../shared/classes/app-error';
 import { DataObject } from '../data-object';
 
 export class Email extends DataObject<string> {
-	constructor(value: string, validate: boolean = true) {
+	constructor(value: string) {
 		super(value);
-		if (validate) this.validate();
 	}
 
 	public validate() {
