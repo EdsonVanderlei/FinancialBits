@@ -1,18 +1,11 @@
-import { AppError } from '../../../shared/classes/app-error';
 import { DataObject } from '../data-object';
 
-export class Timestamps extends DataObject<{ createdAt: number; updatedAt?: number }> {
-	constructor(createdAt?: number, updatedAt?: number) {
-		super({ createdAt: createdAt ?? new Date().getTime(), updatedAt });
+export class Timestamps extends DataObject<{ createdAt: Date; updatedAt?: Date }> {
+	constructor(createdAt?: Date, updatedAt?: Date) {
+		super({ createdAt: createdAt ?? new Date(), updatedAt });
 	}
-	
-	validate() {
-		if (this.value.createdAt < 0) {
-			throw new AppError('Invalid created at date', 400);
-		}
 
-		if (!!this.value.updatedAt && this.value.updatedAt < 0) {
-			throw new AppError('Invalid updated at date', 400);
-		}
+	validate() {
+		throw new Error('Timestamps validate not implemented.');
 	}
 }

@@ -1,5 +1,5 @@
+import { JwtPayload, SignOptions, sign, verify } from 'jsonwebtoken';
 import { AppError } from '../../../shared/classes/app-error';
-import { JWTUtils } from '../../../shared/utils/jwt/jwt.utils';
 import { DataObject } from '../data-object';
 
 export class JWT extends DataObject<string> {
@@ -7,21 +7,23 @@ export class JWT extends DataObject<string> {
 		super(value);
 	}
 
-	static create(payload: object, secretKey: string, options?: { expiresIn?: string | number }) {
-		return new JWT(JWTUtils.generate(payload, secretKey, options));
+	static create(payload: object, secretKey: string, options?: SignOptions) {
+		const token = sign(payload, secretKey, options);
+		return new JWT(token);
 	}
 
 	public validate() {
-		if (!JWTUtils.regex(this.value)) {
+		const regExp = /(?:[\w-]*\.){2}[\w-]*/;
+		if (!regExp.test(this.value ?? '')) {
 			throw new AppError('Invalid token', 400);
 		}
 	}
 
-	public get payload() {
-		return JWTUtils.decode(this.value) ?? undefined;
-	}
-
 	public verify(secretKey: string) {
-		return JWTUtils.verify(this.value, secretKey) ?? undefined;
+		try {
+			return verify(this.value, secretKey) as JwtPayload;
+		} catch (e: any) {
+			throw new AppError(e.message, 500);
+		}
 	}
 }

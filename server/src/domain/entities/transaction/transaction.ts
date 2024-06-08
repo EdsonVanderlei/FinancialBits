@@ -1,9 +1,10 @@
-import { Timestamps } from './../../data-objects/timestamps/timestamps';
 import { UUID } from '../../data-objects/uuid/uuid';
+import { CreateTransactionValidator } from '../../validator/transaction/create-transaction.validator';
 import { Entity } from '../entity';
+import { Timestamps } from './../../data-objects/timestamps/timestamps';
 
 export class Transaction extends Entity {
-	public date!: number;
+	public date!: Date;
 	public value!: number;
 	public description!: string;
 	public userId!: UUID;
@@ -13,7 +14,7 @@ export class Transaction extends Entity {
 		super();
 	}
 
-	static create(props: { value: number; date: number; description: string; userId: UUID }) {
+	static create(props: { date: Date; value: number; description: string; userId: UUID }) {
 		const transaction = new Transaction();
 		transaction.id = new UUID();
 		transaction.date = props.date;
@@ -26,7 +27,7 @@ export class Transaction extends Entity {
 
 	static load(props: {
 		id: UUID;
-		date: number;
+		date: Date;
 		value: number;
 		description: string;
 		userId: UUID;
@@ -40,5 +41,10 @@ export class Transaction extends Entity {
 		transaction.userId = props.userId;
 		transaction.timestamps = props.timestamps;
 		return transaction;
+	}
+
+	public validateCreate() {
+		const validator = new CreateTransactionValidator();
+		this.validate(validator);
 	}
 }

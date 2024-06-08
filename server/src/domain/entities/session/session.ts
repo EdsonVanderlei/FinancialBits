@@ -1,7 +1,7 @@
-import { Timestamps } from './../../data-objects/timestamps/timestamps';
 import { JWT } from '../../data-objects/jwt/jwt';
 import { UUID } from '../../data-objects/uuid/uuid';
 import { Entity } from '../entity';
+import { Timestamps } from './../../data-objects/timestamps/timestamps';
 
 export class Session extends Entity {
 	public userId!: UUID;

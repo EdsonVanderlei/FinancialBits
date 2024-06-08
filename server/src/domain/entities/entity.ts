@@ -4,7 +4,7 @@ import { Validator } from '../validator/validator';
 export abstract class Entity {
 	public id!: UUID;
 
-	validate(validator: Validator<typeof this>) {
+	protected validate(validator: Validator<typeof this>) {
 		validator.validate(this);
 	}
 }

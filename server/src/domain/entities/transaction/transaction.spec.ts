@@ -5,11 +5,12 @@ import { Transaction } from './transaction';
 describe('Transaction', () => {
 	const input = {
 		id: 'c346567b-7e86-4c07-9b48-c8339b86adc2',
-		date: 1714790615,
+		date: new Date(),
 		value: 100,
 		description: 'test transaction',
 		userId: '523b53d3-9d8d-47f9-8247-7c40c6076335',
-		createdAt: 0,
+		budgetId: 'a714be6c-9468-4b00-861e-02785949e64b',
+		createdAt: new Date(),
 	};
 
 	test('create', () => {

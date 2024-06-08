@@ -12,7 +12,7 @@ describe('User', () => {
 		firstName: 'John',
 		lastName: 'Doe',
 		fullName: 'John Doe',
-		createdAt: 0,
+		createdAt: new Date(),
 	};
 	test('create', () => {
 		const user = User.create({
@@ -44,6 +44,6 @@ describe('User', () => {
 		expect(input.firstName).toEqual(user.firstName);
 		expect(input.lastName).toEqual(user.lastName);
 		expect(input.fullName).toEqual(user.fullName);
-		expect(input.createdAt).toEqual(user.timestamps.value.createdAt);
+		expect(input.createdAt.getTime()).toEqual(user.timestamps.value.createdAt.getTime());
 	});
 });

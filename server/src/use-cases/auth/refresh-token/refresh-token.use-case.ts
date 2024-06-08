@@ -1,23 +1,22 @@
 import { JWT } from '../../../domain/data-objects/jwt/jwt';
-import { UseCase } from '../../use-case';
+import { AppError } from '../../../shared/classes/app-error';
+import { SessionToken } from '../../../shared/classes/session-token';
 import { RefreshTokenUseCaseInput, RefreshTokenUseCaseOutput } from './refresh-token.use-case-io';
 
-export class RefreshTokenUseCase implements UseCase<RefreshTokenUseCaseInput, RefreshTokenUseCaseOutput> {
-	constructor(private accessSecretKey: string, private refreshSecretKey: string) {}
+export class RefreshTokenUseCase {
+	constructor(private secretKeys: { access: string; refresh: string }) {}
 
 	async exec(request: RefreshTokenUseCaseInput): Promise<RefreshTokenUseCaseOutput> {
 		const refreshToken = new JWT(request.refreshToken);
+		refreshToken.validate();
+		let payload = refreshToken.verify(this.secretKeys.refresh);
+		if (!payload || !payload.sub || !payload.name) throw new AppError('Invalid token', 400);
 
-		refreshToken.verify(this.refreshSecretKey);
-
-		const payload = refreshToken.payload;
-		const accessToken = JWT.generate({ sub: payload!.sub!, name: payload!.name }, this.accessSecretKey, {
-			expiresIn: '24h',
-		});
-
-		return {
-			refresh: refreshToken.value,
-			access: accessToken.value,
-		};
+		const session = new SessionToken(
+			{ sub: payload.sub, name: payload.name },
+			this.secretKeys,
+			refreshToken
+		);
+		return session.asString;
 	}
 }

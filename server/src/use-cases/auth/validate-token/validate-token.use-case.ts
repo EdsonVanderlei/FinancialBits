@@ -1,22 +1,20 @@
-import { JwtPayload } from 'jsonwebtoken';
 import { JWT } from '../../../domain/data-objects/jwt/jwt';
 import { AppError } from '../../../shared/classes/app-error';
 import { ValidateTokenUseCaseInput, ValidateTokenUseCaseOutput } from './validate-token.use-case-io';
-import { UseCase } from '../../use-case';
 
-export class ValidateTokenUseCase implements UseCase<ValidateTokenUseCaseInput, ValidateTokenUseCaseOutput> {
+export class ValidateTokenUseCase {
 	constructor(private accessSecretKey: string) {}
 
 	exec(request: ValidateTokenUseCaseInput): ValidateTokenUseCaseOutput {
-		const accessToken = new JWT(request.accessToken);
-
-		let payload: JwtPayload | null;
 		try {
-			payload = accessToken.verify(this.accessSecretKey);
-			if (!payload || !payload.sub) throw new Error('');
+			const token = request.authorizationHeader.split(' ')[1] ?? '';
+			const jwt = new JWT(token);
+			jwt.validate();
+			const payload = jwt.verify(this.accessSecretKey);
+			if (!payload.name || !payload.sub) throw new Error('Invalid token payload');
+			return { userId: payload.sub, userFullname: payload.name };
 		} catch (e: any) {
-			throw new AppError(e.message ?? 'Invalid access token', 401);
+			throw new AppError(e.message, 401);
 		}
-		return { userFullname: payload.name, userId: payload.sub };
 	}
 }

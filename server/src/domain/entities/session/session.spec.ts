@@ -9,7 +9,7 @@ describe('Session', () => {
 		userId: '31326db2-1337-46f2-89db-0b7437b82619',
 		refreshToken:
 			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
-		createdAt: 0,
+		createdAt: new Date(),
 	};
 
 	test('create', () => {

@@ -2,7 +2,8 @@ export class AppError extends Error {
 	statusCode: number;
 
 	constructor(message: string, statusCode: number) {
-		super(message);
+		const msg = message.charAt(0).toUpperCase() + message.slice(1);
+		super(msg);
 		this.statusCode = statusCode;
 	}
 }

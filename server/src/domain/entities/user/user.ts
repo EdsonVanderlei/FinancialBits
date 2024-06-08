@@ -1,6 +1,7 @@
 import { Email } from '../../data-objects/email/email';
 import { Password } from '../../data-objects/password/password';
 import { UUID } from '../../data-objects/uuid/uuid';
+import { CreateUserValidator } from '../../validator/user/create-user.validator';
 import { Entity } from '../entity';
 import { Timestamps } from './../../data-objects/timestamps/timestamps';
 
@@ -19,7 +20,12 @@ export class User extends Entity {
 		super();
 	}
 
-	static create(props: { email: Email; password: Password; firstName: string; lastName?: string }) {
+	static create(props: {
+		email: Email;
+		password: Password;
+		firstName: string;
+		lastName?: string;
+	}) {
 		const user = new User();
 		user.id = new UUID();
 		user.email = props.email;
@@ -50,5 +56,10 @@ export class User extends Entity {
 
 	public comparePassword(target: string) {
 		return this.password.compare(target);
+	}
+
+	public validateCreate() {
+		const validator = new CreateUserValidator();
+		this.validate(validator);
 	}
 }
