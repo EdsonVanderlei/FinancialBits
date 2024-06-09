@@ -3,18 +3,15 @@ import { Transaction } from '../../../domain/entities/transaction/transaction';
 import { TransactionRepository } from '../../../domain/repositories/transaction/transaction.repository';
 import { UseCase } from '../../use-case';
 import { FindTransactionByIdUseCase } from '../find-by-id/find-transaction-by-id.use-case';
-import {
-	UpdateTransactionUseCaseInput,
-	UpdateTransactionUseCaseOutput,
-} from './update-transaction.use-case-io';
+import { UpdateTransactionUseCaseInput, UpdateTransactionUseCaseOutput } from './update-transaction.use-case-io';
 
 export class UpdateTransactionUseCase
-	implements
-	UseCase<UpdateTransactionUseCaseInput, UpdateTransactionUseCaseOutput> {
+	implements UseCase<UpdateTransactionUseCaseInput, UpdateTransactionUseCaseOutput>
+{
 	constructor(
 		private transactionRepository: TransactionRepository,
 		private findTransactionByIdUseCase: FindTransactionByIdUseCase
-	) { }
+	) {}
 
 	async exec(input: UpdateTransactionUseCaseInput) {
 		const transaction = await this.findTransactionByIdUseCase.exec({
@@ -28,10 +25,7 @@ export class UpdateTransactionUseCase
 			value: input.value,
 			description: input.description,
 			userId: transaction.userId,
-			timestamps: new Timestamps(
-				transaction.timestamps.value.createdAt,
-				new Date()
-			),
+			timestamps: Timestamps.create({ createdAt: transaction.timestamps.value.createdAt, updatedAt: new Date() }),
 		});
 		newTransaction = await this.transactionRepository.update(newTransaction);
 

@@ -32,8 +32,8 @@ export class RegisterUseCase {
 
 	async createUser(request: RegisterUseCaseInput) {
 		let user = User.create({
-			email: new Email(request.email),
-			password: new Password(request.password),
+			email: Email.create(request.email),
+			password: Password.create(request.password),
 			firstName: request.firstName,
 			lastName: request.lastName,
 		});
@@ -42,13 +42,12 @@ export class RegisterUseCase {
 		if (await this.userRepository.findByEmail(user.email)) {
 			throw new AppError('Email already in use', 404);
 		}
-		user.password.hash();
 
 		return await this.userRepository.create(user);
 	}
 
 	async createSession(user: User) {
-		const sessionToken = new SessionToken({ sub: user.id.value, name: user.fullName }, this.secretKeys);
+		const sessionToken = new SessionToken({ userId: user.id, userFullName: user.fullName }, this.secretKeys);
 		const session = Session.create({ userId: user.id!, refreshToken: sessionToken.refreshToken });
 		await this.sessionRepository.create(session);
 		return sessionToken.asString;

@@ -20,19 +20,14 @@ export class User extends Entity {
 		super();
 	}
 
-	static create(props: {
-		email: Email;
-		password: Password;
-		firstName: string;
-		lastName?: string;
-	}) {
+	static create(props: { email: Email; password: Password; firstName: string; lastName?: string }) {
 		const user = new User();
-		user.id = new UUID();
+		user.id = UUID.generate();
 		user.email = props.email;
 		user.password = props.password;
 		user.firstName = props.firstName;
 		user.lastName = props.lastName;
-		user.timestamps = new Timestamps();
+		user.timestamps = Timestamps.generate();
 		return user;
 	}
 

@@ -14,10 +14,10 @@ export class Session extends Entity {
 
 	static create(props: { userId: UUID; refreshToken: JWT }) {
 		const session = new Session();
-		session.id = new UUID();
+		session.id = UUID.generate();
 		session.userId = props.userId;
 		session.refreshToken = props.refreshToken;
-		session.timestamps = new Timestamps();
+		session.timestamps = Timestamps.generate();
 		return session;
 	}
 

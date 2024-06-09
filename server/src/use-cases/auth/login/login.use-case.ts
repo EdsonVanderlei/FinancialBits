@@ -15,8 +15,7 @@ export class LoginUseCase {
 	) {}
 
 	async exec(request: LoginUseCaseInput): Promise<LoginUseCaseOutput> {
-		const email = new Email(request.email);
-		email.validate();
+		const email = Email.create(request.email);
 		const user = await this.loginUser(email, request.password);
 		const tokens = await this.updateSession(user);
 		return {
@@ -34,7 +33,8 @@ export class LoginUseCase {
 	async loginUser(email: Email, password: string) {
 		try {
 			const user = await this.userRepository.findByEmail(email);
-			if (!user || !user.comparePassword(password)) throw Error();
+			if (!user) throw Error();
+			user.comparePassword(password);
 			return user;
 		} catch (e) {
 			throw new AppError('Invalid credentials', 400);
@@ -44,7 +44,7 @@ export class LoginUseCase {
 	async updateSession(user: User) {
 		let session = await this.sessionRepository.findByUserId(user.id);
 		const sessionToken = new SessionToken(
-			{ sub: user.id.value, name: user.fullName },
+			{ userId: user.id, userFullName: user.fullName },
 			this.secretKeys,
 			session?.refreshToken
 		);

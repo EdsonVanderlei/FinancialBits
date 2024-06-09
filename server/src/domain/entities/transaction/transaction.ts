@@ -16,12 +16,12 @@ export class Transaction extends Entity {
 
 	static create(props: { date: Date; value: number; description: string; userId: UUID }) {
 		const transaction = new Transaction();
-		transaction.id = new UUID();
+		transaction.id = UUID.generate();
 		transaction.date = props.date;
 		transaction.value = props.value;
 		transaction.description = props.description;
 		transaction.userId = props.userId;
-		transaction.timestamps = new Timestamps();
+		transaction.timestamps = Timestamps.generate();
 		return transaction;
 	}
 

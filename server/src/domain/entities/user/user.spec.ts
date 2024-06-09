@@ -16,8 +16,8 @@ describe('User', () => {
 	};
 	test('create', () => {
 		const user = User.create({
-			email: new Email(input.email),
-			password: new Password(input.password),
+			email: Email.create(input.email),
+			password: Password.create(input.password),
 			firstName: input.firstName,
 			lastName: input.lastName,
 		});
@@ -30,12 +30,12 @@ describe('User', () => {
 	});
 	test('load', () => {
 		const user = User.load({
-			id: new UUID(input.id),
-			email: new Email(input.email),
-			password: new Password(input.password),
+			id: UUID.create(input.id),
+			email: Email.create(input.email),
+			password: Password.create(input.password),
 			firstName: input.firstName,
 			lastName: input.lastName,
-			timestamps: new Timestamps(input.createdAt),
+			timestamps: Timestamps.create({ createdAt: input.createdAt }),
 		});
 
 		expect(input.id).toEqual(user.id.value);

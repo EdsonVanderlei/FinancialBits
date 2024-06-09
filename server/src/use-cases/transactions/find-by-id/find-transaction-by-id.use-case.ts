@@ -8,16 +8,13 @@ import {
 } from './find-transaction-by-id.use-case-io';
 
 export class FindTransactionByIdUseCase
-	implements
-		UseCase<FindTransactionByIdUseCaseInput, FindTransactionByIdUseCaseOutput>
+	implements UseCase<FindTransactionByIdUseCaseInput, FindTransactionByIdUseCaseOutput>
 {
 	constructor(private transactionRepository: TransactionRepository) {}
 
 	async exec(input: FindTransactionByIdUseCaseInput) {
-		const id = new UUID(input.id);
-		id.validate();
-		const userId = new UUID(input.userId);
-		userId.validate();
+		const id = UUID.create(input.id);
+		const userId = UUID.create(input.userId);
 
 		let transaction = await this.transactionRepository.findById(userId, id);
 		if (!transaction) {

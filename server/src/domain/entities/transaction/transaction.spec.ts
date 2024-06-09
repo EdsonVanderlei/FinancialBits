@@ -18,7 +18,7 @@ describe('Transaction', () => {
 			date: input.date,
 			value: input.value,
 			description: input.description,
-			userId: new UUID(input.userId),
+			userId: UUID.create(input.userId),
 		});
 
 		expect(input.date).toEqual(transaction.date);
@@ -28,12 +28,12 @@ describe('Transaction', () => {
 	});
 	test('load', () => {
 		const transaction = Transaction.load({
-			id: new UUID(input.id),
+			id: UUID.create(input.id),
 			date: input.date,
 			value: input.value,
 			description: input.description,
-			userId: new UUID(input.userId),
-			timestamps: new Timestamps(input.createdAt),
+			userId: UUID.create(input.userId),
+			timestamps: Timestamps.create({ createdAt: input.createdAt }),
 		});
 
 		expect(input.id).toEqual(transaction.id.value);

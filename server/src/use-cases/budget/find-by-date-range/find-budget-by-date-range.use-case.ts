@@ -8,26 +8,16 @@ import {
 } from './find-budget-by-date-range.use-case-io';
 
 export class FindBudgetByDateRangeUseCase
-	implements
-		UseCase<
-			FindBudgetByDateRangeUseCaseInput,
-			FindBudgetByDateRangeUseCaseOuput
-		>
+	implements UseCase<FindBudgetByDateRangeUseCaseInput, FindBudgetByDateRangeUseCaseOuput>
 {
 	constructor(private transactionRepository: TransactionRepository) {}
 
 	async exec(input: FindBudgetByDateRangeUseCaseInput) {
-		const userId = new UUID(input.userId);
-		userId.validate();
-		
+		const userId = UUID.create(input.userId);
 		const startDate = new Date(input.startDate);
 		const endDate = new Date(input.endDate);
 
-		let transactions = await this.transactionRepository.findByDateRange(
-			userId,
-			startDate,
-			endDate
-		);
+		let transactions = await this.transactionRepository.findByDateRange(userId, startDate, endDate);
 		const budget = new Budget(userId, startDate, endDate, transactions);
 
 		return budget.asString();

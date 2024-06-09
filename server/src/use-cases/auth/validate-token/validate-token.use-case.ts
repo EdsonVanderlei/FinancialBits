@@ -8,11 +8,10 @@ export class ValidateTokenUseCase {
 	exec(request: ValidateTokenUseCaseInput): ValidateTokenUseCaseOutput {
 		try {
 			const token = request.authorizationHeader.split(' ')[1] ?? '';
-			const jwt = new JWT(token);
-			jwt.validate();
-			const payload = jwt.verify(this.accessSecretKey);
-			if (!payload.name || !payload.sub) throw new Error('Invalid token payload');
-			return { userId: payload.sub, userFullname: payload.name };
+			const jwt = JWT.create(token);
+			jwt.verify(this.accessSecretKey);
+			const payload = jwt.payload;
+			return { userId: payload!.sub, userFullname: payload!.name };
 		} catch (e: any) {
 			throw new AppError(e.message, 401);
 		}

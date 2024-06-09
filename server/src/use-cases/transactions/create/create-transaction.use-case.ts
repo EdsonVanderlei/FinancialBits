@@ -7,18 +7,15 @@ import {
 	CreateTransactionUseCaseOutput,
 } from './create-transaction.use-case-io';
 
-export class CreateTransactionUseCase
-	implements
-		UseCase<CreateTransactionUseCaseInput, CreateTransactionUseCaseOutput>
-{
-	constructor(private transactionRepository: TransactionRepository) {}
+export class CreateTransactionUseCase implements UseCase<CreateTransactionUseCaseInput, CreateTransactionUseCaseOutput> {
+	constructor(private transactionRepository: TransactionRepository) { }
 
 	async exec(input: CreateTransactionUseCaseInput) {
 		let transaction = Transaction.create({
 			date: new Date(input.date),
 			value: input.value,
 			description: input.description,
-			userId: new UUID(input.userId),
+			userId: UUID.create(input.userId),
 		});
 		transaction.validateCreate();
 		transaction = await this.transactionRepository.create(transaction);

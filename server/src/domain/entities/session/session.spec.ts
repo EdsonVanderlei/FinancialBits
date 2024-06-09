@@ -14,8 +14,8 @@ describe('Session', () => {
 
 	test('create', () => {
 		const session = Session.create({
-			userId: new UUID(input.userId),
-			refreshToken: new JWT(input.refreshToken),
+			userId: UUID.create(input.userId),
+			refreshToken: JWT.create(input.refreshToken),
 		});
 
 		expect(input.userId).toEqual(session.userId.value);
@@ -23,10 +23,10 @@ describe('Session', () => {
 	});
 	test('load', () => {
 		const session = Session.load({
-			id: new UUID(input.id),
-			userId: new UUID(input.userId),
-			refreshToken: new JWT(input.refreshToken),
-			timestamps: new Timestamps(input.createdAt),
+			id: UUID.create(input.id),
+			userId: UUID.create(input.userId),
+			refreshToken: JWT.create(input.refreshToken),
+			timestamps: Timestamps.create({ createdAt: input.createdAt }),
 		});
 
 		expect(input.id).toEqual(session.id.value);

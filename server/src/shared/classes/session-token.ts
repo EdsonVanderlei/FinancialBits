@@ -1,18 +1,17 @@
 import { JWT } from '../../domain/data-objects/jwt/jwt';
+import { UUID } from '../../domain/data-objects/uuid/uuid';
 
 export class SessionToken {
 	accessToken: JWT;
 	refreshToken: JWT;
 
 	constructor(
-		payload: { sub: string; name: string },
+		payload: { userId: UUID; userFullName: string },
 		secretKeys: { access: string; refresh: string },
 		refreshToken?: JWT
 	) {
-		this.accessToken = JWT.create(payload, secretKeys.access, {
-			expiresIn: '5m',
-		});
-		this.refreshToken = refreshToken ?? JWT.create(payload, secretKeys.refresh);
+		this.accessToken = JWT.generate(payload, secretKeys.access, { expiresIn: '5m' });
+		this.refreshToken = refreshToken ?? JWT.generate(payload, secretKeys.refresh);
 	}
 
 	get asString() {

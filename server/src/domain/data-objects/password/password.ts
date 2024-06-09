@@ -3,8 +3,23 @@ import { AppError } from '../../../shared/classes/app-error';
 import { DataObject } from '../data-object';
 
 export class Password extends DataObject<string> {
-	constructor(value: string) {
+	private constructor(value: string) {
 		super(value);
+	}
+
+	static create(value: string) {
+		const password = Password.load(value);
+		password.validate();
+		password.hash();
+		return password;
+	}
+
+	static load(value: string) {
+		return new Password(value);
+	}
+
+	private hash() {
+		this.value = hashSync(this.value, 10);
 	}
 
 	public validate() {
@@ -17,11 +32,8 @@ export class Password extends DataObject<string> {
 		}
 	}
 
-	public hash() {
-		this.value = hashSync(this.value, 10);
-	}
-
 	public compare(password: string) {
-		return compareSync(password, this.value);
+		const result = compareSync(password, this.value);
+		if (!result) throw new AppError('Invalid password', 401);
 	}
 }

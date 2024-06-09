@@ -6,8 +6,7 @@ export class LogoutUseCase {
 	constructor(private sessionRepository: SessionRepository) {}
 
 	async exec(request: LogoutUseCaseInput): Promise<LogoutUseCaseOutput> {
-		const userId = new UUID(request.userId);
-		userId.validate();
+		const userId = UUID.create(request.userId);
 		await this.sessionRepository.deleteByUserId(userId);
 	}
 }

@@ -3,8 +3,22 @@ import { AppError } from '../../../shared/classes/app-error';
 import { DataObject } from '../data-object';
 
 export class UUID extends DataObject<string> {
-	constructor(value?: string) {
-		super(value ?? v4());
+	private constructor(value: string) {
+		super(value);
+	}
+
+	static create(value: string) {
+		const uuid = UUID.load(value);
+		uuid.validate();
+		return uuid;
+	}
+
+	static load(value: string) {
+		return new UUID(value);
+	}
+
+	static generate() {
+		return UUID.load(v4());
 	}
 
 	public validate() {

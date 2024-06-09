@@ -9,12 +9,11 @@ describe('LoginUseCase', () => {
 	test('exec', async () => {
 		const password = 'abc123';
 		let user = User.create({
-			email: new Email('john@doe.com'),
-			password: new Password(password),
+			email: Email.create('john@doe.com'),
+			password: Password.create(password),
 			firstName: 'John',
 			lastName: 'Doe',
 		});
-		user.password.hash();
 
 		const userRepository = new UserInMemoryRepository();
 		const sessionRepository = new SessionInMemoryRepository();
