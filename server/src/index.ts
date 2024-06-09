@@ -17,8 +17,8 @@ import { CreateTransactionUseCase } from './use-cases/transactions/create/create
 import { DeleteTransactionUseCase } from './use-cases/transactions/delete/delete-transaction.use-case';
 import { FindTransactionByIdUseCase } from './use-cases/transactions/find-by-id/find-transaction-by-id.use-case';
 import { UpdateTransactionUseCase } from './use-cases/transactions/update/update-transaction.use-case';
-import { CreateUserValidator } from './domain/validator/user/create-user.validator';
-import { CreateTransactionValidator } from './domain/validator/transaction/create-transaction.validator';
+import { UserValidator } from './domain/validator/user/user.validator';
+import { TransactionValidator } from './domain/validator/transaction/transaction.validator';
 
 configDotenv();
 const port = parseInt(process.env.PORT!);
@@ -30,8 +30,8 @@ const userRepository = new UserInMemoryRepository();
 const sessionRepository = new SessionInMemoryRepository();
 const transactionRepository = new TransactionInMemoryRepository();
 
-const createUserValidator = new CreateUserValidator();
-const createTransactionValidator = new CreateTransactionValidator();
+const createUserValidator = new UserValidator();
+const createTransactionValidator = new TransactionValidator();
 
 const loginUserUseCase = new LoginUseCase(userRepository, sessionRepository, secretKeys);
 const logoutUserUseCase = new LogoutUseCase(sessionRepository);
