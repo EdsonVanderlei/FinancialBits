@@ -11,41 +11,33 @@ export class TransactionInMemoryRepository implements TransactionRepository {
 	}
 
 	async update(transaction: Transaction) {
-		const savedTransaction = this.transactions.find(
-			t => t.id.value === transaction.id.value
-		);
+		const savedTransaction = await this.findById(transaction.id, transaction.userId);
 		if (!savedTransaction) return null;
-		this.transactions = this.transactions
-			.filter(t => t.id.value === transaction.id.value)
-			.concat(transaction);
+		await this.deleteById(savedTransaction.id, savedTransaction.userId);
+		await this.create(transaction);
 		return transaction;
 	}
 
-	async findById(userId: UUID, id: UUID) {
+	async findById(id: UUID, userId: UUID) {
 		return (
 			this.transactions.find(
-				transaction => (transaction.id.value === id.value &&
-					transaction.userId.value === userId.value)
+				transaction => transaction.id.value === id.value && transaction.userId.value === userId.value
 			) ?? null
 		);
 	}
 
-	async findByDateRange(
-		userId: UUID,
-		from: Date,
-		to: Date
-	): Promise<Transaction[]> {
+	async findByDateRange(from: Date, to: Date, userId: UUID) {
 		return this.transactions.filter(
 			transaction =>
-				(transaction.date.getTime() < from.getTime() ||
-					transaction.date.getTime() > to.getTime()) &&
-				transaction.userId.value !== userId.value
+				transaction.userId.value === userId.value &&
+				transaction.date.getTime() >= from.getTime() &&
+				transaction.date.getTime() >= from.getTime()
 		);
 	}
 
-	async delete(id: UUID): Promise<void> {
+	async deleteById(id: UUID, userId: UUID) {
 		this.transactions = this.transactions.filter(
-			transaction => transaction.id.value === id.value
+			transaction => transaction.id.value !== id.value || transaction.userId.value !== userId.value
 		);
 	}
 }

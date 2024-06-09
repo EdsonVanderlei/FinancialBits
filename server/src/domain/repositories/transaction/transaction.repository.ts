@@ -4,7 +4,7 @@ import { Transaction } from '../../entities/transaction/transaction';
 export interface TransactionRepository {
 	create(transaction: Transaction): Promise<Transaction>;
 	update(transaction: Transaction): Promise<Transaction | null>;
-	findById(userId: UUID, id: UUID): Promise<Transaction | null>;
-	findByDateRange(userId: UUID, from: Date, to: Date): Promise<Transaction[]>;
-	delete(id: UUID): Promise<void>;
+	findById(id: UUID, userId: UUID): Promise<Transaction | null>;
+	findByDateRange(from: Date, to: Date, userId: UUID): Promise<Transaction[]>;
+	deleteById(id: UUID, userId: UUID): Promise<void>;
 }

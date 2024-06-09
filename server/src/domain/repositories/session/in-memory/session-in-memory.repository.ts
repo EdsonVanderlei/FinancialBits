@@ -15,6 +15,6 @@ export class SessionInMemoryRepository implements SessionRepository {
 	}
 
 	async deleteByUserId(userId: UUID) {
-		this.sessions = this.sessions.filter(session => session.userId.value === userId.value);
+		this.sessions = this.sessions.filter(session => session.userId.value !== userId.value);
 	}
 }

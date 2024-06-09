@@ -6,10 +6,9 @@ import { UserInMemoryRepository } from './user-in-memory.repository';
 describe('UserInMemoryRepository', () => {
 	let repository: UserInMemoryRepository;
 	const user = User.create({
-		email: new Email('user@test.com'),
-		password: new Password('abc123'),
 		firstName: 'John',
-		lastName: 'Doe',
+		email: Email.create('test@test.com'),
+		password: Password.create('abc123'),
 	});
 	beforeEach(() => (repository = new UserInMemoryRepository()));
 

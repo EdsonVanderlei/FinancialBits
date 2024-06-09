@@ -17,7 +17,7 @@ export class FindBudgetByDateRangeUseCase
 		const startDate = new Date(input.startDate);
 		const endDate = new Date(input.endDate);
 
-		let transactions = await this.transactionRepository.findByDateRange(userId, startDate, endDate);
+		let transactions = await this.transactionRepository.findByDateRange(startDate, endDate, userId);
 		const budget = new Budget(userId, startDate, endDate, transactions);
 
 		return budget.asString();

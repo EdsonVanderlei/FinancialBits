@@ -5,10 +5,8 @@ import { SessionInMemoryRepository } from './session-in-memory.repository';
 
 describe('SessionInMemoryRepository', () => {
 	let repository: SessionInMemoryRepository;
-	const session = Session.create({
-		userId: new UUID(),
-		refreshToken: JWT.create({}, 'secretKey'),
-	});
+	const userId = UUID.generate();
+	const session = Session.create({ userId, refreshToken: JWT.generate({ userId, userFullName: 'John' }, 'secretKey') });
 	beforeEach(() => (repository = new SessionInMemoryRepository()));
 
 	test('create', async () => {
@@ -23,6 +21,13 @@ describe('SessionInMemoryRepository', () => {
 		expect(result).toMatchObject(session);
 	});
 	test('find by user id null', async () => {
+		const result = await repository.findByUserId(session.userId);
+
+		expect(result).toEqual(null);
+	});
+	test('delete by user id', async () => {
+		await repository.create(session);
+		await repository.deleteByUserId(session.userId);
 		const result = await repository.findByUserId(session.userId);
 
 		expect(result).toEqual(null);
