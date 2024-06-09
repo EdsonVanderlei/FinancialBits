@@ -12,16 +12,18 @@ describe('Session', () => {
 		createdAt: new Date(),
 	};
 
-	test('create', () => {
+	test('Create', () => {
 		const session = Session.create({
 			userId: UUID.create(input.userId),
 			refreshToken: JWT.create(input.refreshToken),
 		});
 
-		expect(input.userId).toEqual(session.userId.value);
-		expect(input.refreshToken).toEqual(session.refreshToken.value);
+		expect(session.id).toBeDefined();
+		expect(session.userId.value).toEqual(input.userId);
+		expect(session.refreshToken.value).toEqual(input.refreshToken);
+		expect(session.timestamps).toBeDefined();
 	});
-	test('load', () => {
+	test('Load', () => {
 		const session = Session.load({
 			id: UUID.create(input.id),
 			userId: UUID.create(input.userId),
@@ -29,9 +31,9 @@ describe('Session', () => {
 			timestamps: Timestamps.create({ createdAt: input.createdAt }),
 		});
 
-		expect(input.id).toEqual(session.id.value);
-		expect(input.userId).toEqual(session.userId.value);
-		expect(input.refreshToken).toEqual(session.refreshToken.value);
-		expect(input.createdAt).toEqual(session.timestamps.value.createdAt);
+		expect(session.id.value).toEqual(input.id);
+		expect(session.userId.value).toEqual(input.userId);
+		expect(session.refreshToken.value).toEqual(input.refreshToken);
+		expect(session.timestamps.value.createdAt.getTime()).toEqual(input.createdAt.getTime());
 	});
 });

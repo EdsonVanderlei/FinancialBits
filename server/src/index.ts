@@ -17,10 +17,12 @@ import { CreateTransactionUseCase } from './use-cases/transactions/create/create
 import { DeleteTransactionUseCase } from './use-cases/transactions/delete/delete-transaction.use-case';
 import { FindTransactionByIdUseCase } from './use-cases/transactions/find-by-id/find-transaction-by-id.use-case';
 import { UpdateTransactionUseCase } from './use-cases/transactions/update/update-transaction.use-case';
+import { CreateUserValidator } from './domain/validator/user/create-user.validator';
+import { CreateTransactionValidator } from './domain/validator/transaction/create-transaction.validator';
 
 configDotenv();
 const port = parseInt(process.env.PORT!);
-const secretKeys = {access: process.env.ACCESS_TOKEN_SECRET!, refresh: process.env.REFRESH_TOKEN_SECRET!};
+const secretKeys = { access: process.env.ACCESS_TOKEN_SECRET!, refresh: process.env.REFRESH_TOKEN_SECRET! };
 
 const server = new App(port);
 
@@ -28,30 +30,27 @@ const userRepository = new UserInMemoryRepository();
 const sessionRepository = new SessionInMemoryRepository();
 const transactionRepository = new TransactionInMemoryRepository();
 
+const createUserValidator = new CreateUserValidator();
+const createTransactionValidator = new CreateTransactionValidator();
+
 const loginUserUseCase = new LoginUseCase(userRepository, sessionRepository, secretKeys);
 const logoutUserUseCase = new LogoutUseCase(sessionRepository);
-const registerUserUseCase = new RegisterUseCase(userRepository, sessionRepository, secretKeys);
+const registerUserUseCase = new RegisterUseCase(userRepository, sessionRepository, createUserValidator, secretKeys);
 const refreshTokenUseCase = new RefreshTokenUseCase(secretKeys);
 const validateTokenUseCase = new ValidateTokenUseCase(secretKeys.access);
 
 const findTransactionByIdUseCase = new FindTransactionByIdUseCase(transactionRepository);
-const createTransactionUseCase = new CreateTransactionUseCase(transactionRepository);
+const createTransactionUseCase = new CreateTransactionUseCase(transactionRepository, createTransactionValidator);
 const updateTransactionUseCase = new UpdateTransactionUseCase(transactionRepository, findTransactionByIdUseCase);
 const deleteTransactionUseCase = new DeleteTransactionUseCase(transactionRepository, findTransactionByIdUseCase);
 
 const findBudgetByDateRangeUseCase = new FindBudgetByDateRangeUseCase(transactionRepository);
 
-
-server.setController(
-	new AuthController(loginUserUseCase, logoutUserUseCase, registerUserUseCase, refreshTokenUseCase)
-);
+server.setController(new AuthController(loginUserUseCase, logoutUserUseCase, registerUserUseCase, refreshTokenUseCase));
 server.setController(
 	new TransactionsController(createTransactionUseCase, updateTransactionUseCase, deleteTransactionUseCase),
 	[authMiddleware(validateTokenUseCase)]
 );
-server.setController(
-	new BudgetsController(findBudgetByDateRangeUseCase),
-	[authMiddleware(validateTokenUseCase)]
-);
+server.setController(new BudgetsController(findBudgetByDateRangeUseCase), [authMiddleware(validateTokenUseCase)]);
 
 server.listen();

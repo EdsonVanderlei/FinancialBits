@@ -1,14 +1,17 @@
 import { UUID } from '../../../domain/data-objects/uuid/uuid';
 import { Transaction } from '../../../domain/entities/transaction/transaction';
 import { TransactionRepository } from '../../../domain/repositories/transaction/transaction.repository';
+import { Validator } from '../../../domain/validator/validator';
 import { UseCase } from '../../use-case';
-import {
-	CreateTransactionUseCaseInput,
-	CreateTransactionUseCaseOutput,
-} from './create-transaction.use-case-io';
+import { CreateTransactionUseCaseInput, CreateTransactionUseCaseOutput } from './create-transaction.use-case-io';
 
-export class CreateTransactionUseCase implements UseCase<CreateTransactionUseCaseInput, CreateTransactionUseCaseOutput> {
-	constructor(private transactionRepository: TransactionRepository) { }
+export class CreateTransactionUseCase
+	implements UseCase<CreateTransactionUseCaseInput, CreateTransactionUseCaseOutput>
+{
+	constructor(
+		private transactionRepository: TransactionRepository,
+		private createTransactionValidator: Validator<Transaction>
+	) {}
 
 	async exec(input: CreateTransactionUseCaseInput) {
 		let transaction = Transaction.create({
@@ -17,7 +20,7 @@ export class CreateTransactionUseCase implements UseCase<CreateTransactionUseCas
 			description: input.description,
 			userId: UUID.create(input.userId),
 		});
-		transaction.validateCreate();
+		transaction.validate(this.createTransactionValidator);
 		transaction = await this.transactionRepository.create(transaction);
 
 		return {

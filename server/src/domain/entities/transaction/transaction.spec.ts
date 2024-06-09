@@ -13,7 +13,7 @@ describe('Transaction', () => {
 		createdAt: new Date(),
 	};
 
-	test('create', () => {
+	test('Create', () => {
 		const transaction = Transaction.create({
 			date: input.date,
 			value: input.value,
@@ -21,12 +21,14 @@ describe('Transaction', () => {
 			userId: UUID.create(input.userId),
 		});
 
-		expect(input.date).toEqual(transaction.date);
-		expect(input.value).toEqual(transaction.value);
-		expect(input.description).toEqual(transaction.description);
-		expect(input.userId).toEqual(transaction.userId.value);
+		expect(transaction.id).toBeDefined();
+		expect(transaction.userId.value).toEqual(input.userId);
+		expect(transaction.date).toEqual(input.date);
+		expect(transaction.value).toEqual(input.value);
+		expect(transaction.description).toEqual(input.description);
+		expect(transaction.timestamps).toBeDefined();
 	});
-	test('load', () => {
+	test('Load', () => {
 		const transaction = Transaction.load({
 			id: UUID.create(input.id),
 			date: input.date,
@@ -36,11 +38,11 @@ describe('Transaction', () => {
 			timestamps: Timestamps.create({ createdAt: input.createdAt }),
 		});
 
-		expect(input.id).toEqual(transaction.id.value);
-		expect(input.date).toEqual(transaction.date);
-		expect(input.value).toEqual(transaction.value);
-		expect(input.description).toEqual(transaction.description);
-		expect(input.userId).toEqual(transaction.userId.value);
-		expect(input.createdAt).toEqual(transaction.timestamps.value.createdAt);
+		expect(transaction.id.value).toEqual(input.id);
+		expect(transaction.userId.value).toEqual(input.userId);
+		expect(transaction.date).toEqual(input.date);
+		expect(transaction.value).toEqual(input.value);
+		expect(transaction.description).toEqual(input.description);
+		expect(transaction.timestamps.value.createdAt.getTime()).toEqual(input.createdAt.getTime());
 	});
 });

@@ -4,6 +4,7 @@ import { Session } from '../../../domain/entities/session/session';
 import { User } from '../../../domain/entities/user/user';
 import { SessionRepository } from '../../../domain/repositories/session/session.repository';
 import { UserRepository } from '../../../domain/repositories/user/user.repository';
+import { Validator } from '../../../domain/validator/validator';
 import { AppError } from '../../../shared/classes/app-error';
 import { SessionToken } from '../../../shared/classes/session-token';
 import { RegisterUseCaseInput, RegisterUseCaseOutput } from './register.use-case-io';
@@ -12,6 +13,7 @@ export class RegisterUseCase {
 	constructor(
 		private userRepository: UserRepository,
 		private sessionRepository: SessionRepository,
+		private createUserValidator: Validator<User>,
 		private secretKeys: { access: string; refresh: string }
 	) {}
 
@@ -37,8 +39,8 @@ export class RegisterUseCase {
 			firstName: request.firstName,
 			lastName: request.lastName,
 		});
-
-		user.validateCreate();
+		
+		user.validate(this.createUserValidator);
 		if (await this.userRepository.findByEmail(user.email)) {
 			throw new AppError('Email already in use', 404);
 		}

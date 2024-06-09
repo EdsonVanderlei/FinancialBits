@@ -5,13 +5,15 @@ import { UUID } from '../../../domain/data-objects/uuid/uuid';
 import { User } from '../../../domain/entities/user/user';
 import { TransactionInMemoryRepository } from '../../../domain/repositories/transaction/in-memory/transaction-in-memory.repository';
 import { UserInMemoryRepository } from '../../../domain/repositories/user/in-memory/user-in-memory.repository';
+import { CreateTransactionValidator } from '../../../domain/validator/transaction/create-transaction.validator';
 import { AppError } from '../../../shared/classes/app-error';
 import { CreateTransactionUseCase } from './create-transaction.use-case';
 
 describe('CreateTransactionUseCase', () => {
 	const userRepository = new UserInMemoryRepository();
 	const transactionRepository = new TransactionInMemoryRepository();
-	const createTransactionUseCase = new CreateTransactionUseCase(transactionRepository);
+	const createTransactionValidator = new CreateTransactionValidator();
+	const createTransactionUseCase = new CreateTransactionUseCase(transactionRepository, createTransactionValidator);
 	const user = User.load({
 		id: UUID.create('23325fb9-8acc-4b91-966b-f5f37cce18d8'),
 		email: Email.create('user@test.com'),

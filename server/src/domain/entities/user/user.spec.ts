@@ -14,7 +14,7 @@ describe('User', () => {
 		fullName: 'John Doe',
 		createdAt: new Date(),
 	};
-	test('create', () => {
+	test('Create', () => {
 		const user = User.create({
 			email: Email.create(input.email),
 			password: Password.create(input.password),
@@ -22,11 +22,13 @@ describe('User', () => {
 			lastName: input.lastName,
 		});
 
-		expect(input.email).toEqual(user.email.value);
-		expect(input.password).toEqual(user.password.value);
-		expect(input.firstName).toEqual(user.firstName);
-		expect(input.lastName).toEqual(user.lastName);
-		expect(input.fullName).toEqual(user.fullName);
+		expect(user.id).toBeDefined();
+		expect(user.email.value).toEqual(input.email);
+		expect(user.password.value).not.toEqual(input.password);
+		expect(user.firstName).toEqual(input.firstName);
+		expect(user.lastName).toEqual(input.lastName);
+		expect(user.fullName).toEqual(input.fullName);
+		expect(user.timestamps).toBeDefined();
 	});
 	test('load', () => {
 		const user = User.load({
@@ -38,12 +40,12 @@ describe('User', () => {
 			timestamps: Timestamps.create({ createdAt: input.createdAt }),
 		});
 
-		expect(input.id).toEqual(user.id.value);
-		expect(input.email).toEqual(user.email.value);
-		expect(input.password).toEqual(user.password.value);
-		expect(input.firstName).toEqual(user.firstName);
-		expect(input.lastName).toEqual(user.lastName);
-		expect(input.fullName).toEqual(user.fullName);
-		expect(input.createdAt.getTime()).toEqual(user.timestamps.value.createdAt.getTime());
+		expect(user.id.value).toEqual(input.id);
+		expect(user.email.value).toEqual(input.email);
+		expect(user.password.value).not.toEqual(input.password);
+		expect(user.firstName).toEqual(input.firstName);
+		expect(user.lastName).toEqual(input.lastName);
+		expect(user.fullName).toEqual(input.fullName);
+		expect(user.timestamps.value.createdAt.getTime()).toEqual(input.createdAt.getTime());
 	});
 });
