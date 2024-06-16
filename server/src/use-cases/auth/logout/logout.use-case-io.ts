@@ -1,3 +1,3 @@
-export type LogoutUseCaseInput = { userId: string };
+export type LogoutUseCaseInput = { refreshToken: string };
 
 export type LogoutUseCaseOutput = void;

@@ -4,27 +4,34 @@ import { AppError } from '../../../shared/classes/app-error';
 import { RefreshTokenUseCase } from './refresh-token.use-case';
 
 describe('RefreshTokenUseCase', () => {
-	test('exec', async () => {
-		const secretKeys = { access: 'accessSecret', refresh: 'refreshSecret' };
-		const useCase = new RefreshTokenUseCase(secretKeys);
-		const payload = { userId: UUID.generate(), userFullName: 'John Doe' };
+	const secretKeys = { access: 'accessSecretKey', refresh: 'refreshSecretKey' };
+	let useCase: RefreshTokenUseCase;
 
-		const refreshToken = JWT.generate(payload, secretKeys.refresh).value;
-		const result = await useCase.exec({ refreshToken });
+	beforeEach(() => (useCase = new RefreshTokenUseCase(secretKeys)));
 
-		expect(result).toBeTruthy();
-	});
-	test('invalid payload', async () => {
-		const secretKeys = { access: 'accessSecret', refresh: 'refreshSecret' };
-		const useCase = new RefreshTokenUseCase(secretKeys);
-		const payload = { userId: UUID.generate() } as any;
+	test('Invalid token', async () => {
+		const input = { refreshToken: 'acb-123' };
 
-		const refreshToken = JWT.generate(payload, secretKeys.refresh).value;
-
-		await useCase.exec({ refreshToken }).catch(e => {
+		useCase.exec(input).catch(e => {
 			expect(e).toBeInstanceOf(AppError);
 			expect(e.statusCode).toEqual(400);
 			expect(e.message).toEqual('Invalid token');
 		});
+	});
+	test('Invalid signature', async () => {
+		const token = JWT.generate({ userId: UUID.generate(), userFullName: 'John' }, 'refreshSecret');
+
+		useCase.exec({ refreshToken: token.value }).catch(e => {
+			expect(e).toBeInstanceOf(AppError);
+			expect(e.statusCode).toEqual(401);
+			expect(e.message).toEqual('Invalid signature');
+		});
+	});
+	test('Success', async () => {
+		const token = JWT.generate({ userId: UUID.generate(), userFullName: 'John' }, secretKeys.refresh);
+
+		const result = await useCase.exec({ refreshToken: token.value });
+
+		expect(result).toBeDefined()
 	});
 });

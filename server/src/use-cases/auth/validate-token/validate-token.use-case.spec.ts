@@ -4,32 +4,43 @@ import { AppError } from '../../../shared/classes/app-error';
 import { ValidateTokenUseCase } from './validate-token.use-case';
 
 describe('ValidateTokenUseCase', () => {
+	const accessSecretKey = 'accessSecretKey';
 	let useCase: ValidateTokenUseCase;
-	beforeAll(() => (useCase = new ValidateTokenUseCase('accessSecret')));
 
-	test('valid token', () => {
-		const token = JWT.generate({ userFullName: 'name', userId: UUID.generate() }, 'accessSecret');
-		const result = useCase.exec({ authorizationHeader: `Bearer ${token.value}` });
+	beforeEach(() => (useCase = new ValidateTokenUseCase(accessSecretKey)));
 
-		expect(result).toBeDefined();
-		expect(result.userId).toEqual('sub');
-		expect(result.userFullname).toEqual('name');
+	test('Invalid token', () => {
+		const input = { refreshToken: 'acb-123' };
+
+		expect(() => useCase.exec(input)).toThrow({
+			statusCode: 401,
+			message: 'Invalid token',
+		} as AppError);
 	});
-	test('invalid token', () => {
-		const token =
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibmFtZSIsInN1YiI6InN1YiIsImlhdCI6MTcxNDc4NTQ5MSwiZXhwIjoxNzE0Nzg1NTAxfQ.v5HRaoqXjtNC2_GIzXEIp8HYNQLOQBzjg5b8XgSfmLk';
+	test('Invalid signature', () => {
+		const token = JWT.generate({ userId: UUID.generate(), userFullName: 'John' }, 'refreshSecret');
 
-		expect(() => useCase.exec({ authorizationHeader: `Bearer ${token}` })).toThrow({
+		expect(() => useCase.exec({ refreshToken: token.value })).toThrow({
+			statusCode: 401,
+			message: 'Invalid signature',
+		} as AppError);
+	});
+	test('Token expired', () => {
+		const token = JWT.generate({ userId: UUID.generate(), userFullName: 'John' }, accessSecretKey, { expiresIn: 0 });
+
+		expect(() => useCase.exec({ refreshToken: token.value })).toThrow({
 			statusCode: 401,
 			message: 'Token expired',
 		} as AppError);
 	});
-	test('not a token', () => {
-		const token = 'token';
+	test('Success', () => {
+		const userFullName = 'John';
+		const userId = UUID.generate();
+		const token = JWT.generate({ userId, userFullName }, accessSecretKey);
 
-		expect(() => useCase.exec({ authorizationHeader: `Bearer ${token}` })).toThrow({
-			statusCode: 401,
-			message: 'Invalid token',
-		} as AppError);
+		const result = useCase.exec({ refreshToken: token.value });
+
+		expect(result.userId).toEqual(userId.value);
+		expect(result.userFullName).toEqual(userFullName);
 	});
 });

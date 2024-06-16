@@ -5,16 +5,17 @@ import { SessionRepository } from '../../../domain/repositories/session/session.
 import { UserRepository } from '../../../domain/repositories/user/user.repository';
 import { AppError } from '../../../shared/classes/app-error';
 import { SessionToken } from '../../../shared/classes/session-token';
+import { UseCase } from '../../use-case';
 import { LoginUseCaseInput, LoginUseCaseOutput } from './login.use-case-io';
 
-export class LoginUseCase {
+export class LoginUseCase implements UseCase<LoginUseCaseInput, LoginUseCaseOutput> {
 	constructor(
 		private userRepository: UserRepository,
 		private sessionRepository: SessionRepository,
 		private secretKeys: { access: string; refresh: string }
 	) {}
 
-	async exec(request: LoginUseCaseInput): Promise<LoginUseCaseOutput> {
+	async exec(request: LoginUseCaseInput) {
 		const email = Email.create(request.email);
 		const user = await this.loginUser(email, request.password);
 		const tokens = await this.updateSession(user);

@@ -13,7 +13,7 @@ export class AuthController {
 		private loginUserUseCase: LoginUseCase,
 		private logoutUserUseCase: LogoutUseCase,
 		private registerUserUseCase: RegisterUseCase,
-		private refreshTokenUseCase: RefreshTokenUseCase
+		private refreshTokenUseCase: RefreshTokenUseCase,
 	) {}
 
 	@Route(HttpMethodEnum.POST, '/login')
@@ -25,20 +25,15 @@ export class AuthController {
 
 	@Route(HttpMethodEnum.POST, '/logout')
 	public async logout(req: Request, res: Response) {
-		const { email: userId } = req.body;
-		await this.logoutUserUseCase.exec({ userId });
+		const { refreshToken } = req.body;
+		await this.logoutUserUseCase.exec({ refreshToken });
 		return res.status(200).json({ message: 'Session successfully ended' });
 	}
 
 	@Route(HttpMethodEnum.POST, '/register')
 	public async register(req: Request, res: Response) {
 		const { email, firstName, password, lastName } = req.body;
-		const result = await this.registerUserUseCase.exec({
-			email,
-			password,
-			firstName,
-			lastName,
-		});
+		const result = await this.registerUserUseCase.exec({ email, password, firstName, lastName });
 		return res.status(201).json(result);
 	}
 

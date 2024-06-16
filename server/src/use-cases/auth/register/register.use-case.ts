@@ -7,9 +7,10 @@ import { UserRepository } from '../../../domain/repositories/user/user.repositor
 import { Validator } from '../../../domain/validator/validator';
 import { AppError } from '../../../shared/classes/app-error';
 import { SessionToken } from '../../../shared/classes/session-token';
+import { UseCase } from '../../use-case';
 import { RegisterUseCaseInput, RegisterUseCaseOutput } from './register.use-case-io';
 
-export class RegisterUseCase {
+export class RegisterUseCase implements UseCase<RegisterUseCaseInput, RegisterUseCaseOutput> {
 	constructor(
 		private userRepository: UserRepository,
 		private sessionRepository: SessionRepository,
@@ -17,7 +18,7 @@ export class RegisterUseCase {
 		private secretKeys: { access: string; refresh: string }
 	) {}
 
-	async exec(request: RegisterUseCaseInput): Promise<RegisterUseCaseOutput> {
+	async exec(request: RegisterUseCaseInput) {
 		const user = await this.createUser(request);
 		const tokens = await this.createSession(user);
 		return {
@@ -39,10 +40,10 @@ export class RegisterUseCase {
 			firstName: request.firstName,
 			lastName: request.lastName,
 		});
-		
+
 		user.validate(this.createUserValidator);
 		if (await this.userRepository.findByEmail(user.email)) {
-			throw new AppError('Email already in use', 404);
+			throw new AppError('Email already in use', 400);
 		}
 
 		return await this.userRepository.create(user);

@@ -5,15 +5,15 @@ import { ValidateTokenUseCaseInput, ValidateTokenUseCaseOutput } from './validat
 export class ValidateTokenUseCase {
 	constructor(private accessSecretKey: string) {}
 
-	exec(request: ValidateTokenUseCaseInput): ValidateTokenUseCaseOutput {
+	exec(input: ValidateTokenUseCaseInput): ValidateTokenUseCaseOutput {
 		try {
-			const token = request.authorizationHeader.split(' ')[1] ?? '';
-			const jwt = JWT.create(token);
+			const jwt = JWT.create(input.refreshToken);
 			jwt.verify(this.accessSecretKey);
 			const payload = jwt.payload;
-			return { userId: payload!.sub, userFullname: payload!.name };
-		} catch (e: any) {
-			throw new AppError(e.message, 401);
+			return { userId: payload!.sub, userFullName: payload!.name };
+		} catch (e: unknown) {
+			if (e instanceof AppError) throw new AppError(e.message, 401);
+			else throw new AppError('Internal server error', 500);
 		}
 	}
 }

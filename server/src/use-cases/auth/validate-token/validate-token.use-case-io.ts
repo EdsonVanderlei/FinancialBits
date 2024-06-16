@@ -1,3 +1,3 @@
-export type ValidateTokenUseCaseInput = { authorizationHeader: string };
+export type ValidateTokenUseCaseInput = { refreshToken: string };
 
-export type ValidateTokenUseCaseOutput = { userFullname: string; userId: string };
+export type ValidateTokenUseCaseOutput = { userFullName: string; userId: string };
