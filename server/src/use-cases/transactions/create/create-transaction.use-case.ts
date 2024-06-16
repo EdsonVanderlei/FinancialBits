@@ -2,6 +2,7 @@ import { UUID } from '../../../domain/data-objects/uuid/uuid';
 import { Transaction } from '../../../domain/entities/transaction/transaction';
 import { TransactionRepository } from '../../../domain/repositories/transaction/transaction.repository';
 import { Validator } from '../../../domain/validator/validator';
+import { AppError } from '../../../shared/classes/app-error';
 import { UseCase } from '../../use-case';
 import { CreateTransactionUseCaseInput, CreateTransactionUseCaseOutput } from './create-transaction.use-case-io';
 
@@ -10,15 +11,22 @@ export class CreateTransactionUseCase
 {
 	constructor(
 		private transactionRepository: TransactionRepository,
-		private createTransactionValidator: Validator<Transaction>
+		private createTransactionValidator: Validator<Transaction>,
 	) {}
 
 	async exec(input: CreateTransactionUseCaseInput) {
+		let userId: UUID;
+		try {
+			userId = UUID.create(input.userId);
+		} catch (e) {
+			throw new AppError('Invalid user identifier', 400);
+		}
+		
 		let transaction = Transaction.create({
 			date: new Date(input.date),
 			value: input.value,
 			description: input.description,
-			userId: UUID.create(input.userId),
+			userId,
 		});
 		transaction.validate(this.createTransactionValidator);
 		transaction = await this.transactionRepository.create(transaction);
