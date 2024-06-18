@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "nodemon src/index.ts",
+    "start": "eslint **/*.ts && nodemon src/index.ts",
     "test": "jest"
   },
   "keywords": [],
