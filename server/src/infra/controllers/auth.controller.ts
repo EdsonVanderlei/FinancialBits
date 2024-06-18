@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
-import { LoginUseCase } from '../../use-cases/auth/login/login.use-case';
-import { LogoutUseCase } from '../../use-cases/auth/logout/logout.use-case';
-import { RefreshTokenUseCase } from '../../use-cases/auth/refresh-token/refresh-token.use-case';
-import { RegisterUseCase } from '../../use-cases/auth/register/register.use-case';
+import { LoginUseCaseInput, LoginUseCaseOutput } from '../../use-cases/auth/login/login.use-case-io';
+import { LogoutUseCaseInput, LogoutUseCaseOutput } from '../../use-cases/auth/logout/logout.use-case-io';
+import { RefreshTokenUseCaseInput, RefreshTokenUseCaseOutput } from '../../use-cases/auth/refresh-token/refresh-token.use-case-io';
+import { RegisterUseCaseInput, RegisterUseCaseOutput } from '../../use-cases/auth/register/register.use-case-io';
+import { UseCase } from '../../use-cases/use-case';
 import { Controller } from '../decorators/controller.decorator';
 import { Route } from '../decorators/route.decorator';
 import { HttpMethodEnum } from '../types/route-definition';
@@ -10,10 +11,10 @@ import { HttpMethodEnum } from '../types/route-definition';
 @Controller('/auth')
 export class AuthController {
 	constructor(
-		private loginUserUseCase: LoginUseCase,
-		private logoutUserUseCase: LogoutUseCase,
-		private registerUserUseCase: RegisterUseCase,
-		private refreshTokenUseCase: RefreshTokenUseCase,
+		private loginUserUseCase: UseCase<LoginUseCaseInput,LoginUseCaseOutput>,
+		private logoutUserUseCase: UseCase<LogoutUseCaseInput,LogoutUseCaseOutput>,
+		private registerUserUseCase: UseCase<RegisterUseCaseInput,RegisterUseCaseOutput>,
+		private refreshTokenUseCase: UseCase<RefreshTokenUseCaseInput,RefreshTokenUseCaseOutput>,
 	) {}
 
 	@Route(HttpMethodEnum.POST, '/login')

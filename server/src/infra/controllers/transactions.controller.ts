@@ -6,14 +6,26 @@ import { UseCase } from '../../use-cases/use-case';
 import { Controller } from '../decorators/controller.decorator';
 import { Route } from '../decorators/route.decorator';
 import { HttpMethodEnum } from '../types/route-definition';
+import { FindTransactionsByDateRangeUseCaseInput, FindTransactionsByDateRangeUseCaseOutput } from '../../use-cases/transactions/find-by-date-range/find-transactions-by-date-range.use-case-io';
 
 @Controller('/transactions')
 export class TransactionsController {
 	constructor(
+		private findTransactionsByDateRangeUseCase: UseCase<FindTransactionsByDateRangeUseCaseInput, FindTransactionsByDateRangeUseCaseOutput>,
 		private createTransactionUseCase: UseCase<CreateTransactionUseCaseInput, CreateTransactionUseCaseOutput>,
 		private updateTransactionUseCase: UseCase<UpdateTransactionUseCaseInput, UpdateTransactionUseCaseOutput>,
 		private deleteTransactionUseCase: UseCase<DeleteTransactionUseCaseInput, DeleteTransactionUseCaseOutput>
 	) { }
+
+	@Route(HttpMethodEnum.GET, '/from/:startDate/to/:endDate')
+	public async findByDateRange(req: Request, res: Response) {
+		const { startDateQuery, endDateQuery } = req.query;
+		const { userId } = req.body;
+		const startDate = startDateQuery?.toString()??''
+		const endDate = endDateQuery?.toString()??''
+		const transaction = await this.findTransactionsByDateRangeUseCase.exec({ startDate, endDate, userId });
+		return res.status(201).json(transaction);
+	}
 
 	@Route(HttpMethodEnum.POST, '/')
 	public async create(req: Request, res: Response) {

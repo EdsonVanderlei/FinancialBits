@@ -5,9 +5,9 @@ export const enum HttpMethodEnum {
 	DELETE = 'delete',
 }
 
-export type RouteDefinition = {
+export type RouteDefinition<T> = {
 	path: string;
 	httpMethod: HttpMethodEnum;
-	methodName: string;
+	methodName: keyof T;
 	isAsync: boolean;
 };
