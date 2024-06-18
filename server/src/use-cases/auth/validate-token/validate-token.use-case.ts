@@ -1,11 +1,12 @@
 import { JWT } from '../../../domain/data-objects/jwt/jwt';
 import { AppError } from '../../../shared/classes/app-error';
+import { UseCase } from '../../use-case';
 import { ValidateTokenUseCaseInput, ValidateTokenUseCaseOutput } from './validate-token.use-case-io';
 
-export class ValidateTokenUseCase {
+export class ValidateTokenUseCase implements UseCase<ValidateTokenUseCaseInput, ValidateTokenUseCaseOutput> {
 	constructor(private accessSecretKey: string) {}
 
-	exec(input: ValidateTokenUseCaseInput): ValidateTokenUseCaseOutput {
+	exec(input: ValidateTokenUseCaseInput) {
 		try {
 			const jwt = JWT.create(input.refreshToken);
 			jwt.verify(this.accessSecretKey);

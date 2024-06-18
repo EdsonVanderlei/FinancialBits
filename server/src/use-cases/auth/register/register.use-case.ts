@@ -34,7 +34,7 @@ export class RegisterUseCase implements UseCase<RegisterUseCaseInput, RegisterUs
 	}
 
 	async createUser(request: RegisterUseCaseInput) {
-		let user = User.create({
+		const user = User.create({
 			email: Email.create(request.email),
 			password: Password.create(request.password),
 			firstName: request.firstName,
