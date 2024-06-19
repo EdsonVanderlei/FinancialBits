@@ -46,7 +46,12 @@ export class RegisterUseCase implements UseCase<RegisterUseCaseInput, RegisterUs
 			throw new AppError('Email already in use', 400);
 		}
 
-		return await this.userRepository.create(user);
+		const saved = await this.userRepository.create(user);
+		if (!saved) {
+			throw new AppError("Couldn't save the user", 500);
+		}
+
+		return saved;
 	}
 
 	async createSession(user: User) {
