@@ -17,7 +17,7 @@ export const authFactory = (secretKeys: { access: string; refresh: string }) => 
 	const loginUserUseCase = new LoginUseCase(userRepository, sessionRepository, secretKeys);
 	const logoutUserUseCase = new LogoutUseCase(sessionRepository, secretKeys.refresh);
 	const registerUserUseCase = new RegisterUseCase(userRepository, sessionRepository, userValidator, secretKeys);
-	const refreshTokenUseCase = new RefreshTokenUseCase(secretKeys);
+	const refreshTokenUseCase = new RefreshTokenUseCase(sessionRepository, secretKeys);
 	const validateTokenUseCase = new ValidateTokenUseCase(secretKeys.access);
 
 	const authController = new AuthController(
