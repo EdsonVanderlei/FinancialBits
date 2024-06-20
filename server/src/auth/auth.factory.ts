@@ -1,5 +1,7 @@
-import { SessionInMemoryRepository } from './domain/repositories/session/in-memory/session-in-memory.repository';
-import { UserInMemoryRepository } from './domain/repositories/user/in-memory/user-in-memory.repository';
+import knex from 'knex';
+import config from '../../knexfile';
+import { SessionKnexRepository } from './domain/repositories/session/session-knex.repository';
+import { UserKnexRepository } from './domain/repositories/user/user-knex.repository';
 import { UserValidator } from './domain/validator/user.validator';
 import { AuthController } from './infra/auth.controller';
 import { LoginUseCase } from './use-cases/login/login.use-case';
@@ -9,8 +11,9 @@ import { RegisterUseCase } from './use-cases/register/register.use-case';
 import { ValidateTokenUseCase } from './use-cases/validate-token/validate-token.use-case';
 
 export const authFactory = (secretKeys: { access: string; refresh: string }) => {
-	const userRepository = new UserInMemoryRepository();
-	const sessionRepository = new SessionInMemoryRepository();
+	const knexInstance = knex(config.development);
+	const userRepository = new UserKnexRepository(knexInstance);
+	const sessionRepository = new SessionKnexRepository(knexInstance);
 
 	const userValidator = new UserValidator();
 

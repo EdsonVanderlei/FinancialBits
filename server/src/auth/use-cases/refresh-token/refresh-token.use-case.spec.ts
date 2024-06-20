@@ -2,7 +2,7 @@ import { AppError } from '../../../shared/classes/app-error';
 import { UUID } from '../../../shared/domain/data-objects/uuid/uuid';
 import { JWT } from '../../domain/data-objects/jwt/jwt';
 import { Session } from '../../domain/entities/session/session';
-import { SessionInMemoryRepository } from '../../domain/repositories/session/in-memory/session-in-memory.repository';
+import { SessionInMemoryRepository } from '../../domain/repositories/session/session-in-memory.repository';
 import { RefreshTokenUseCase } from './refresh-token.use-case';
 
 describe('RefreshTokenUseCase', () => {

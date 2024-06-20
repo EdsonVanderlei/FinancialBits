@@ -1,6 +1,6 @@
-import { UUID } from '../../../../../shared/domain/data-objects/uuid/uuid';
-import { Session } from '../../../entities/session/session';
-import { SessionRepository } from '../session.repository';
+import { UUID } from '../../../../shared/domain/data-objects/uuid/uuid';
+import { Session } from '../../entities/session/session';
+import { SessionRepository } from './session.repository';
 
 export class SessionInMemoryRepository implements SessionRepository {
 	private sessions: Session[] = [];

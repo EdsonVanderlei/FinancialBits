@@ -1,7 +1,7 @@
 import { AppError } from '../../../shared/classes/app-error';
-import { SessionInMemoryRepository } from '../../domain/repositories/session/in-memory/session-in-memory.repository';
+import { SessionInMemoryRepository } from '../../domain/repositories/session/session-in-memory.repository';
 import { SessionRepository } from '../../domain/repositories/session/session.repository';
-import { UserInMemoryRepository } from '../../domain/repositories/user/in-memory/user-in-memory.repository';
+import { UserInMemoryRepository } from '../../domain/repositories/user/user-in-memory.repository';
 import { UserRepository } from '../../domain/repositories/user/user.repository';
 import { UserValidator } from '../../domain/validator/user.validator';
 import { RegisterUseCase } from './register.use-case';

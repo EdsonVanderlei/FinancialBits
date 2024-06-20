@@ -1,6 +1,6 @@
-import { Email } from '../../../data-objects/email/email';
-import { User } from '../../../entities/user/user';
-import { UserRepository } from '../user.repository';
+import { Email } from '../../data-objects/email/email';
+import { User } from '../../entities/user/user';
+import { UserRepository } from './user.repository';
 
 export class UserInMemoryRepository implements UserRepository {
 	private users: User[] = [];

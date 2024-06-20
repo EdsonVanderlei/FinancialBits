@@ -1,7 +1,7 @@
 import { AppError } from '../../../shared/classes/app-error';
 import { UUID } from '../../../shared/domain/data-objects/uuid/uuid';
 import { JWT } from '../../domain/data-objects/jwt/jwt';
-import { SessionInMemoryRepository } from '../../domain/repositories/session/in-memory/session-in-memory.repository';
+import { SessionInMemoryRepository } from '../../domain/repositories/session/session-in-memory.repository';
 import { SessionRepository } from '../../domain/repositories/session/session.repository';
 import { LogoutUseCase } from './logout.use-case';
 

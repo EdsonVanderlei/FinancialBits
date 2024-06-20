@@ -2,9 +2,9 @@ import { AppError } from '../../../shared/classes/app-error';
 import { Email } from '../../domain/data-objects/email/email';
 import { Password } from '../../domain/data-objects/password/password';
 import { User } from '../../domain/entities/user/user';
-import { SessionInMemoryRepository } from '../../domain/repositories/session/in-memory/session-in-memory.repository';
+import { SessionInMemoryRepository } from '../../domain/repositories/session/session-in-memory.repository';
 import { SessionRepository } from '../../domain/repositories/session/session.repository';
-import { UserInMemoryRepository } from '../../domain/repositories/user/in-memory/user-in-memory.repository';
+import { UserInMemoryRepository } from '../../domain/repositories/user/user-in-memory.repository';
 import { UserRepository } from '../../domain/repositories/user/user.repository';
 import { LoginUseCase } from './login.use-case';
 
