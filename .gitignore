@@ -1,3 +1,10 @@
-server/.env
-server/package-lock.json
+*/.env
+*/package-lock.json
 */node_modules
+*/npm-debug.log
+*/dist
+*/.vscode
+*/.history
+
+client/.angular
+client/.sass-cache
