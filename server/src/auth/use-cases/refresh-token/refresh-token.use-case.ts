@@ -22,7 +22,7 @@ export class RefreshTokenUseCase implements UseCase<RefreshTokenUseCaseInput, Re
 			throw new AppError('User not found', 404);
 		}
 
-		const sessionToken = new Session({ userId, userFullName: refreshToken.payload!.name }, this.secretKeys);
+		const sessionToken = new Session({ userId, userFullName: refreshToken.payload!.name }, this.secretKeys, refreshToken);
 		return sessionToken.asString;
 	}
 }

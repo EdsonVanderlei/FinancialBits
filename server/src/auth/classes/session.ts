@@ -5,9 +5,13 @@ export class Session {
 	accessToken: JWT;
 	refreshToken: JWT;
 
-	constructor(payload: { userId: UUID; userFullName: string }, secretKeys: { access: string; refresh: string }) {
+	constructor(
+		payload: { userId: UUID; userFullName: string },
+		secretKeys: { access: string; refresh: string },
+		refreshToken?: JWT,
+	) {
 		this.accessToken = JWT.generate(payload, secretKeys.access, { expiresIn: '5m' });
-		this.refreshToken = JWT.generate(payload, secretKeys.refresh);
+		this.refreshToken = refreshToken ?? JWT.generate(payload, secretKeys.refresh);
 	}
 
 	get asString() {
