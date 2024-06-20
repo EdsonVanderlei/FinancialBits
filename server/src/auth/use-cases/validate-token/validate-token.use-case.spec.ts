@@ -9,8 +9,16 @@ describe('ValidateTokenUseCase', () => {
 
 	beforeEach(() => (useCase = new ValidateTokenUseCase(accessSecretKey)));
 
+	test('Authorization header is required', () => {
+		const input = { authorizationHeader: '' };
+
+		expect(() => useCase.exec(input)).toThrow({
+			statusCode: 401,
+			message: 'Authorization header is required',
+		} as AppError);
+	});
 	test('Invalid token', () => {
-		const input = { refreshToken: 'acb-123' };
+		const input = { authorizationHeader: 'acb-123' };
 
 		expect(() => useCase.exec(input)).toThrow({
 			statusCode: 401,
@@ -20,7 +28,7 @@ describe('ValidateTokenUseCase', () => {
 	test('Invalid signature', () => {
 		const token = JWT.generate({ userId: UUID.generate(), userFullName: 'John' }, 'refreshSecret');
 
-		expect(() => useCase.exec({ refreshToken: token.value })).toThrow({
+		expect(() => useCase.exec({ authorizationHeader: `Bearer ${token.value}` })).toThrow({
 			statusCode: 401,
 			message: 'Invalid signature',
 		} as AppError);
@@ -28,7 +36,7 @@ describe('ValidateTokenUseCase', () => {
 	test('Token expired', () => {
 		const token = JWT.generate({ userId: UUID.generate(), userFullName: 'John' }, accessSecretKey, { expiresIn: 0 });
 
-		expect(() => useCase.exec({ refreshToken: token.value })).toThrow({
+		expect(() => useCase.exec({ authorizationHeader: `Bearer ${token.value}` })).toThrow({
 			statusCode: 401,
 			message: 'Token expired',
 		} as AppError);
@@ -38,9 +46,9 @@ describe('ValidateTokenUseCase', () => {
 		const userId = UUID.generate();
 		const token = JWT.generate({ userId, userFullName }, accessSecretKey);
 
-		const result = useCase.exec({ refreshToken: token.value });
+		const result = useCase.exec({ authorizationHeader: `Bearer ${token.value}` });
 
-		expect(result.userId).toEqual(userId.value);
-		expect(result.userFullName).toEqual(userFullName);
+		expect(result.sub).toEqual(userId.value);
+		expect(result.name).toEqual(userFullName);
 	});
 });

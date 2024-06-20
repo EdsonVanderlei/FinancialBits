@@ -7,14 +7,13 @@ export class ValidateTokenUseCase implements UseCase<ValidateTokenUseCaseInput, 
 	constructor(private accessSecretKey: string) {}
 
 	exec(input: ValidateTokenUseCaseInput) {
-		try {
-			const jwt = JWT.create(input.refreshToken);
-			jwt.verify(this.accessSecretKey);
-			const payload = jwt.payload;
-			return { userId: payload!.sub, userFullName: payload!.name };
-		} catch (e: unknown) {
-			if (e instanceof AppError) throw new AppError(e.message, 401);
-			else throw new AppError('Internal server error', 500);
+		if (!input.authorizationHeader) {
+			throw new AppError('Authorization header is required', 401);
 		}
+		const refreshToken = input.authorizationHeader.split(' ')[1] ?? '';
+		const token = JWT.create(refreshToken);
+		token.verify(this.accessSecretKey);
+
+		return token.payload!;
 	}
 }

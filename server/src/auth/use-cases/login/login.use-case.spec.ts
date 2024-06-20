@@ -1,23 +1,19 @@
 import { AppError } from '../../../shared/classes/app-error';
 import { Email } from '../../domain/data-objects/email/email';
 import { Password } from '../../domain/data-objects/password/password';
-import { User } from '../../domain/entities/user/user';
-import { SessionInMemoryRepository } from '../../domain/repositories/session/session-in-memory.repository';
-import { SessionRepository } from '../../domain/repositories/session/session.repository';
-import { UserInMemoryRepository } from '../../domain/repositories/user/user-in-memory.repository';
-import { UserRepository } from '../../domain/repositories/user/user.repository';
+import { User } from '../../domain/entities/user';
+import { UserInMemoryRepository } from '../../domain/repositories/user-in-memory.repository';
+import { UserRepository } from '../../domain/repositories/user.repository';
 import { LoginUseCase } from './login.use-case';
 
 describe('LoginUseCase', () => {
 	let userRepository: UserRepository;
-	let sessionRepository: SessionRepository;
 	let useCase: LoginUseCase;
 	const secretKeys = { access: 'accessSecret', refresh: 'refreshSecret' };
 
 	beforeEach(() => {
 		userRepository = new UserInMemoryRepository();
-		sessionRepository = new SessionInMemoryRepository();
-		useCase = new LoginUseCase(userRepository, sessionRepository, secretKeys);
+		useCase = new LoginUseCase(userRepository, secretKeys);
 	});
 
 	test('Invalid email', async () => {
@@ -29,7 +25,7 @@ describe('LoginUseCase', () => {
 			expect(e.message).toEqual('Invalid email');
 		});
 	});
-	test('Wrong Email', async () => {
+	test('User not found', async () => {
 		const password = 'abc123';
 		const user = User.create({
 			firstName: 'John',
@@ -41,11 +37,11 @@ describe('LoginUseCase', () => {
 
 		useCase.exec(input).catch(e => {
 			expect(e).toBeInstanceOf(AppError);
-			expect(e.statusCode).toEqual(400);
-			expect(e.message).toEqual('Invalid credentials');
+			expect(e.statusCode).toEqual(404);
+			expect(e.message).toEqual('User not found');
 		});
 	});
-	test('Wrong Password', async () => {
+	test('Invalid password', async () => {
 		const password = 'abc123';
 		const user = User.create({
 			firstName: 'John',
@@ -57,8 +53,8 @@ describe('LoginUseCase', () => {
 
 		useCase.exec(input).catch(e => {
 			expect(e).toBeInstanceOf(AppError);
-			expect(e.statusCode).toEqual(400);
-			expect(e.message).toEqual('Invalid credentials');
+			expect(e.statusCode).toEqual(401);
+			expect(e.message).toEqual('Invalid password');
 		});
 	});
 	test('Success', async () => {

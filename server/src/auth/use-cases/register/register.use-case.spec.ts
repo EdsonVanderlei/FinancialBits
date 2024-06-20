@@ -1,23 +1,19 @@
 import { AppError } from '../../../shared/classes/app-error';
-import { SessionInMemoryRepository } from '../../domain/repositories/session/session-in-memory.repository';
-import { SessionRepository } from '../../domain/repositories/session/session.repository';
-import { UserInMemoryRepository } from '../../domain/repositories/user/user-in-memory.repository';
-import { UserRepository } from '../../domain/repositories/user/user.repository';
+import { UserInMemoryRepository } from '../../domain/repositories/user-in-memory.repository';
+import { UserRepository } from '../../domain/repositories/user.repository';
 import { UserValidator } from '../../domain/validator/user.validator';
 import { RegisterUseCase } from './register.use-case';
 
 describe('RegisterUseCase', () => {
 	let userRepository: UserRepository;
-	let sessionRepository: SessionRepository;
 	let userValidator: UserValidator;
 	let useCase: RegisterUseCase;
 	const secretKeys = { access: 'accessSecret', refresh: 'refreshSecret' };
 
 	beforeEach(() => {
 		userRepository = new UserInMemoryRepository();
-		sessionRepository = new SessionInMemoryRepository();
 		userValidator = new UserValidator();
-		useCase = new RegisterUseCase(userRepository, sessionRepository, userValidator, secretKeys);
+		useCase = new RegisterUseCase(userRepository, userValidator, secretKeys);
 	});
 
 	test('Invalid email', async () => {

@@ -1,7 +1,7 @@
-import { Timestamps } from '../../../../shared/domain/data-objects/timestamps/timestamps';
-import { UUID } from '../../../../shared/domain/data-objects/uuid/uuid';
-import { Email } from '../../data-objects/email/email';
-import { Password } from '../../data-objects/password/password';
+import { Timestamps } from '../../../shared/domain/data-objects/timestamps/timestamps';
+import { UUID } from '../../../shared/domain/data-objects/uuid/uuid';
+import { Email } from '../data-objects/email/email';
+import { Password } from '../data-objects/password/password';
 import { User } from './user';
 
 describe('User', () => {

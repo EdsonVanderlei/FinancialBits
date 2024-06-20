@@ -1,3 +1,5 @@
-export type ValidateTokenUseCaseInput = { refreshToken: string };
+import { JWTPayload } from '../../domain/data-objects/jwt/jwt';
 
-export type ValidateTokenUseCaseOutput = { userFullName: string; userId: string };
+export type ValidateTokenUseCaseInput = { authorizationHeader: string };
+
+export type ValidateTokenUseCaseOutput = JWTPayload;

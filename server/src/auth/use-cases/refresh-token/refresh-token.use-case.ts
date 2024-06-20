@@ -1,32 +1,28 @@
 import { AppError } from '../../../shared/classes/app-error';
 import { UUID } from '../../../shared/domain/data-objects/uuid/uuid';
 import { UseCase } from '../../../shared/use-case';
-import { SessionToken } from '../../classes/session-token';
+import { Session } from '../../classes/session';
 import { JWT } from '../../domain/data-objects/jwt/jwt';
-import { SessionRepository } from '../../domain/repositories/session/session.repository';
+import { UserRepository } from '../../domain/repositories/user.repository';
 import { RefreshTokenUseCaseInput, RefreshTokenUseCaseOutput } from './refresh-token.use-case-io';
 
 export class RefreshTokenUseCase implements UseCase<RefreshTokenUseCaseInput, RefreshTokenUseCaseOutput> {
 	constructor(
-		private sessionRepository: SessionRepository,
+		private userRepository: UserRepository,
 		private secretKeys: { access: string; refresh: string },
 	) {}
 
 	async exec(request: RefreshTokenUseCaseInput) {
 		const refreshToken = JWT.create(request.refreshToken);
 		refreshToken.verify(this.secretKeys.refresh);
-		const userId = UUID.create(refreshToken.payload?.sub ?? '');
 
-		const session = await this.sessionRepository.findByUserId(userId);
-		if (!session) {
-			throw new AppError('Session not found', 404);
+		const userId = UUID.create(refreshToken.payload!.sub);
+		const user = await this.userRepository.findById(userId);
+		if (!user) {
+			throw new AppError('User not found', 404);
 		}
 
-		const sessionToken = new SessionToken(
-			{ userId, userFullName: refreshToken.payload!.name },
-			this.secretKeys,
-			session.refreshToken,
-		);
+		const sessionToken = new Session({ userId, userFullName: refreshToken.payload!.name }, this.secretKeys);
 		return sessionToken.asString;
 	}
 }

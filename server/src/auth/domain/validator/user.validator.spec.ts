@@ -1,7 +1,7 @@
 import { AppError } from '../../../shared/classes/app-error';
 import { Email } from '../data-objects/email/email';
 import { Password } from '../data-objects/password/password';
-import { User } from '../entities/user/user';
+import { User } from '../entities/user';
 import { UserValidator } from './user.validator';
 
 describe('UserValidator', () => {

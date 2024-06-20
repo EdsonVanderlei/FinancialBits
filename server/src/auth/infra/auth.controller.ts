@@ -4,7 +4,6 @@ import { Route } from '../../shared/decorators/route.decorator';
 import { HttpMethodEnum } from '../../shared/types/http.method.enum';
 import { UseCase } from '../../shared/use-case';
 import { LoginUseCaseInput, LoginUseCaseOutput } from '../use-cases/login/login.use-case-io';
-import { LogoutUseCaseInput, LogoutUseCaseOutput } from '../use-cases/logout/logout.use-case-io';
 import {
 	RefreshTokenUseCaseInput,
 	RefreshTokenUseCaseOutput,
@@ -15,7 +14,6 @@ import { RegisterUseCaseInput, RegisterUseCaseOutput } from '../use-cases/regist
 export class AuthController {
 	constructor(
 		private loginUserUseCase: UseCase<LoginUseCaseInput, LoginUseCaseOutput>,
-		private logoutUserUseCase: UseCase<LogoutUseCaseInput, LogoutUseCaseOutput>,
 		private registerUserUseCase: UseCase<RegisterUseCaseInput, RegisterUseCaseOutput>,
 		private refreshTokenUseCase: UseCase<RefreshTokenUseCaseInput, RefreshTokenUseCaseOutput>,
 	) {}
@@ -25,13 +23,6 @@ export class AuthController {
 		const { email, password } = req.body;
 		const result = await this.loginUserUseCase.exec({ email, password });
 		return res.status(200).json(result);
-	}
-
-	@Route(HttpMethodEnum.POST, '/logout')
-	public async logout(req: Request, res: Response) {
-		const { refreshToken } = req.body;
-		await this.logoutUserUseCase.exec({ refreshToken });
-		return res.status(200).json({ message: 'Session successfully ended' });
 	}
 
 	@Route(HttpMethodEnum.POST, '/register')

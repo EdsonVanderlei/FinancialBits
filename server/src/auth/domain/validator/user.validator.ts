@@ -1,6 +1,6 @@
 import { AppError } from '../../../shared/classes/app-error';
 import { Validator } from '../../../shared/domain/validator';
-import { User } from '../entities/user/user';
+import { User } from '../entities/user';
 
 export class UserValidator extends Validator<User> {
 	validate(user: User) {

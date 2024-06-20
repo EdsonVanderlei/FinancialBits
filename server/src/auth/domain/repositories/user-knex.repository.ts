@@ -1,10 +1,10 @@
 import { Knex } from 'knex';
-import { Timestamps } from '../../../../shared/domain/data-objects/timestamps/timestamps';
-import { UUID } from '../../../../shared/domain/data-objects/uuid/uuid';
-import { KnexRepository } from '../../../../shared/domain/knex.repository';
-import { Email } from '../../data-objects/email/email';
-import { Password } from '../../data-objects/password/password';
-import { User } from '../../entities/user/user';
+import { Timestamps } from '../../../shared/domain/data-objects/timestamps/timestamps';
+import { UUID } from '../../../shared/domain/data-objects/uuid/uuid';
+import { KnexRepository } from '../../../shared/domain/knex.repository';
+import { Email } from '../data-objects/email/email';
+import { Password } from '../data-objects/password/password';
+import { User } from '../entities/user';
 import { UserRepository } from './user.repository';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -48,6 +48,11 @@ export class UserKnexRepository extends KnexRepository implements UserRepository
 
 	async findByEmail(email: Email) {
 		const query = await this.knex.select().where({ email: email.value }).from(this.tableName);
+		return this.queryToUser(query);
+	}
+
+	async findById(id: UUID) {
+		const query = await this.knex.select().where({ id: id.value }).from(this.tableName);
 		return this.queryToUser(query);
 	}
 }

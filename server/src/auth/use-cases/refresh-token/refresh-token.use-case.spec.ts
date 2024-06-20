@@ -1,16 +1,18 @@
 import { AppError } from '../../../shared/classes/app-error';
 import { UUID } from '../../../shared/domain/data-objects/uuid/uuid';
+import { Email } from '../../domain/data-objects/email/email';
 import { JWT } from '../../domain/data-objects/jwt/jwt';
-import { Session } from '../../domain/entities/session/session';
-import { SessionInMemoryRepository } from '../../domain/repositories/session/session-in-memory.repository';
+import { Password } from '../../domain/data-objects/password/password';
+import { User } from '../../domain/entities/user';
+import { UserInMemoryRepository } from '../../domain/repositories/user-in-memory.repository';
 import { RefreshTokenUseCase } from './refresh-token.use-case';
 
 describe('RefreshTokenUseCase', () => {
 	const secretKeys = { access: 'accessSecretKey', refresh: 'refreshSecretKey' };
 	let useCase: RefreshTokenUseCase;
-	const sessionRepository = new SessionInMemoryRepository();
+	const userRepository = new UserInMemoryRepository();
 
-	beforeEach(() => (useCase = new RefreshTokenUseCase(sessionRepository, secretKeys)));
+	beforeEach(() => (useCase = new RefreshTokenUseCase(userRepository, secretKeys)));
 
 	test('Invalid token', async () => {
 		const input = { refreshToken: 'acb-123' };
@@ -30,24 +32,23 @@ describe('RefreshTokenUseCase', () => {
 			expect(e.message).toEqual('Invalid signature');
 		});
 	});
-	test('Session not found', async () => {
+	test('User not found', async () => {
 		const token = JWT.generate({ userId: UUID.generate(), userFullName: 'John' }, secretKeys.refresh);
 
 		useCase.exec({ refreshToken: token.value }).catch(e => {
 			expect(e).toBeInstanceOf(AppError);
 			expect(e.statusCode).toEqual(404);
-			expect(e.message).toEqual('Session not found');
+			expect(e.message).toEqual('User not found');
 		});
 	});
 	test('Success', async () => {
-		const userId = UUID.generate();
-		const token = JWT.generate({ userId, userFullName: 'John' }, secretKeys.refresh);
-		await sessionRepository.create(
-			Session.create({
-				userId,
-				refreshToken: token,
-			}),
-		);
+		const user = User.create({
+			firstName: 'John',
+			email: Email.create('email@test.com'),
+			password: Password.create('abc123'),
+		});
+		const token = JWT.generate({ userId: user.id, userFullName: 'John' }, secretKeys.refresh);
+		await userRepository.create(user);
 
 		const result = await useCase.exec({ refreshToken: token.value });
 

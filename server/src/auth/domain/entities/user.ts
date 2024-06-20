@@ -1,8 +1,8 @@
-import { Timestamps } from '../../../../shared/domain/data-objects/timestamps/timestamps';
-import { UUID } from '../../../../shared/domain/data-objects/uuid/uuid';
-import { Entity } from '../../../../shared/domain/entity';
-import { Email } from '../../data-objects/email/email';
-import { Password } from '../../data-objects/password/password';
+import { Timestamps } from '../../../shared/domain/data-objects/timestamps/timestamps';
+import { UUID } from '../../../shared/domain/data-objects/uuid/uuid';
+import { Entity } from '../../../shared/domain/entity';
+import { Email } from '../data-objects/email/email';
+import { Password } from '../data-objects/password/password';
 
 export class User extends Entity {
 	public email!: Email;
