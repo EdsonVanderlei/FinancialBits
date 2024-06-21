@@ -1,7 +1,8 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../shared/classes/app-error';
 
-export const errorMiddleware = (err: Error, req: Request, res: Response) => {
+export const errorMiddleware = (err: Error, req: Request, res: Response, next: NextFunction) => {
+	next();
 	let error: AppError;
 	if (err instanceof AppError && err.statusCode && err.statusCode !== 500) {
 		error = new AppError(err.message, err.statusCode);

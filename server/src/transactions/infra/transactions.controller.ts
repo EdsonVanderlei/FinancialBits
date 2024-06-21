@@ -23,7 +23,7 @@ import {
 @Controller('/transactions')
 export class TransactionsController {
 	constructor(
-		private findTransactionsByDateRangeUseCase: UseCase<FindTransactionsByDateRangeUseCaseInput,FindTransactionsByDateRangeUseCaseOutput>,
+		private findTransactionsByDateRangeUseCase: UseCase<FindTransactionsByDateRangeUseCaseInput, FindTransactionsByDateRangeUseCaseOutput>,
 		private createTransactionUseCase: UseCase<CreateTransactionUseCaseInput, CreateTransactionUseCaseOutput>,
 		private updateTransactionUseCase: UseCase<UpdateTransactionUseCaseInput, UpdateTransactionUseCaseOutput>,
 		private deleteTransactionUseCase: UseCase<DeleteTransactionUseCaseInput, DeleteTransactionUseCaseOutput>,
@@ -31,11 +31,13 @@ export class TransactionsController {
 
 	@Route(HttpMethodEnum.GET, '/from/:startDate/to/:endDate')
 	public async findByDateRange(req: Request, res: Response) {
-		const { startDateQuery, endDateQuery } = req.query;
+		const { startDate, endDate } = req.params;
 		const { userId } = req.body;
-		const startDate = startDateQuery?.toString() ?? '';
-		const endDate = endDateQuery?.toString() ?? '';
-		const transaction = await this.findTransactionsByDateRangeUseCase.exec({ startDate, endDate, userId });
+		const transaction = await this.findTransactionsByDateRangeUseCase.exec({
+			userId,
+			startDate: +startDate,
+			endDate: +endDate,
+		});
 		return res.status(201).json(transaction);
 	}
 
@@ -48,7 +50,7 @@ export class TransactionsController {
 
 	@Route(HttpMethodEnum.POST, '/:id')
 	public async update(req: Request, res: Response) {
-		const id = (req.query.id ?? '').toString();
+		const id = req.params.id
 		const { value, date, description, userId } = req.body;
 		const transaction = await this.updateTransactionUseCase.exec({ id, userId, date, value, description });
 		return res.status(200).json(transaction);
@@ -56,7 +58,7 @@ export class TransactionsController {
 
 	@Route(HttpMethodEnum.DELETE, '/:id')
 	public async delete(req: Request, res: Response) {
-		const id = (req.query.id ?? '').toString();
+		const id = req.params.id
 		const { userId } = req.body;
 		await this.deleteTransactionUseCase.exec({ id, userId });
 		return res.status(200).json();

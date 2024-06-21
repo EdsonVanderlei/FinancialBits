@@ -1,6 +1,6 @@
-import { UUID } from '../../../../shared/domain/data-objects/uuid/uuid';
-import { Transaction } from '../../entities/transaction';
-import { TransactionRepository } from '../transaction.repository';
+import { UUID } from '../../../shared/domain/data-objects/uuid/uuid';
+import { Transaction } from '../entities/transaction';
+import { TransactionRepository } from './transaction.repository';
 
 export class TransactionInMemoryRepository implements TransactionRepository {
 	private transactions: Transaction[] = [];

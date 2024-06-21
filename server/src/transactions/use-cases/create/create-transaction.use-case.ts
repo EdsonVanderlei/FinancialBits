@@ -22,14 +22,18 @@ export class CreateTransactionUseCase
 			throw new AppError('Invalid user identifier', 400);
 		}
 
-		let transaction = Transaction.create({
+		const transaction = Transaction.create({
 			date: new Date(input.date),
 			value: input.value,
 			description: input.description,
 			userId,
 		});
 		transaction.validate(this.createTransactionValidator);
-		transaction = await this.transactionRepository.create(transaction);
+
+		const saved = await this.transactionRepository.create(transaction);
+		if (!saved) {
+			throw new AppError("Couldn't save the transaction", 500);
+		}
 
 		return {
 			id: transaction.id.value,

@@ -1,14 +1,14 @@
 {
-  "compilerOptions": {
-    "lib": ["ES5", "ES6", "ES2020"],
-    "target": "ES2020",
-    "module": "commonjs",
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-	"emitDecoratorMetadata": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true
-  }
+	"compilerOptions": {
+		"lib": ["ES5", "ES6", "ES2020"],
+		"target": "ES2020",
+		"module": "commonjs",
+		"outDir": "./dist",
+		"esModuleInterop": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"skipLibCheck": true
+	}
 }

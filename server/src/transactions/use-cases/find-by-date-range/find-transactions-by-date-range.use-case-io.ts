@@ -1,7 +1,7 @@
 export type FindTransactionsByDateRangeUseCaseInput = {
 	userId: string;
-	startDate: number | string;
-	endDate: number | string;
+	startDate: number;
+	endDate: number;
 };
 export type FindTransactionsByDateRangeUseCaseOutput = {
 	id: string;

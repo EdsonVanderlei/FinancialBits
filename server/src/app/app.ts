@@ -24,7 +24,6 @@ export class App {
 
 	public listen(callback?: () => void) {
 		this.express.use(errorMiddleware);
-
 		this.express.listen(this.port, callback ?? (() => console.log(`Server running at http://localhost:${this.port}`)));
 	}
 }

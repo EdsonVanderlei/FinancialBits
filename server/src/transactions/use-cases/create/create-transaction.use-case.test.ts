@@ -2,7 +2,7 @@ import { AppError } from '../../../shared/classes/app-error';
 import { UUID } from '../../../shared/domain/data-objects/uuid/uuid';
 import { Validator } from '../../../shared/domain/validator';
 import { Transaction } from '../../domain/entities/transaction';
-import { TransactionInMemoryRepository } from '../../domain/repositories/in-memory/transaction-in-memory.repository';
+import { TransactionInMemoryRepository } from '../../domain/repositories/transaction-in-memory.repository';
 import { TransactionRepository } from '../../domain/repositories/transaction.repository';
 import { TransactionValidator } from '../../domain/validator/transaction.validator';
 import { CreateTransactionUseCase } from './create-transaction.use-case';

@@ -1,5 +1,4 @@
-import knex from 'knex';
-import config from '../../knexfile';
+import { Knex } from 'knex';
 import { UserKnexRepository } from './domain/repositories/user-knex.repository';
 import { UserValidator } from './domain/validator/user.validator';
 import { AuthController } from './infra/auth.controller';
@@ -8,9 +7,8 @@ import { RefreshTokenUseCase } from './use-cases/refresh-token/refresh-token.use
 import { RegisterUseCase } from './use-cases/register/register.use-case';
 import { ValidateTokenUseCase } from './use-cases/validate-token/validate-token.use-case';
 
-export const authFactory = (secretKeys: { access: string; refresh: string }) => {
-	const knexInstance = knex(config.development);
-	const userRepository = new UserKnexRepository(knexInstance);
+export const authFactory = (secretKeys: { access: string; refresh: string }, knexInstance?: Knex) => {
+	const userRepository = new UserKnexRepository(knexInstance!);
 	const userValidator = new UserValidator();
 
 	const loginUserUseCase = new LoginUseCase(userRepository, secretKeys);
@@ -18,11 +16,7 @@ export const authFactory = (secretKeys: { access: string; refresh: string }) => 
 	const refreshTokenUseCase = new RefreshTokenUseCase(userRepository, secretKeys);
 	const validateTokenUseCase = new ValidateTokenUseCase(secretKeys.access);
 
-	const authController = new AuthController(
-		loginUserUseCase,
-		registerUserUseCase,
-		refreshTokenUseCase,
-	);
+	const authController = new AuthController(loginUserUseCase, registerUserUseCase, refreshTokenUseCase);
 
 	return { authController, validateTokenUseCase };
 };

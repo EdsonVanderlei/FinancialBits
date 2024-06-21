@@ -16,12 +16,15 @@ export class AppRoute<T extends object> {
 			express[route.httpMethod](
 				prefix + route.path,
 				...this.middlewares,
-				async (req: Request, res: Response, next: NextFunction) =>
-					route.isAsync
+				async (req: Request, res: Response, next: NextFunction) => {
+					return route.isAsync
 						? ((this.controller[route.methodName] as RouteRequestFn)(req, res, next) as Promise<unknown>).catch(
-								(err: unknown) => next(err),
+								(err: unknown) => {
+									return next(err);
+								},
 							)
-						: (this.controller[route.methodName] as RouteRequestFn)(req, res, next),
+						: (this.controller[route.methodName] as RouteRequestFn)(req, res, next);
+				},
 			),
 		);
 	}

@@ -18,7 +18,6 @@ export class UserKnexRepository extends KnexRepository implements UserRepository
 		const result = query.length > 0 ? query[0] : null;
 		if (query.length <= 0 || !result) return null;
 
-		console.log(query);
 		return User.load({
 			id: UUID.create(result.id),
 			email: Email.create(result.email),
@@ -42,8 +41,7 @@ export class UserKnexRepository extends KnexRepository implements UserRepository
 			created_at: user.timestamps.value.createdAt?.getTime(),
 			updated_at: user.timestamps.value.updatedAt?.getTime() ?? null,
 		});
-		const query = await this.knex.select().where({ id: user.id.value }).from(this.tableName);
-		return this.queryToUser(query);
+		return await this.findById(user.id);
 	}
 
 	async findByEmail(email: Email) {
