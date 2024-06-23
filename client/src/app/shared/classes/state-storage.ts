@@ -15,4 +15,9 @@ export class StateStorage<T extends object> extends State<T | null> {
       if (value) localStorage.setItem(this.storageKey, JSON.stringify(value));
     });
   }
+
+  clearValue() {
+    this.setValue(null);
+    localStorage.removeItem(this.storageKey);
+  }
 }

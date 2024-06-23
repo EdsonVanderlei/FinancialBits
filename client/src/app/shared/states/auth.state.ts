@@ -22,4 +22,10 @@ export class AuthState {
     this.tokens.setValue(tokens);
     this.toastService.addSuccess('Successfully logged in');
   }
+
+  logout() {
+    this.user.clearValue();
+    this.tokens.clearValue();
+    this.toastService.addSuccess('Successfully logged out');
+  }
 }
