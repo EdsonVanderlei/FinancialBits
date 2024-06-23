@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { tap } from 'rxjs';
 import { StateStorage } from '../classes/state-storage';
-import { AuthService } from '../services/auth.service';
+import { ToastService } from '../services/toast.service';
 import { Tokens } from '../types/tokens';
 import { User } from '../types/user';
 
@@ -9,17 +8,14 @@ import { User } from '../types/user';
   providedIn: 'root',
 })
 export class AuthState {
-  private authService = inject(AuthService);
-  
-  private user = new StateStorage<User>('user');
-  private tokens = new StateStorage<Tokens>('tokens');
+  private toastService = inject(ToastService);
 
-  login(email: string, password: string) {
-    return this.authService.login(email, password).pipe(
-      tap((res) => {
-        this.user.setValue(res.user);
-        this.tokens.setValue(res.tokens);
-      })
-    );
+  user = new StateStorage<User>('user');
+  tokens = new StateStorage<Tokens>('tokens');
+
+  login(user: User, tokens: Tokens) {
+    this.user.setValue(user);
+    this.tokens.setValue(tokens);
+    this.toastService.addSuccess('Successfully logged in');
   }
 }

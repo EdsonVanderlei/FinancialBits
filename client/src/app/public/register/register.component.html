@@ -1,0 +1,16 @@
+<p-card>
+  <header class="m-0 mb-8 flex justify-between">
+    <h1 class="m-0 text-4xl">Register</h1>
+    <p-button text icon="pi pi-arrow-left" routerLink="../login" />
+  </header>
+  <app-register-form [loading]="loading" (submit)="onRegister($event)"></app-register-form>
+  <button
+    pButton
+    text
+    class="w-full mt-4"
+    size="small"
+    severity="secondary"
+    label="Back to login"
+    routerLink="../login"
+  ></button>
+</p-card>

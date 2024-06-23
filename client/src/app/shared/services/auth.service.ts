@@ -17,4 +17,17 @@ export class AuthService {
       { headers: { 'No-Auth': 'true' } }
     );
   }
+
+  register(
+    firstName: string,
+    email: string,
+    password: string,
+    lastName?: string
+  ) {
+    return this.httpClient.post<{ user: User; tokens: Tokens }>(
+      `${this.baseUrl}register`,
+      { firstName, lastName, email, password },
+      { headers: { 'No-Auth': 'true' } }
+    );
+  }
 }

@@ -1,40 +1,18 @@
 <p-card>
-  <h1 class="m-0 text-4xl">Login</h1>
-  <form class="grid gap-4 my-8" [formGroup]="form" (ngSubmit)="onLogin()">
-    <input
-      pInputText
-      class="w-full"
-      type="text"
-      id="email"
-      formControlName="email"
-      placeholder="Email"
-    />
-    <p-password
-      class="w-full"
-      styleClass="w-full"
-      inputStyleClass="w-full"
-      inputId="password"
-      formControlName="password"
-      placeholder="Password"
-      [feedback]="false"
-      [toggleMask]="true"
-    />
-    <button
-      pButton
-      class="w-full"
-      type="submit"
-      size="small"
-      label="Submit"
-      [disabled]="form.invalid"
-    ></button>
-  </form>
+  <h1 class="m-0 mb-8 text-4xl">Login</h1>
+  <app-login-form
+    (submit)="onLogin($event)"
+  ></app-login-form>
+  <p-divider align="center">
+    <small class="text-neutral-500">OR</small>
+  </p-divider>
   <button
     pButton
-    outlined
-    type="button"
+    text
     class="w-full"
     size="small"
     severity="secondary"
     label="Register"
+    routerLink="../register"
   ></button>
 </p-card>
