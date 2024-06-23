@@ -1,20 +1,18 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { MessageService } from 'primeng/api';
+import { ToastService } from '../../shared/services/toast.service';
 import { catchError, throwError } from 'rxjs';
 
 export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
-  const messageService = inject(MessageService);
-
+  const toastService = inject(ToastService);
   return next(req).pipe(
-    catchError((err) => {
+    catchError((err: Error) => {
       if (err instanceof HttpErrorResponse)
-        messageService.add({
-          severity: 'error',
-          summary: `${err.status} ${err.statusText}`,
-          detail: err.error.message,
-        });
-      return throwError(() => new Error(err.error.message));
+        toastService.addError(
+          `${err.status} ${err.statusText}`,
+          err.error.message
+        );
+      return throwError(() => new Error(err.message));
     })
   );
 };
