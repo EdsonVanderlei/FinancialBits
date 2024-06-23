@@ -13,6 +13,10 @@ export class AuthState {
   user = new StateStorage<User>('user');
   tokens = new StateStorage<Tokens>('tokens');
 
+  get logged() {
+    return !!this.user.value() && !!this.tokens.value();
+  }
+
   login(user: User, tokens: Tokens) {
     this.user.setValue(user);
     this.tokens.setValue(tokens);

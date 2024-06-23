@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-export const publicRoutes: Routes = [
+export const routes: Routes = [
   {
     path: '',
     redirectTo: 'login',

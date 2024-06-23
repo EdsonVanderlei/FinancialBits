@@ -41,6 +41,7 @@ export class RegisterComponent {
         error: () => (this.loading = false),
         next: (response) => {
           this.authState.login(response.user, response.tokens);
+          this.router.navigate(['/private']);
         },
       });
   }
