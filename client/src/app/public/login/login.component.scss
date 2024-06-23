@@ -1,0 +1,13 @@
+:host {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+p-card {
+  width: min(500px, 90vw);
+  border: 1px solid var(--surface-50);
+  border-radius: var(--border-radius);
+}

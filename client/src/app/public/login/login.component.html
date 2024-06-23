@@ -1,0 +1,40 @@
+<p-card>
+  <h1 class="m-0 text-4xl">Login</h1>
+  <form class="grid gap-4 my-8" [formGroup]="form" (ngSubmit)="onLogin()">
+    <input
+      pInputText
+      class="w-full"
+      type="text"
+      id="email"
+      formControlName="email"
+      placeholder="Email"
+    />
+    <p-password
+      class="w-full"
+      styleClass="w-full"
+      inputStyleClass="w-full"
+      inputId="password"
+      formControlName="password"
+      placeholder="Password"
+      [feedback]="false"
+      [toggleMask]="true"
+    />
+    <button
+      pButton
+      class="w-full"
+      type="submit"
+      size="small"
+      label="Submit"
+      [disabled]="form.invalid"
+    ></button>
+  </form>
+  <button
+    pButton
+    outlined
+    type="button"
+    class="w-full"
+    size="small"
+    severity="secondary"
+    label="Register"
+  ></button>
+</p-card>
