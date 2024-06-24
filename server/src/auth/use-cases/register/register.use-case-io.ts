@@ -12,6 +12,7 @@ export type RegisterUseCaseOutput = {
 		email: string;
 		firstName: string;
 		lastName?: string;
+		fullName: string;
 		createdAt: Date;
 		updatedAt?: Date;
 	};

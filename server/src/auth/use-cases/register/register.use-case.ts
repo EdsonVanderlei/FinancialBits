@@ -41,6 +41,7 @@ export class RegisterUseCase implements UseCase<RegisterUseCaseInput, RegisterUs
 				email: user.email.value,
 				firstName: user.firstName,
 				lastName: user.lastName,
+				fullName: user.fullName,
 				...user.timestamps.value,
 			},
 		};

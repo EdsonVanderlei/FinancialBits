@@ -29,6 +29,7 @@ export class LoginUseCase implements UseCase<LoginUseCaseInput, LoginUseCaseOutp
 				email: user.email.value,
 				firstName: user.firstName,
 				lastName: user.lastName,
+				fullName: user.fullName,
 				...user.timestamps.value,
 			},
 		};

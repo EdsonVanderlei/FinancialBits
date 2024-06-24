@@ -7,6 +7,7 @@ export type LoginUseCaseOutput = {
 		email: string;
 		firstName: string;
 		lastName?: string;
+		fullName: string;
 		createdAt: Date;
 		updatedAt?: Date;
 	};
