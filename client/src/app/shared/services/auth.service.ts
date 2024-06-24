@@ -18,16 +18,15 @@ export class AuthService {
     );
   }
 
-  register(
-    firstName: string,
-    email: string,
-    password: string,
-    lastName?: string
-  ) {
+  register(firstName: string, email: string, password: string, lastName?: string) {
     return this.httpClient.post<{ user: User; tokens: Tokens }>(
       `${this.baseUrl}register`,
       { firstName, lastName, email, password },
       { headers: { 'No-Auth': 'true' } }
     );
+  }
+
+  refresh(refreshToken: string) {
+    return this.httpClient.post<Tokens>(`${this.baseUrl}refresh`, { refreshToken }, { headers: { 'No-Auth': 'true' } });
   }
 }
