@@ -3,6 +3,7 @@ export type User = {
   email: string;
   firstName: string;
   lastName?: string;
+  fullName: string;
   createdAt: string;
   updatedAt?: string;
 };

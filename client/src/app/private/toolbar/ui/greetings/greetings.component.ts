@@ -6,10 +6,11 @@ import { Component, computed, input } from '@angular/core';
   template: `<h1 class="m-0">{{ greetings() }}</h1>`,
 })
 export class GreetingsComponent {
-  name = input<string>();
+  firstName = input<string>();
+
   greetings = computed(() => {
     let greetings = '';
-    const name = this.name();
+    const name = this.firstName();
     const hours = new Date().getHours();
 
     if (hours < 12) greetings = 'Good morning';
