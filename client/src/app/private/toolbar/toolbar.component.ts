@@ -25,11 +25,11 @@ export class ToolbarComponent {
   private authState = inject(AuthState);
   private periodState = inject(PeriodState);
 
-  period = this.periodState.period.value;
-  user = computed(() => this.authState.user.value() ?? undefined);
+  period = this.periodState.period;
+  user = computed(() => this.authState.user() ?? undefined);
 
   onPeriodChange(period: PeriodEnum) {
-    this.periodState.period.setValue(period);
+    this.periodState.period.set(period);
   }
 
   onLogout() {

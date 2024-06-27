@@ -17,14 +17,14 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authState = inject(AuthState);
   const authService = inject(AuthService);
 
-  let newReq = cloneReq(req, authState.tokens.value()?.access);
+  let newReq = cloneReq(req, authState.tokens()?.access);
   return next(newReq).pipe(
     catchError((err) => {
       if (err instanceof HttpErrorResponse && err.status === 401 && err.error.message === 'Token expired') {
-        return authService.refresh(authState.tokens.value()?.refresh ?? '').pipe(
+        return authService.refresh(authState.tokens()?.refresh ?? '').pipe(
           switchMap((tokens) => {
-            authState.tokens.setValue(tokens);
-            newReq = cloneReq(newReq, authState.tokens.value()?.access);
+            authState.tokens.set(tokens);
+            newReq = cloneReq(newReq, authState.tokens()?.access);
             return next(newReq);
           })
         );

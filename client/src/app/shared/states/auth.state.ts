@@ -1,31 +1,38 @@
-import { Injectable, inject } from '@angular/core';
-import { StateStorage } from '../classes/state-storage';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { ToastService } from '../services/toast.service';
 import { Tokens } from '../types/tokens';
 import { User } from '../types/user';
+import { StorageService } from '../services/storage.service';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthState {
   private toastService = inject(ToastService);
+  private storageService = inject(StorageService);
 
-  user = new StateStorage<User>('user');
-  tokens = new StateStorage<Tokens>('tokens');
+  user = signal<User | null>(this.storageService.get('user'));
+  tokens = signal<Tokens | null>(this.storageService.get('tokens'));
 
-  get logged() {
-    return !!this.user.value() && !!this.tokens.value();
+  logged = computed(() => !!this.user() && !!this.tokens());
+
+  constructor() {
+    effect(() => {
+      this.storageService.handle(this.user(), 'user');
+      this.storageService.handle(this.user(), 'tokens');
+    });
   }
 
   login(user: User, tokens: Tokens) {
-    this.user.setValue(user);
-    this.tokens.setValue(tokens);
+    this.user.set(user);
+    this.tokens.set(tokens);
     this.toastService.addSuccess('Successfully logged in');
   }
 
   logout() {
-    this.user.clearValue();
-    this.tokens.clearValue();
+    this.user.set(null);
+    this.tokens.set(null);
     this.toastService.addSuccess('Successfully logged out');
   }
 }
