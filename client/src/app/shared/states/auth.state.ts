@@ -1,9 +1,8 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
+import { StorageService } from '../services/storage.service';
 import { ToastService } from '../services/toast.service';
 import { Tokens } from '../types/tokens';
 import { User } from '../types/user';
-import { StorageService } from '../services/storage.service';
-import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +19,7 @@ export class AuthState {
   constructor() {
     effect(() => {
       this.storageService.handle(this.user(), 'user');
-      this.storageService.handle(this.user(), 'tokens');
+      this.storageService.handle(this.tokens(), 'tokens');
     });
   }
 
