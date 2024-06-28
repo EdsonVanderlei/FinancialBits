@@ -1,35 +1,36 @@
-import { HttpErrorResponse, HttpHeaders, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AuthState } from '../../shared/states/auth.state';
-import { catchError, retry, switchMap, tap, throwError } from 'rxjs';
+import { Router } from '@angular/router';
+import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../../shared/services/auth.service';
-
-const cloneReq = (req: HttpRequest<unknown>, accessToken?: string) => {
-  return req.clone({
-    headers: new HttpHeaders({
-      Authorization: `Bearer ${accessToken}`,
-    }),
-  });
-};
+import { AuthState } from '../../shared/states/auth.state';
 
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   if (req.headers.has('No-Auth')) return next(req);
+
+  const router = inject(Router);
   const authState = inject(AuthState);
   const authService = inject(AuthService);
+  let refreshed = false;
 
-  let newReq = cloneReq(req, authState.tokens()?.access);
-  return next(newReq).pipe(
+  return next(cloneReq(req, authState.tokens()?.access)).pipe(
     catchError((err) => {
-      if (err instanceof HttpErrorResponse && err.status === 401 && err.error.message === 'Token expired') {
+      if (err?.status === 401 && !refreshed) {
+        refreshed = true;
         return authService.refresh(authState.tokens()?.refresh ?? '').pipe(
           switchMap((tokens) => {
             authState.tokens.set(tokens);
-            newReq = cloneReq(newReq, authState.tokens()?.access);
-            return next(newReq);
+            return next(cloneReq(req, authState.tokens()?.access));
           })
         );
+      } else if (refreshed) {
+        authState.logout();
+        router.navigate(['/public']); 
       }
       return throwError(() => new HttpErrorResponse(err));
     })
   );
 };
+
+const cloneReq = (req: HttpRequest<unknown>, accessToken?: string) =>
+  req.clone({ setHeaders: { Authorization: `Bearer ${accessToken}` } });

@@ -5,9 +5,12 @@ import { catchError, throwError } from 'rxjs';
 
 export const httpErrorInterceptor: HttpInterceptorFn = (req, next) => {
   const toastService = inject(ToastService);
+  
   return next(req).pipe(
     catchError((err: Error) => {
-      if (err instanceof HttpErrorResponse) toastService.addError(`${err.status} ${err.statusText}`, err.error.message);
+      if (err instanceof HttpErrorResponse && err.error.message !== 'Token expired')
+        toastService.addError(`${err.status} ${err.statusText}`, err.error.message);
+
       return throwError(() => err);
     })
   );
