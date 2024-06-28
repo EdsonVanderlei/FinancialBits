@@ -12,13 +12,7 @@ import { LoginFormComponent } from './ui/login-form.component';
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
-  imports: [
-    CardModule,
-    LoginFormComponent,
-    ButtonModule,
-    DividerModule,
-    RouterLink,
-  ],
+  imports: [CardModule, LoginFormComponent, ButtonModule, DividerModule, RouterLink],
 })
 export class LoginComponent {
   private router = inject(Router);
@@ -30,7 +24,7 @@ export class LoginComponent {
   onLogin(value: Partial<{ email: string; password: string }>) {
     if (!value.email || !value.password) return;
 
-    this.authService.login(value.email, value.password).subscribe({
+    this.authService.login({ email: value.email, password: value.password }).subscribe({
       error: () => (this.loading = false),
       next: (response) => {
         this.authState.login(response.user, response.tokens);

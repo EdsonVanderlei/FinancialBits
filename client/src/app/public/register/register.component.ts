@@ -31,12 +31,12 @@ export class RegisterComponent {
     if (!value.firstName || !value.email || !value.password) return;
     this.loading = true;
     this.authService
-      .register(
-        value.firstName,
-        value.email,
-        value.password,
-        value.lastName ?? undefined
-      )
+      .register({
+        email: value.email,
+        password: value.password,
+        firstName: value.firstName,
+        lastName: value.lastName,
+      })
       .subscribe({
         error: () => (this.loading = false),
         next: (response) => {

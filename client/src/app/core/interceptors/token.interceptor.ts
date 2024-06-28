@@ -17,7 +17,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((err) => {
       if (err?.status === 401 && !refreshed) {
         refreshed = true;
-        return authService.refresh(authState.tokens()?.refresh ?? '').pipe(
+        return authService.refresh({ refreshToken: authState.tokens()?.refresh ?? '' }).pipe(
           switchMap((tokens) => {
             authState.tokens.set(tokens);
             return next(cloneReq(req, authState.tokens()?.access));
@@ -25,7 +25,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
         );
       } else if (refreshed) {
         authState.logout();
-        router.navigate(['/public']); 
+        router.navigate(['/public']);
       }
       return throwError(() => new HttpErrorResponse(err));
     })

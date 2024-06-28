@@ -4,6 +4,6 @@ export type User = {
   firstName: string;
   lastName?: string;
   fullName: string;
-  createdAt: string;
-  updatedAt?: string;
+  createdAt: Date;
+  updatedAt?: Date;
 };
