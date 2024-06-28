@@ -4,6 +4,7 @@ import { PeriodState } from './period.state';
 import { TransactionsService } from '../services/transactions.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs';
+import { TransactionsSnapshot } from '../classes/transactions-snapshot';
 
 @Injectable({
   providedIn: 'root',
@@ -13,9 +14,11 @@ export class TransactionState {
   private transactionsService = inject(TransactionsService);
 
   transactions = signal<Transaction[]>([]);
-  income = computed(() => this.transactions().reduce((acc, curr) => (curr.value > 0 ? (acc += curr.value) : acc), 0));
-  outcome = computed(() => this.transactions().reduce((acc, curr) => (curr.value < 0 ? (acc += curr.value) : acc), 0));
-  balance = computed(() => this.income() - this.outcome());
+  private transactionsSnapshot = computed(() => new TransactionsSnapshot(this.transactions()));
+  
+  income = computed(() => this.transactionsSnapshot().income);
+  outcome = computed(() => this.transactionsSnapshot().outcome);
+  balance = computed(() => this.transactionsSnapshot().balance);
 
   constructor() {
     toObservable(this.periodState.dateRange)
