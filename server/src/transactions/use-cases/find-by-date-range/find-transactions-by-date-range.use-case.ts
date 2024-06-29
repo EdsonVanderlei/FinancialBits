@@ -41,7 +41,6 @@ export class FindTransactionsByDateRangeUseCase
 			...transaction.timestamps.value,
 		}));
 
-		console.log(input.groupBy)
 		if (!input.groupBy || input.groupBy !== 'date') return result;
 
 		return result.reduce((acc, curr) => {
