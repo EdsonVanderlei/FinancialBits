@@ -135,9 +135,8 @@ describe('FindTransactionsByDateRangeUseCase', () => {
 		} as FindTransactionsByDateRangeUseCaseInput;
 
 		const result = (await useCase.exec(input)) as FindTransactionsByDateRangeUseCaseOutputGrouped;
-		console.log(result)
 
-		expect(result[transaction.date.toISOString()].length).toEqual(1);
-		expect(result[transaction.date.toISOString()][0].id).toEqual(transaction.id.value);
+		expect(result.length).toEqual(1);
+		expect(result[0].transactions[0].id).toEqual(transaction.id.value);
 	});
 });

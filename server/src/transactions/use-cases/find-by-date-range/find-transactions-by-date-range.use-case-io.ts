@@ -16,9 +16,11 @@ export type FindTransactionsByDateRangeUseCaseOutputData = {
 };
 
 export type FindTransactionsByDateRangeUseCaseOutputArr = FindTransactionsByDateRangeUseCaseOutputData[];
+
 export type FindTransactionsByDateRangeUseCaseOutputGrouped = {
-	[date: string]: FindTransactionsByDateRangeUseCaseOutputData[];
-};
+	date: Date;
+	transactions: FindTransactionsByDateRangeUseCaseOutputData[];
+}[];
 
 export type FindTransactionsByDateRangeUseCaseOutput =
 	| FindTransactionsByDateRangeUseCaseOutputArr

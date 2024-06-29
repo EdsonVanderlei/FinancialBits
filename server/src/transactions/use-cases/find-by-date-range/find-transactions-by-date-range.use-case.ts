@@ -32,22 +32,26 @@ export class FindTransactionsByDateRangeUseCase
 		}
 
 		const transactions = await this.transactionRepository.findByDateRange(startDate, endDate, userId);
-		const result = transactions.map(transaction => ({
-			id: transaction.id.value,
-			date: transaction.date,
-			value: transaction.value,
-			description: transaction.description,
-			userId: transaction.userId.value,
-			...transaction.timestamps.value,
-		}));
+		const result = transactions
+			.map(transaction => ({
+				id: transaction.id.value,
+				date: transaction.date,
+				value: transaction.value,
+				description: transaction.description,
+				userId: transaction.userId.value,
+				...transaction.timestamps.value,
+			}))
+			.sort((a, b) => b.date.getTime() - a.date.getTime());
 
 		if (!input.groupBy || input.groupBy !== 'date') return result;
 
 		return result.reduce((acc, curr) => {
-			const dateStr = curr.date.toISOString().split('T')[0];
-			if (!acc[dateStr]) acc[dateStr] = [];
-			acc[dateStr].push(curr);
+			const date = new Date(curr.date.toISOString().split('T')[0]);
+			const group = acc.find(group => group.date.getTime() === date.getTime());
+
+			if (group) group.transactions.push(curr);
+			else acc.push({ date, transactions: [curr] });
 			return acc;
-		}, {} as FindTransactionsByDateRangeUseCaseOutputGrouped);
+		}, [] as FindTransactionsByDateRangeUseCaseOutputGrouped);
 	}
 }
