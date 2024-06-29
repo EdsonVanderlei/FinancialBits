@@ -2,8 +2,10 @@ export type FindTransactionsByDateRangeUseCaseInput = {
 	userId: string;
 	startDate: number;
 	endDate: number;
+	groupBy?: string;
 };
-export type FindTransactionsByDateRangeUseCaseOutput = {
+
+export type FindTransactionsByDateRangeUseCaseOutputData = {
 	id: string;
 	date: Date;
 	value: number;
@@ -11,4 +13,13 @@ export type FindTransactionsByDateRangeUseCaseOutput = {
 	userId: string;
 	createdAt: Date;
 	updatedAt?: Date;
-}[];
+};
+
+export type FindTransactionsByDateRangeUseCaseOutputArr = FindTransactionsByDateRangeUseCaseOutputData[];
+export type FindTransactionsByDateRangeUseCaseOutputGrouped = {
+	[date: string]: FindTransactionsByDateRangeUseCaseOutputData[];
+};
+
+export type FindTransactionsByDateRangeUseCaseOutput =
+	| FindTransactionsByDateRangeUseCaseOutputArr
+	| FindTransactionsByDateRangeUseCaseOutputGrouped;

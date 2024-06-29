@@ -5,6 +5,7 @@ import { TransactionRepository } from '../../domain/repositories/transaction.rep
 import {
 	FindTransactionsByDateRangeUseCaseInput,
 	FindTransactionsByDateRangeUseCaseOutput,
+	FindTransactionsByDateRangeUseCaseOutputGrouped,
 } from './find-transactions-by-date-range.use-case-io';
 
 export class FindTransactionsByDateRangeUseCase
@@ -30,8 +31,8 @@ export class FindTransactionsByDateRangeUseCase
 			throw new AppError('Invalid end date', 400);
 		}
 
-		const result = await this.transactionRepository.findByDateRange(startDate, endDate, userId);
-		return result.map(transaction => ({
+		const transactions = await this.transactionRepository.findByDateRange(startDate, endDate, userId);
+		const result = transactions.map(transaction => ({
 			id: transaction.id.value,
 			date: transaction.date,
 			value: transaction.value,
@@ -39,5 +40,15 @@ export class FindTransactionsByDateRangeUseCase
 			userId: transaction.userId.value,
 			...transaction.timestamps.value,
 		}));
+
+		console.log(input.groupBy)
+		if (!input.groupBy || input.groupBy !== 'date') return result;
+
+		return result.reduce((acc, curr) => {
+			const dateStr = curr.date.toISOString().split('T')[0];
+			if (!acc[dateStr]) acc[dateStr] = [];
+			acc[dateStr].push(curr);
+			return acc;
+		}, {} as FindTransactionsByDateRangeUseCaseOutputGrouped);
 	}
 }

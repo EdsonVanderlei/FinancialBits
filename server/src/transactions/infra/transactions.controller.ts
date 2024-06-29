@@ -31,12 +31,14 @@ export class TransactionsController {
 
 	@Route(HttpMethodEnum.GET, '/from/:startDate/to/:endDate')
 	public async findByDateRange(req: Request, res: Response) {
+		const { groupBy } = req.query;
 		const { startDate, endDate } = req.params;
 		const { userId } = req.body;
 		const transaction = await this.findTransactionsByDateRangeUseCase.exec({
 			userId,
 			startDate: +startDate,
 			endDate: +endDate,
+			groupBy: groupBy?.toString()
 		});
 		return res.status(201).json(transaction);
 	}

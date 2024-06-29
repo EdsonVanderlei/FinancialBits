@@ -4,7 +4,13 @@ import { Transaction } from '../../domain/entities/transaction';
 import { TransactionInMemoryRepository } from '../../domain/repositories/transaction-in-memory.repository';
 import { TransactionRepository } from '../../domain/repositories/transaction.repository';
 import { FindTransactionsByDateRangeUseCase } from './find-transactions-by-date-range.use-case';
-import { FindTransactionsByDateRangeUseCaseInput } from './find-transactions-by-date-range.use-case-io';
+import {
+	FindTransactionsByDateRangeUseCaseInput,
+	FindTransactionsByDateRangeUseCaseOutputArr,
+	FindTransactionsByDateRangeUseCaseOutputGrouped,
+} from './find-transactions-by-date-range.use-case-io';
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 describe('FindTransactionsByDateRangeUseCase', () => {
 	let useCase: FindTransactionsByDateRangeUseCase;
@@ -37,7 +43,7 @@ describe('FindTransactionsByDateRangeUseCase', () => {
 	test('Invalid start date', async () => {
 		const input = {
 			userId: UUID.generate().value,
-			startDate: 'abc',
+			startDate: 'abc' as any,
 			endDate,
 		} as FindTransactionsByDateRangeUseCaseInput;
 
@@ -51,7 +57,7 @@ describe('FindTransactionsByDateRangeUseCase', () => {
 		const input = {
 			userId: UUID.generate().value,
 			startDate,
-			endDate: 'abc',
+			endDate: 'abc' as any,
 		} as FindTransactionsByDateRangeUseCaseInput;
 
 		useCase.exec(input).catch(e => {
@@ -74,7 +80,7 @@ describe('FindTransactionsByDateRangeUseCase', () => {
 			endDate,
 		} as FindTransactionsByDateRangeUseCaseInput;
 
-		const result = await useCase.exec(input);
+		const result = (await useCase.exec(input)) as FindTransactionsByDateRangeUseCaseOutputArr;
 
 		expect(result.length).toEqual(1);
 		expect(result[0].id).toEqual(transaction.id.value);
@@ -108,9 +114,30 @@ describe('FindTransactionsByDateRangeUseCase', () => {
 			endDate,
 		} as FindTransactionsByDateRangeUseCaseInput;
 
-		const result = await useCase.exec(input);
+		const result = (await useCase.exec(input)) as FindTransactionsByDateRangeUseCaseOutputArr;
 
 		expect(result.length).toEqual(1);
 		expect(result[0].id).toEqual(transaction.id.value);
+	});
+	test('Success group by date', async () => {
+		const transaction = Transaction.create({
+			userId: UUID.generate(),
+			date: new Date(),
+			description: 'Test',
+			value: 100,
+		});
+		await transactionRepository.create(transaction);
+		const input = {
+			userId: transaction.userId.value,
+			startDate,
+			endDate,
+			groupBy: 'date',
+		} as FindTransactionsByDateRangeUseCaseInput;
+
+		const result = (await useCase.exec(input)) as FindTransactionsByDateRangeUseCaseOutputGrouped;
+		console.log(result)
+
+		expect(result[transaction.date.toISOString()].length).toEqual(1);
+		expect(result[transaction.date.toISOString()][0].id).toEqual(transaction.id.value);
 	});
 });
