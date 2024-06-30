@@ -4,7 +4,6 @@ import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Tokens } from '../types/tokens';
 import { User } from '../types/user';
-import { DateUtils } from '../utils/date.utils';
 
 @Injectable({
   providedIn: 'root',
@@ -14,18 +13,22 @@ export class AuthService {
   private baseUrl = `${environment.apiUrl}auth/`;
   private baseOptions = { headers: { 'No-Auth': 'true' } };
 
-  private hanldeUserDates = (user: User) => DateUtils.handleDateProps(user, ['createdAt', 'updatedAt']);
+  private handleUserDates = (user: User) => ({
+    ...user,
+    createdAt: new Date(user.createdAt),
+    updatedAt: user.updatedAt && new Date(user.updatedAt),
+  });
 
   login(body: Pick<User, 'email'> & { password: string }) {
     return this.httpClient
       .post<{ user: User; tokens: Tokens }>(`${this.baseUrl}login`, body, this.baseOptions)
-      .pipe(map((res) => ({ ...res, user: this.hanldeUserDates(res.user) })));
+      .pipe(map((res) => ({ ...res, user: this.handleUserDates(res.user) })));
   }
 
   register(body: Pick<User, 'firstName' | 'lastName' | 'email'> & { password: string }) {
     return this.httpClient
       .post<{ user: User; tokens: Tokens }>(`${this.baseUrl}register`, body, this.baseOptions)
-      .pipe(map((res) => ({ ...res, user: this.hanldeUserDates(res.user) })));
+      .pipe(map((res) => ({ ...res, user: this.handleUserDates(res.user) })));
   }
 
   refresh(body: { refreshToken: string }) {
