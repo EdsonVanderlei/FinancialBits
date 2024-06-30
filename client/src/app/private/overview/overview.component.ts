@@ -1,34 +1,35 @@
+import { CurrencyPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { TransactionState } from '../../shared/states/transactions.state';
-import { CurrencyPipe } from '@angular/common';
 
 @Component({
   standalone: true,
   selector: 'app-overview',
   imports: [CurrencyPipe],
   template: `
-    <h2 class="m-0 mb-4">Overview</h2>
-    <div class="flex items-center gap-8">
+    <h2 class="m-0">Overview</h2>
+    <div class="flex items-center justify-between p-4">
       <div>
-        <h1 class="m-0">{{ transactionState.income() | currency }}</h1>
+        <h1 class="m-0">{{ transactionState.mainSnapshot().income | currency }}</h1>
         <small class="text-color-secondary">Income</small>
       </div>
       <span class="text-color-secondary mb-4">-</span>
       <div>
-        <h1 class="m-0">{{ transactionState.outcome() | currency }}</h1>
+        <h1 class="m-0">{{ transactionState.mainSnapshot().outcome | currency }}</h1>
         <small class="text-color-secondary">Outcome</small>
       </div>
       <span class="text-color-secondary mb-4">=</span>
       <div>
-        <h1 class="m-0">{{ transactionState.balance() | currency }}</h1>
+        <h1 class="m-0">{{ transactionState.mainSnapshot().balance | currency }}</h1>
         <small class="text-color-secondary">Balance</small>
       </div>
     </div>
   `,
   styles: `
-  .text-color-secondary{
-    color: var(--text-color-secondary);
-  }`,
+    .text-color-secondary{
+      color: var(--text-color-secondary);
+    }
+  `,
 })
 export class OverviewComponent {
   transactionState = inject(TransactionState);
