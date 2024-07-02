@@ -1,35 +1,32 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
-import { first } from 'rxjs';
-import { TransactionsService } from '../../shared/services/transactions.service';
 import { TransactionsState } from '../../shared/states/transactions.state';
 import { Transaction } from '../../shared/types/transaction';
 import { TransactionFormComponent } from './ui/transaction-form/transaction-form.component';
+import { AreaComponent } from '../../shared/components/area/area.component';
 
 @Component({
   standalone: true,
   selector: 'app-actions',
-  imports: [ButtonModule, DialogModule, TransactionFormComponent],
+  imports: [ButtonModule, AreaComponent, DialogModule, TransactionFormComponent],
   template: `
-    <h2 class="m-0">Actions</h2>
-
-    <div class="grid grid-cols-2 gap-4 p-4">
+    <app-area title="Actions" containerClasses="grid grid-cols-2 gap-x-4">
       <p-button
-        styleClass="w-full"
+        styleClass="w-full h-full"
         severity="secondary"
         icon="pi pi-arrow-up-right text-red-400"
         label="Transfer"
-        (onClick)="onTransfer()"
+        (onClick)="openDialog(false)"
       ></p-button>
       <p-button
-        styleClass="w-full"
+        styleClass="w-full h-full"
         severity="secondary"
         icon="pi pi-arrow-down-left text-green-400"
         label="Receive"
-        (onClick)="onReceive()"
+        (onClick)="openDialog(true)"
       ></p-button>
-    </div>
+    </app-area>
 
     <p-dialog modal [draggable]="false" [header]="dialogHeader" [(visible)]="dialogVisible">
       <app-transaction-form
@@ -42,23 +39,19 @@ import { TransactionFormComponent } from './ui/transaction-form/transaction-form
 })
 export class ActionsComponent {
   private transactionsState = inject(TransactionsState);
-  private transactionsService = inject(TransactionsService);
 
   dialogHeader?: string;
   dialogVisible = false;
   positiveTransactionValue = true;
 
-  onTransfer() {
-    this.positiveTransactionValue = false;
-    this.openDialog();
+  constructor() {
+    effect(() => {
+      if (this.transactionsState.transactions()) this.dialogVisible = false;
+    });
   }
 
-  onReceive() {
-    this.positiveTransactionValue = true;
-    this.openDialog();
-  }
-
-  private openDialog() {
+  openDialog(positive: boolean) {
+    this.positiveTransactionValue = positive;
     this.dialogHeader = this.positiveTransactionValue ? 'Receive Value' : 'Transfer Value';
     this.dialogVisible = true;
   }
@@ -69,12 +62,7 @@ export class ActionsComponent {
       (!this.positiveTransactionValue && transaction.value > 0)
     )
       transaction.value = transaction.value * -1;
-    this.transactionsService
-      .create(transaction)
-      .pipe(first())
-      .subscribe((res) => {
-        this.transactionsState.push(res);
-        this.dialogVisible = false;
-      });
+
+    this.transactionsState.create.run(transaction);
   }
 }

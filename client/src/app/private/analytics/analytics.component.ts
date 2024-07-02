@@ -1,20 +1,20 @@
-import { CurrencyPipe, DATE_PIPE_DEFAULT_OPTIONS, DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, Signal, computed, inject } from '@angular/core';
 import { ChartData } from 'chart.js';
 import { ChartModule } from 'primeng/chart';
+import { AreaComponent } from '../../shared/components/area/area.component';
 import { ChartService } from './services/chart.service';
 import { getDocumentColors } from './utils/get-document-colors';
 
 @Component({
   standalone: true,
   selector: 'app-analytics',
-  imports: [ChartModule],
+  imports: [ChartModule, AreaComponent],
   providers: [ChartService, DatePipe, CurrencyPipe],
   template: `
-    <h2 class="m-0">Analytics</h2>
-    <div class="flex-auto p-4 pl-0">
+    <app-area title="Analytics">
       <p-chart type="line" height="100%" [data]="data()" [options]="options" />
-    </div>
+    </app-area>
   `,
   host: { class: 'flex flex-col' },
 })

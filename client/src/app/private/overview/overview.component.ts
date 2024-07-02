@@ -1,34 +1,30 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { AreaComponent } from '../../shared/components/area/area.component';
+import { TitleDirective } from '../../shared/directives/title.directive';
 import { TransactionsState } from '../../shared/states/transactions.state';
 
 @Component({
   standalone: true,
   selector: 'app-overview',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, AreaComponent, TitleDirective],
   template: `
-    <h2 class="m-0">Overview</h2>
-    <div class="flex items-center justify-between p-4">
-      <div>
-        <h1 class="m-0">{{ transactionState.mainSnapshot().income | currency }}</h1>
-        <small class="text-color-secondary">Income</small>
+    <app-area title="Overview" containerClasses="flex items-start justify-between">
+      <div class="grid">
+        <h1 appTitle>{{ transactionState.income() | currency }}</h1>
+        <small class="text-xs text-neutral-500">Income</small>
       </div>
-      <span class="text-xl text-color-secondary mb-4">-</span>
-      <div>
-        <h1 class="m-0">{{ transactionState.mainSnapshot().outcome * -1 | currency }}</h1>
-        <small class="text-color-secondary">Outcome</small>
+      <span class="text-2xl leading-9 font-semibold text-neutral-500">-</span>
+      <div class="grid">
+        <h1 appTitle>{{ transactionState.outcome() * -1 | currency }}</h1>
+        <small class="text-xs text-neutral-500">Outcome</small>
       </div>
-      <span class="text-xl text-color-secondary mb-4">=</span>
-      <div>
-        <h1 class="m-0">{{ transactionState.mainSnapshot().balance | currency }}</h1>
-        <small class="text-color-secondary">Balance</small>
+      <span class="text-2xl leading-9 font-semibold text-neutral-500">=</span>
+      <div class="grid">
+        <h1 appTitle>{{ transactionState.balance() | currency }}</h1>
+        <small class="text-xs text-neutral-500">Balance</small>
       </div>
-    </div>
-  `,
-  styles: `
-    .text-color-secondary{
-      color: var(--text-color-secondary);
-    }
+    </app-area>
   `,
 })
 export class OverviewComponent {

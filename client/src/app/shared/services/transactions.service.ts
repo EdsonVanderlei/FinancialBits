@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { TransactionsSnapshot } from '../classes/transactions-snapshot';
 import { Transaction } from '../types/transaction';
 
 @Injectable({
@@ -12,7 +11,7 @@ export class TransactionsService {
   private httpClient = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}transactions`;
 
-  private handleTransactionDates = (transaction: Transaction) => ({
+  private handleTransactionDates = (transaction: Transaction): Transaction => ({
     ...transaction,
     date: new Date(transaction.date),
     createdAt: new Date(transaction.createdAt),
@@ -21,23 +20,12 @@ export class TransactionsService {
 
   getByDateRange(from: Date, to: Date) {
     return this.httpClient
-      .get<Required<Pick<TransactionsSnapshot, 'date' | 'transactions'>[]>>(
-        `${this.baseUrl}/from/${from.getTime()}/to/${to.getTime()}`,
-        { params: { groupBy: 'date' } }
-      )
-      .pipe(
-        map((snapshots) =>
-          snapshots.map((snapshot) => ({
-            date: new Date(snapshot.date!),
-            transactions: snapshot.transactions.map((transaction) => this.handleTransactionDates(transaction)),
-          }))
-        )
-      );
+      .get<Transaction[]>(`${this.baseUrl}/from/${from.getTime()}/to/${to.getTime()}`)
+      .pipe(map((transactions) => transactions.map((transaction) => this.handleTransactionDates(transaction))));
   }
 
-  create(values: Pick<Transaction, 'date' | 'description' | 'value'>) {
-    return this.httpClient
+  create = (values: Pick<Transaction, 'date' | 'description' | 'value'>) =>
+    this.httpClient
       .post<Transaction>(this.baseUrl, values)
       .pipe(map((transaction) => this.handleTransactionDates(transaction)));
-  }
 }
