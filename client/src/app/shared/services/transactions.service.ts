@@ -10,7 +10,7 @@ import { Transaction } from '../types/transaction';
 })
 export class TransactionsService {
   private httpClient = inject(HttpClient);
-  private baseUrl = `${environment.apiUrl}transactions/`;
+  private baseUrl = `${environment.apiUrl}transactions`;
 
   private handleTransactionDates = (transaction: Transaction) => ({
     ...transaction,
@@ -22,7 +22,7 @@ export class TransactionsService {
   getByDateRange(from: Date, to: Date) {
     return this.httpClient
       .get<Required<Pick<TransactionsSnapshot, 'date' | 'transactions'>[]>>(
-        `${this.baseUrl}from/${from.getTime()}/to/${to.getTime()}`,
+        `${this.baseUrl}/from/${from.getTime()}/to/${to.getTime()}`,
         { params: { groupBy: 'date' } }
       )
       .pipe(
@@ -33,5 +33,11 @@ export class TransactionsService {
           }))
         )
       );
+  }
+
+  create(values: Pick<Transaction, 'date' | 'description' | 'value'>) {
+    return this.httpClient
+      .post<Transaction>(this.baseUrl, values)
+      .pipe(map((transaction) => this.handleTransactionDates(transaction)));
   }
 }

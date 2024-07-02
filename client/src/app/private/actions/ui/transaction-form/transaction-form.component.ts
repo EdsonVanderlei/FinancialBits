@@ -44,6 +44,11 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
       />
     </form>
   `,
+  styles: `
+    ::ng-deep .p-datepicker table td.p-datepicker-today > span:not(.p-highlight) {
+      background: transparent !important;
+    }
+  `,
 })
 export class TransactionFormComponent {
   private formBuilder = inject(FormBuilder);
@@ -53,7 +58,7 @@ export class TransactionFormComponent {
   visible = input<boolean>(false);
   positiveTransactionValue = input<boolean>(true);
 
-  submit = output<{ value: number; date: Date; description: string }>();
+  submitEvent = output<{ value: number; date: Date; description: string }>();
 
   form = this.formBuilder.group({
     value: [0, [Validators.required, Validators.min(0.01)]],
@@ -64,18 +69,14 @@ export class TransactionFormComponent {
   constructor() {
     effect(() => {
       if (this.visible())
-        this.form.setValue({
-          value: null,
-          date: new Date(),
-          description: null,
-        });
+        this.form.reset();
     });
   }
 
   onSubmit() {
     const value = this.form.value;
     if (!value.date || !value.description || !value.value) return;
-    this.submit.emit({
+    this.submitEvent.emit({
       value: value.value,
       date: value.date,
       description: value.description,
