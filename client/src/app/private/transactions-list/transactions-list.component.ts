@@ -1,16 +1,16 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
-import { TransactionState } from '../../shared/states/transactions.state';
+import { TransactionsState } from '../../shared/states/transactions.state';
 
 @Component({
   standalone: true,
   selector: 'app-transactions-list',
   imports: [DatePipe, ButtonModule, CurrencyPipe],
   template: `
-    <h2 class="m-0">Transactions</h2>
+    <h2 class="m-0 mb-4">Transactions</h2>
 
-    <div class="overflow-auto flex flex-col gap-4 p-4">
+    <div class="overflow-auto flex flex-col gap-4 px-4 mb-4">
       @for (transaction of mainSnapshot().transactions; track transaction.id; let i = $index) {
       <div class="flex justify-between items-center">
         <div class="grid gap-1">
@@ -19,7 +19,11 @@ import { TransactionState } from '../../shared/states/transactions.state';
         </div>
         <div class="flex items-center gap-2">
           <span class="font-bold">{{ transaction.value | currency }}</span>
-          <span [class]="transaction.value > 0 ? 'pi pi-arrow-down-left' : 'pi pi-arrow-up-right'"></span>
+          <span
+            [class]="
+              transaction.value > 0 ? 'pi pi-arrow-down-left text-green-400' : 'pi pi-arrow-up-right text-red-400'
+            "
+          ></span>
           <p-button text severity="secondary" size="small" icon="pi pi-ellipsis-v"></p-button>
         </div>
       </div>
@@ -41,6 +45,6 @@ import { TransactionState } from '../../shared/states/transactions.state';
   `,
 })
 export class TransactionsListComponent {
-  private transactionState = inject(TransactionState);
+  private transactionState = inject(TransactionsState);
   mainSnapshot = this.transactionState.mainSnapshot;
 }

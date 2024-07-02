@@ -1,6 +1,6 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { TransactionState } from '../../shared/states/transactions.state';
+import { TransactionsState } from '../../shared/states/transactions.state';
 
 @Component({
   standalone: true,
@@ -13,12 +13,12 @@ import { TransactionState } from '../../shared/states/transactions.state';
         <h1 class="m-0">{{ transactionState.mainSnapshot().income | currency }}</h1>
         <small class="text-color-secondary">Income</small>
       </div>
-      <span class="text-color-secondary mb-4">-</span>
+      <span class="text-xl text-color-secondary mb-4">-</span>
       <div>
-        <h1 class="m-0">{{ transactionState.mainSnapshot().outcome | currency }}</h1>
+        <h1 class="m-0">{{ transactionState.mainSnapshot().outcome * -1 | currency }}</h1>
         <small class="text-color-secondary">Outcome</small>
       </div>
-      <span class="text-color-secondary mb-4">=</span>
+      <span class="text-xl text-color-secondary mb-4">=</span>
       <div>
         <h1 class="m-0">{{ transactionState.mainSnapshot().balance | currency }}</h1>
         <small class="text-color-secondary">Balance</small>
@@ -32,5 +32,5 @@ import { TransactionState } from '../../shared/states/transactions.state';
   `,
 })
 export class OverviewComponent {
-  transactionState = inject(TransactionState);
+  transactionState = inject(TransactionsState);
 }
