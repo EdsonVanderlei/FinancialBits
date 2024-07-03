@@ -20,65 +20,28 @@ export class TransactionsState {
   private _snapshot = signal<Snapshot>(new Snapshot([]));
   // Actions
   private actionBuilder = Action.builder(this._error, this._loading);
-  create = this.actionBuilder(this.transactionsService.create);
+  private createAction = this.actionBuilder(this.transactionsService.create);
   // Accessors
   error = computed(() => this._error());
   loading = computed(() => this._loading());
+
   income = computed(() => this._snapshot().income);
   outcome = computed(() => this._snapshot().outcome);
   balance = computed(() => this._snapshot().balance);
   transactions = computed(() => this._snapshot().transactions);
 
-  private _snapshots = signal<TransactionsSnapshot[]>([]);
-  private _mainSnapshot = computed(
-    () =>
-      new TransactionsSnapshot(
-        Array.from(this._snapshots().values())
-          .map((snapshot) => snapshot.transactions)
-          .flat(1)
-      )
-  );
-
-  snapshots = computed(() => this._snapshots());
-  mainSnapshot = computed(() => this._mainSnapshot());
-
   constructor() {
-    toObservable(this.periodState.dateRange)
-      .pipe(
-        takeUntilDestroyed(),
-        switchMap((dateRange) => this.transactionsService.getByDateRange(dateRange.from, dateRange.to))
-      )
-      .subscribe((transactions) => this._snapshot.set(new Snapshot(transactions)));
+    toObservable(this.periodState.dateRange).pipe(
+      takeUntilDestroyed(),
+      switchMap((dateRange) => this.transactionsService.getByDateRange(dateRange.from, dateRange.to))
+    ).subscribe((transactions) => this._snapshot.set(new Snapshot(transactions)));
     // Reducers
-    this.create.reducer.subscribe((transaction) =>
-      this._snapshot.update((snapshot) => new Snapshot([...snapshot.transactions, transaction]))
-    );
+    this.createAction.reducer.subscribe((transaction) => this._snapshot.update(
+      (snapshot) => new Snapshot([...snapshot.transactions, transaction])
+    ));
   }
 
-  private inDateRange(transaction: Transaction) {
-    const dateRange = this.periodState.dateRange();
-    return (
-      transaction.date.getTime() >= dateRange.from.getTime() && transaction.date.getTime() <= dateRange.to.getTime()
-    );
-  }
-
-  push(transaction: Transaction) {
-    if (!this.inDateRange(transaction)) return;
-    const date = new Date(transaction.date.getTime());
-    date.setHours(0, 0, 0, 0);
-
-    this._snapshots.update((snapshots) => {
-      const transactions = [transaction];
-      return snapshots
-        .filter((snapshot) => {
-          if (snapshot.date?.getTime() === date?.getTime()) {
-            transactions.push(...snapshot.transactions);
-            return false;
-          }
-          return true;
-        })
-        .concat(new TransactionsSnapshot(transactions, date))
-        .sort((a, b) => b.date!.getTime() - a.date!.getTime());
-    });
+  create(value: Pick<Transaction, 'date' | 'description' | 'value'>) {
+    this.createAction.run(value);
   }
 }

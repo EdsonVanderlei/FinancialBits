@@ -62,7 +62,6 @@ export class ActionsComponent {
       (!this.positiveTransactionValue && transaction.value > 0)
     )
       transaction.value = transaction.value * -1;
-
-    this.transactionsState.create.run(transaction);
+    this.transactionsState.create(transaction);
   }
 }
