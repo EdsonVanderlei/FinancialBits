@@ -4,6 +4,7 @@ import { ChartData } from 'chart.js';
 import { ChartModule } from 'primeng/chart';
 import { AreaComponent } from '../../shared/components/area/area.component';
 import { ChartService } from './services/chart.service';
+import { getChartOptions } from './utils/get-chart-options';
 import { getDocumentColors } from './utils/get-document-colors';
 
 @Component({
@@ -22,7 +23,8 @@ export class AnalyticsComponent {
   private chartService = inject(ChartService);
   private documentColors = getDocumentColors(document.documentElement);
 
-  options = this.chartService.getOptions(this.documentColors.surfaceBorder);
+  options = getChartOptions(this.documentColors.surfaceBorder);
+  
   data: Signal<ChartData> = computed(() => ({
     labels: this.chartService.labels(),
     datasets: [
