@@ -28,4 +28,6 @@ export class TransactionsService {
     this.httpClient
       .post<Transaction>(this.baseUrl, values)
       .pipe(map((transaction) => this.handleTransactionDates(transaction)));
+
+  delete = (id: string) => this.httpClient.delete<void>(`${this.baseUrl}/${id}`).pipe(map(() => id));
 }

@@ -34,7 +34,7 @@ export class TransactionsListComponent {
       rejectButtonStyleClass: 'p-button-text p-button-text',
       acceptIcon: 'none',
       rejectIcon: 'none',
-      accept: () => alert('delete'),
+      accept: () => this.transactionsState.delete(transaction.id),
     });
   }
 }

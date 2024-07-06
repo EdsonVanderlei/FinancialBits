@@ -21,6 +21,7 @@ export class TransactionsState {
   // Actions
   private actionBuilder = Action.builder(this._error, this._loading);
   private createAction = this.actionBuilder(this.transactionsService.create);
+  private deleteAction = this.actionBuilder(this.transactionsService.delete);
   // Accessors
   error = computed(() => this._error());
   loading = computed(() => this._loading());
@@ -37,11 +38,18 @@ export class TransactionsState {
     ).subscribe((transactions) => this._snapshot.set(new Snapshot(transactions)));
     // Reducers
     this.createAction.reducer.subscribe((transaction) => this._snapshot.update(
-      (snapshot) => new Snapshot([...snapshot.transactions, transaction])
+      snapshot => new Snapshot([...snapshot.transactions, transaction])
     ));
+    this.deleteAction.reducer.subscribe((id) => this._snapshot.update(
+      snapshot => new Snapshot(snapshot.transactions.filter(transaction => transaction.id !== id))
+    ))
   }
 
   create(value: Pick<Transaction, 'date' | 'description' | 'value'>) {
     this.createAction.run(value);
+  }
+
+  delete(id: string) {
+    this.deleteAction.run(id);
   }
 }
