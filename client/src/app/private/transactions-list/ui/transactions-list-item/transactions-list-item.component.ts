@@ -1,12 +1,14 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
+import { MenuModule } from 'primeng/menu';
 import { Transaction } from '../../../../shared/types/transaction';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   standalone: true,
   selector: 'app-transactions-list-item',
-  imports: [ButtonModule, DatePipe, CurrencyPipe],
+  imports: [ButtonModule, DatePipe, CurrencyPipe, MenuModule],
   template: `
     @if(transaction(); as transaction){
     <div class="grid">
@@ -16,7 +18,16 @@ import { Transaction } from '../../../../shared/types/transaction';
     <div class="flex items-center gap-2">
       <span class="text-base font-medium">{{ transaction.value | currency }}</span>
       <span class="text-xs" [class]="getIcon(transaction.value)"></span>
-      <p-button text severity="secondary" size="small" icon="pi pi-ellipsis-v"></p-button>
+      <div>
+        <p-button
+          text
+          severity="secondary"
+          size="small"
+          icon="pi pi-ellipsis-v"
+          (click)="menu.toggle($event)"
+        ></p-button>
+        <p-menu #menu [model]="options" [popup]="true" />
+      </div>
     </div>
     }
   `,
@@ -24,6 +35,14 @@ import { Transaction } from '../../../../shared/types/transaction';
 })
 export class TransactionsListItemComponent {
   transaction = input<Transaction>();
+
+  edit = output<Transaction>();
+  delete = output<Transaction>();
+
+  options: MenuItem[] = [
+    { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.edit.emit(this.transaction()!) },
+    { label: 'Delete', icon: 'pi pi-trash', command: () => this.delete.emit(this.transaction()!) },
+  ];
 
   getIcon = (value: number) =>
     value > 0 ? 'pi pi-arrow-down-left text-green-400' : 'pi pi-arrow-up-right text-red-400';

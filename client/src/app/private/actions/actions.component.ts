@@ -3,7 +3,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { TransactionsState } from '../../shared/states/transactions.state';
 import { Transaction } from '../../shared/types/transaction';
-import { TransactionFormComponent } from './ui/transaction-form/transaction-form.component';
+import { TransactionFormComponent } from '../../shared/components/transaction-form/transaction-form.component';
 import { AreaComponent } from '../../shared/components/area/area.component';
 
 @Component({
@@ -29,11 +29,7 @@ import { AreaComponent } from '../../shared/components/area/area.component';
     </app-area>
 
     <p-dialog modal [draggable]="false" [header]="dialogHeader" [(visible)]="dialogVisible">
-      <app-transaction-form
-        [visible]="dialogVisible"
-        [positiveTransactionValue]="positiveTransactionValue"
-        (submitEvent)="onSubmit($event)"
-      />
+      <app-transaction-form (submitEvent)="onSubmit($event)" />
     </p-dialog>
   `,
 })
@@ -52,7 +48,7 @@ export class ActionsComponent {
 
   openDialog(positive: boolean) {
     this.positiveTransactionValue = positive;
-    this.dialogHeader = this.positiveTransactionValue ? 'Receive Value' : 'Transfer Value';
+    this.dialogHeader = positive ? 'Receive Value' : 'Transfer Value';
     this.dialogVisible = true;
   }
 

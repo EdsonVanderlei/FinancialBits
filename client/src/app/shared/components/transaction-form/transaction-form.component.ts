@@ -1,15 +1,17 @@
-import { Component, DEFAULT_CURRENCY_CODE, LOCALE_ID, effect, inject, input, output } from '@angular/core';
+import { Component, DEFAULT_CURRENCY_CODE, LOCALE_ID, computed, effect, inject, input, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { Transaction } from '../../types/transaction';
 
 @Component({
   standalone: true,
   selector: 'app-transaction-form',
   imports: [ReactiveFormsModule, CalendarModule, InputNumberModule, InputTextareaModule, ButtonModule],
   template: `
+    @if(form(); as form){
     <form class="grid grid-cols-2 gap-4" [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="flex flex-col gap-4">
         <p-inputNumber
@@ -21,7 +23,6 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
           formControlName="value"
           [locale]="localeId"
           [currency]="currencyCode"
-          [prefix]="positiveTransactionValue() ? undefined : '- '"
         />
         <textarea
           pInputTextarea
@@ -43,6 +44,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
         [disabled]="form.invalid"
       />
     </form>
+    }
   `,
   styles: `
     ::ng-deep .p-datepicker table td.p-datepicker-today > span:not(.p-highlight) {
@@ -55,26 +57,20 @@ export class TransactionFormComponent {
   localeId = inject(LOCALE_ID);
   currencyCode = inject(DEFAULT_CURRENCY_CODE);
 
-  visible = input<boolean>(false);
-  positiveTransactionValue = input<boolean>(true);
+  transaction = input<Pick<Transaction, 'date' | 'description' | 'value'>>();
 
   submitEvent = output<{ value: number; date: Date; description: string }>();
 
-  form = this.formBuilder.group({
-    value: [0, [Validators.required, Validators.min(0.01)]],
-    date: [new Date(), Validators.required],
-    description: ['', Validators.required],
-  });
-
-  constructor() {
-    effect(() => {
-      if (this.visible())
-        this.form.reset();
-    });
-  }
+  form = computed(() =>
+    this.formBuilder.group({
+      date: [this.transaction()?.date ?? new Date(), Validators.required],
+      description: [this.transaction()?.description ?? '', Validators.required],
+      value: [this.transaction()?.value ?? 0, [Validators.required, Validators.min(0.01)]],
+    })
+  );
 
   onSubmit() {
-    const value = this.form.value;
+    const value = this.form().value;
     if (!value.date || !value.description || !value.value) return;
     this.submitEvent.emit({
       value: value.value,
