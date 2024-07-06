@@ -7,6 +7,7 @@ import { Action } from '../types/action';
 import { Snapshot } from '../types/snapshot';
 import { Transaction } from '../types/transaction';
 import { PeriodState } from './period.state';
+import { TransactionProps } from '../types/transaction.props';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +22,7 @@ export class TransactionsState {
   // Actions
   private actionBuilder = Action.builder(this._error, this._loading);
   private createAction = this.actionBuilder(this.transactionsService.create);
+  private updateAction = this.actionBuilder(this.transactionsService.update);
   private deleteAction = this.actionBuilder(this.transactionsService.delete);
   // Accessors
   error = computed(() => this._error());
@@ -40,16 +42,23 @@ export class TransactionsState {
     this.createAction.reducer.subscribe((transaction) => this._snapshot.update(
       snapshot => new Snapshot([...snapshot.transactions, transaction])
     ));
+    this.updateAction.reducer.subscribe((transaction) => this._snapshot.update(
+      snapshot => new Snapshot([...snapshot.transactions.filter(t => t.id !== transaction.id), transaction])
+    ))
     this.deleteAction.reducer.subscribe((id) => this._snapshot.update(
       snapshot => new Snapshot(snapshot.transactions.filter(transaction => transaction.id !== id))
     ))
   }
 
-  create(value: Pick<Transaction, 'date' | 'description' | 'value'>) {
-    this.createAction.run(value);
+  create(values: Omit<TransactionProps, 'id'>) {
+    this.createAction.run(values);
   }
 
-  delete(id: string) {
-    this.deleteAction.run(id);
+  update(values: Required<TransactionProps>) {
+    this.updateAction.run(values);
+  }
+
+  delete(values: Pick<TransactionProps, 'id'>) {
+    this.deleteAction.run(values);
   }
 }

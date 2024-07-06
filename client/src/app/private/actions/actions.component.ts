@@ -5,6 +5,7 @@ import { TransactionsState } from '../../shared/states/transactions.state';
 import { Transaction } from '../../shared/types/transaction';
 import { TransactionFormComponent } from '../../shared/components/transaction-form/transaction-form.component';
 import { AreaComponent } from '../../shared/components/area/area.component';
+import { TransactionProps } from '../../shared/types/transaction.props';
 
 @Component({
   standalone: true,
@@ -52,7 +53,7 @@ export class ActionsComponent {
     this.dialogVisible = true;
   }
 
-  onSubmit(transaction: Pick<Transaction, 'value' | 'date' | 'description'>) {
+  onSubmit(transaction: TransactionProps) {
     if (
       (this.positiveTransactionValue && transaction.value < 0) ||
       (!this.positiveTransactionValue && transaction.value > 0)

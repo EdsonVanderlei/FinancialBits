@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Transaction } from '../types/transaction';
+import { TransactionProps } from '../types/transaction.props';
 
 @Injectable({
   providedIn: 'root',
@@ -24,10 +25,16 @@ export class TransactionsService {
       .pipe(map((transactions) => transactions.map((transaction) => this.handleTransactionDates(transaction))));
   }
 
-  create = (values: Pick<Transaction, 'date' | 'description' | 'value'>) =>
+  create = (values: Omit<TransactionProps, 'id'>) =>
     this.httpClient
       .post<Transaction>(this.baseUrl, values)
       .pipe(map((transaction) => this.handleTransactionDates(transaction)));
 
-  delete = (id: string) => this.httpClient.delete<void>(`${this.baseUrl}/${id}`).pipe(map(() => id));
+  update = (values: Required<TransactionProps>) =>
+    this.httpClient
+      .post<Transaction>(`${this.baseUrl}/${values.id}`, values)
+      .pipe(map((transaction) => this.handleTransactionDates(transaction)));
+
+  delete = (values: Pick<TransactionProps, 'id'>) =>
+    this.httpClient.delete<void>(`${this.baseUrl}/${values.id}`).pipe(map(() => values.id));
 }

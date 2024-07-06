@@ -1,10 +1,11 @@
-import { Component, DEFAULT_CURRENCY_CODE, LOCALE_ID, computed, effect, inject, input, output } from '@angular/core';
+import { Component, DEFAULT_CURRENCY_CODE, LOCALE_ID, computed, inject, input, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { Transaction } from '../../types/transaction';
+import { TransactionProps } from '../../types/transaction.props';
 
 @Component({
   standalone: true,
@@ -57,15 +58,16 @@ export class TransactionFormComponent {
   localeId = inject(LOCALE_ID);
   currencyCode = inject(DEFAULT_CURRENCY_CODE);
 
-  transaction = input<Pick<Transaction, 'date' | 'description' | 'value'>>();
+  transaction = input<Transaction>();
 
-  submitEvent = output<{ value: number; date: Date; description: string }>();
+  submitEvent = output<TransactionProps>();
 
   form = computed(() =>
     this.formBuilder.group({
+      id: [this.transaction()?.id ?? null],
       date: [this.transaction()?.date ?? new Date(), Validators.required],
       description: [this.transaction()?.description ?? '', Validators.required],
-      value: [this.transaction()?.value ?? 0, [Validators.required, Validators.min(0.01)]],
+      value: [this.transaction()?.value ?? 0, [Validators.required]],
     })
   );
 
@@ -73,6 +75,7 @@ export class TransactionFormComponent {
     const value = this.form().value;
     if (!value.date || !value.description || !value.value) return;
     this.submitEvent.emit({
+      id: value.id ?? undefined,
       value: value.value,
       date: value.date,
       description: value.description,
