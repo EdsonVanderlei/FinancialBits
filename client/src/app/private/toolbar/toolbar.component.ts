@@ -2,7 +2,6 @@ import { Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthState } from '../../shared/states/auth.state';
 import { PeriodState } from '../../shared/states/period.state';
-import { PeriodEnum } from '../../shared/types/enums/period.enum';
 import { GreetingsComponent } from './ui/greetings/greetings.component';
 import { PeriodSelectComponent } from './ui/period-select/period-select.component';
 import { UserAvatarComponent } from './ui/user-avatar/user-avatar.component';

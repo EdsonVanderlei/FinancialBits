@@ -31,7 +31,7 @@ import { MenuItem } from 'primeng/api';
     </div>
     }
   `,
-  host: { class: 'app-transactions-list-item flex justify-between items-center' },
+  host: { class: 'app-transactions-list-item flex justify-between items-center gap-4' },
 })
 export class TransactionsListItemComponent {
   transaction = input<Transaction>();
