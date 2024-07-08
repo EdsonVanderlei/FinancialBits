@@ -1,22 +1,35 @@
 import { Component, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SelectButtonModule } from 'primeng/selectbutton';
+import { CalendarModule } from 'primeng/calendar';
+import { DropdownModule } from 'primeng/dropdown';
 import { PeriodEnum } from '../../../../shared/types/enums/period.enum';
 
 @Component({
   standalone: true,
   selector: 'app-period-select',
-  imports: [SelectButtonModule, FormsModule],
-  template: ` <p-selectButton
-    [options]="periodOptions"
-    [allowEmpty]="false"
-    [ngModel]="period()"
-    (ngModelChange)="periodChange.emit($event)"
-    optionLabel="label"
-    optionValue="value"
-  />`,
+  imports: [FormsModule, CalendarModule, DropdownModule],
+  template: `
+    <p-calendar
+      inputStyleClass="border-[var(--surface-border)] bg-transparent"
+      view="month"
+      dateFormat="mm/yy"
+      [readonlyInput]="true"
+      [ngModel]="date()"
+      (ngModelChange)="dateChange.emit($event)"
+    />
+    <p-dropdown
+      styleClass="border-[var(--surface-border)] bg-transparent"
+      [options]="periodOptions"
+      [ngModel]="period()"
+      (ngModelChange)="periodChange.emit($event)"
+    />
+  `,
+  host: { class: 'flex gap-4' },
 })
 export class PeriodSelectComponent {
+  date = input<Date>();
+  dateChange = output<Date>();
+
   period = input<PeriodEnum>();
   periodChange = output<PeriodEnum>();
 

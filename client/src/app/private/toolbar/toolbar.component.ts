@@ -8,12 +8,17 @@ import { PeriodSelectComponent } from './ui/period-select/period-select.componen
 import { UserAvatarComponent } from './ui/user-avatar/user-avatar.component';
 
 @Component({
-  selector: 'app-toolbar',
   standalone: true,
+  selector: 'app-toolbar',
   imports: [GreetingsComponent, UserAvatarComponent, PeriodSelectComponent],
   template: `
     <app-greetings [firstName]="user()?.firstName" />
-    <app-period-select [period]="period()" (periodChange)="onPeriodChange($event)" />
+    <app-period-select
+      [date]="periodState.date()"
+      (dateChange)="periodState.date.set($event)"
+      [period]="periodState.period()"
+      (periodChange)="periodState.period.set($event)"
+    />
     <app-user-avatar [fullName]="user()?.fullName" [email]="user()?.email" (logout)="onLogout()" />
   `,
   host: {
@@ -23,14 +28,10 @@ import { UserAvatarComponent } from './ui/user-avatar/user-avatar.component';
 export class ToolbarComponent {
   private router = inject(Router);
   private authState = inject(AuthState);
-  private periodState = inject(PeriodState);
 
-  period = this.periodState.period;
+  periodState = inject(PeriodState);
+
   user = computed(() => this.authState.user() ?? undefined);
-
-  onPeriodChange(period: PeriodEnum) {
-    this.periodState.period.set(period);
-  }
 
   onLogout() {
     this.authState.logout();

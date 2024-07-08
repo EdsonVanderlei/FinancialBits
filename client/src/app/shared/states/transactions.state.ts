@@ -34,7 +34,7 @@ export class TransactionsState {
   transactions = computed(() => this._snapshot().transactions);
 
   constructor() {
-    toObservable(this.periodState.dateRange).pipe(
+    toObservable(this.periodState.range).pipe(
       takeUntilDestroyed(),
       switchMap((dateRange) => this.transactionsService.getByDateRange(dateRange.from, dateRange.to))
     ).subscribe((transactions) => this._snapshot.set(new Snapshot(transactions)));
