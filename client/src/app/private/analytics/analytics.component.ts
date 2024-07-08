@@ -24,12 +24,14 @@ export class AnalyticsComponent {
   private documentColors = getDocumentColors(document.documentElement);
 
   options = getChartOptions(this.documentColors.surfaceBorder);
-  
+
   data: Signal<ChartData> = computed(() => ({
     labels: this.chartService.labels(),
     datasets: [
       {
         tension: 0.1,
+        borderWidth: 3,
+        pointRadius: 0,
         label: 'Icome',
         data: this.chartService.income(),
         borderColor: this.documentColors.green,
@@ -37,6 +39,8 @@ export class AnalyticsComponent {
       },
       {
         tension: 0.1,
+        borderWidth: 3,
+        pointRadius: 0,
         label: 'Outcome',
         data: this.chartService.outcome(),
         borderColor: this.documentColors.red,
@@ -44,6 +48,8 @@ export class AnalyticsComponent {
       },
       {
         tension: 0.1,
+        borderWidth: 1,
+        pointRadius: 0,
         label: 'Balance',
         data: this.chartService.balance(),
         borderColor: this.documentColors.grey,

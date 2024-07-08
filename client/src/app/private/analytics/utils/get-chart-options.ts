@@ -27,7 +27,7 @@ export const getChartOptions = (surfaceBorder: string): ChartOptions<'line'> => 
       },
       y: {
         grid: { color: surfaceBorder },
-        ticks: { display: false },
+        ticks: { maxTicksLimit: 7, callback: (value) => currencyPipe.transform(value) },
       },
     },
   };
