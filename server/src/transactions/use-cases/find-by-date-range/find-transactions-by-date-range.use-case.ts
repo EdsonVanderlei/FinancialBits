@@ -48,7 +48,7 @@ export class FindTransactionsByDateRangeUseCase
 		return result
 			.reduce((acc, curr) => {
 				const date = new Date(curr.date.getTime());
-				date.setUTCHours(0, 0, 0, 0);
+				date.setHours(0, 0, 0, 0);
 				const group = acc.find(group => group.date.getTime() === date.getTime());
 
 				if (group) group.transactions.push(curr);
