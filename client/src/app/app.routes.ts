@@ -8,18 +8,18 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'public',
+        redirectTo: 'private',
         pathMatch: 'full',
       },
       {
         path: 'public',
         loadChildren: () =>
-          import('./public/public.routes').then((r) => r.routes),
+          import('./public/public.routes').then((r) => r.publicRoutes),
       },
       {
         path: 'private',
-        loadChildren: () =>
-          import('./private/private.routes').then((r) => r.routes),
+        loadComponent: () =>
+          import('./private/private.component').then((c) => c.PrivateComponent),
       },
     ],
   },

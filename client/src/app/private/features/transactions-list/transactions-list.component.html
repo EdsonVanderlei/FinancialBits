@@ -1,0 +1,32 @@
+<app-card styleClass="h-full" padding="0">
+  <div class="m-4 flex items-center justify-between">
+    <span class="text-lg font-semibold">Transações</span>
+    <p-button icon="pi pi-plus" size="small" (onClick)="onCreate()" />
+  </div>
+  <div class="grid gap-4 overflow-auto">
+    @for (group of groups(); track $index) {
+      <app-transactions-list-item
+        [group]="group"
+        (onUpdate)="onUpdate($event)"
+        (onDelete)="onDelete($event)"
+      />
+    }
+  </div>
+</app-card>
+
+<p-confirmDialog />
+
+<p-dialog
+  [modal]="true"
+  [draggable]="false"
+  [header]="formTitle"
+  [(visible)]="formVisible"
+>
+  <app-transaction-form
+    [value]="formValue"
+    [wallets]="wallets()"
+    [categories]="categories()"
+    (submitEvent)="onSave($event)"
+    (cancelEvent)="closeForm()"
+  />
+</p-dialog>

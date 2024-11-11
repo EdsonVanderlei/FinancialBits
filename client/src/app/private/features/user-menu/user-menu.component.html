@@ -1,0 +1,20 @@
+<app-card padding="0">
+  <div class="flex items-center">
+    <p-button icon="pi pi-user" [text]="true" (onClick)="op.toggle($event)" />
+  </div>
+</app-card>
+
+<p-overlayPanel #op>
+  <div class="flex gap-8">
+    <div class="grid flex-1">
+      <span class="font-bold">{{ user()?.name }}</span>
+      <span class="text-xs text-neutral-500">{{ user()?.email }}</span>
+    </div>
+    <p-button
+      severity="danger"
+      icon="pi pi-power-off"
+      [text]="true"
+      (onClick)="onLogout()"
+    />
+  </div>
+</p-overlayPanel>

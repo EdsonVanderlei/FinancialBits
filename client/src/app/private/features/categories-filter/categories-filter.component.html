@@ -1,0 +1,86 @@
+<div appFormField>
+  <label for="categories">{{ baseTitle }}</label>
+  <p-multiSelect
+    #multiSelect
+    inputId="categories"
+    optionLabel="name"
+    optionValue="id"
+    styleClass="w-full"
+    [disabled]="loading()"
+    [options]="categories()"
+    [ngModel]="selectedCategories()"
+    (ngModelChange)="selectedCategoriesChange($event)"
+  >
+    <ng-template pTemplate="selectedItems" let-selectedItems>
+      @if (selectedItems) {
+        @if (selectedItems.length < 3) {
+          <div class="flex items-center gap-2">
+            @for (item of selectedItems; track $index; let last = $last) {
+              <span class="inline-flex items-center gap-1">
+                <div
+                  class="h-4 w-4 rounded-full"
+                  [style.backgroundColor]="item.color"
+                ></div>
+                <span>{{ item.name }}{{ last ? "" : "," }}</span>
+              </span>
+            }
+          </div>
+        } @else {
+          <span>{{ selectedItems.length }} categorias selecionadas</span>
+        }
+      } @else {}
+      <span class="text-transparent">.</span>
+    </ng-template>
+    <ng-template let-category pTemplate="item">
+      <div class="mr-[-0.5rem] flex w-full items-center">
+        <div
+          class="mx-2 h-5 w-5 rounded-full"
+          [style.backgroundColor]="category.color"
+        ></div>
+        <div>{{ category.name }}</div>
+        <span class="flex-1"></span>
+        <p-button
+          severity="secondary"
+          size="small"
+          icon="pi pi-pencil"
+          [text]="true"
+          [rounded]="true"
+          (onClick)="this.onEvent($event); this.onUpdate(category)"
+        />
+        <p-button
+          severity="secondary"
+          size="small"
+          icon="pi pi-trash"
+          [text]="true"
+          [rounded]="true"
+          (onClick)="this.onEvent($event); this.onDelete(category)"
+        />
+      </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        class="p-button-secondary w-full justify-center gap-2 rounded-t-none"
+        (click)="this.onEvent($event); this.onCreate()"
+      >
+        <span class="pi pi-plus"></span>
+        <span>Nova Categoria</span>
+      </button>
+    </ng-template>
+  </p-multiSelect>
+</div>
+
+<p-confirmDialog />
+
+<p-dialog
+  [modal]="true"
+  [draggable]="false"
+  [header]="formTitle"
+  [(visible)]="formVisible"
+>
+  <app-category-form
+    [value]="formValue"
+    (submitEvent)="onSave($event)"
+    (cancelEvent)="closeForm()"
+  />
+</p-dialog>

@@ -1,0 +1,40 @@
+<form class="grid gap-4" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div appFormField>
+    <label for="name">Nome</label>
+    <input pInputText id="name" formControlName="name" />
+  </div>
+  <div appFormField>
+    <label for="balance">Balanço</label>
+    <p-inputNumber
+      mode="currency"
+      [currency]="localeId"
+      [allowEmpty]="false"
+      styleClass="w-full"
+      inputStyleClass="text-right"
+      [showButtons]="true"
+      buttonLayout="horizontal"
+      spinnerMode="horizontal"
+      incrementButtonIcon="pi pi-plus"
+      decrementButtonIcon="pi pi-minus"
+      inputId="balance"
+      formControlName="balance"
+    />
+  </div>
+  <div class="mt-2 flex items-center justify-end">
+    <button
+      pButton
+      pRipple
+      type="button"
+      class="p-button-text"
+      label="Cancelar"
+      (click)="onCancel()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      type="submit"
+      label="Enviar"
+      [disabled]="form.invalid"
+    ></button>
+  </div>
+</form>

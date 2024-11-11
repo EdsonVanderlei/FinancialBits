@@ -1,0 +1,9 @@
+::ng-deep app-balance {
+  .p-card {
+    border: 1px solid var(--surface-border);
+
+    .p-card-body {
+      padding: 1rem;
+    }
+  }
+}

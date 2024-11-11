@@ -1,0 +1,76 @@
+@if (group(); as group) {
+  <div class="grid gap-4">
+    <div
+      class="flex cursor-pointer items-center gap-2 px-4 text-neutral-500 transition-colors hover:text-neutral-400"
+      (click)="toggle()"
+    >
+      <i
+        class="pi text-sm"
+        [class.pi-angle-down]="opened()"
+        [class.pi-angle-right]="!opened()"
+      ></i>
+      <span class="select-none text-xs">
+        {{ group.date | date }}
+      </span>
+    </div>
+
+    @if (opened()) {
+      <div class="grid gap-2 px-4">
+        @for (transaction of group.values; track transaction.id) {
+          <div class="flex items-center gap-2">
+            <div
+              class="h-[14px] w-[14px] rounded-full"
+              [showDelay]="1000"
+              [pTooltip]="transaction.category?.name"
+              [style.backgroundColor]="transaction.category?.color"
+            ></div>
+            <div class="grid">
+              <span> {{ transaction.title }} </span>
+              <span class="text-xs text-neutral-500">
+                {{ transaction.wallet.name }}
+              </span>
+            </div>
+            <span class="flex-1"></span>
+            <div class="flex items-center">
+              <span
+                class="text-right text-sm"
+                [class.text-red-400]="transaction.value < 0"
+                [class.text-green-400]="transaction.value > 0"
+              >
+                {{ transaction.value | currency }}
+              </span>
+              <p-button
+                icon="pi pi-ellipsis-v"
+                severity="secondary"
+                size="small"
+                [text]="true"
+                (onClick)="op.toggle($event)"
+              />
+            </div>
+          </div>
+
+          <p-overlayPanel #op>
+            <div class="grid">
+              <p-button
+                styleClass="w-full"
+                label="Atualizar"
+                icon="pi pi-pencil"
+                size="small"
+                [text]="true"
+                (onClick)="onUpdate.emit(transaction)"
+              />
+              <p-button
+                styleClass="w-full"
+                label="Remover"
+                icon="pi pi-trash"
+                size="small"
+                [text]="true"
+                (onClick)="onDelete.emit(transaction)"
+              />
+            </div>
+          </p-overlayPanel>
+        }
+      </div>
+    }
+  </div>
+}

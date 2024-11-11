@@ -1,0 +1,14 @@
+<!-- <app-card>
+</app-card> -->
+<div appFormField>
+  <label for="period">Período</label>
+  <p-calendar
+    inputId="period"
+    view="month"
+    dateFormat="mm/yy"
+    styleClass="w-full"
+    [readonlyInput]="true"
+    [ngModel]="period()"
+    (ngModelChange)="onPeriodChange($event)"
+  />
+</div>

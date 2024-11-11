@@ -1,58 +1,52 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 import { tap } from 'rxjs';
-import { Tokens } from '../../shared/models/tokens';
-import { User } from '../../shared/models/user';
-import { TokensState } from '../../shared/states/tokens.state';
-import { UserState } from '../../shared/states/user.state';
+import { AuthState } from '../../core/states/auth.state';
+import { Tokens } from '../../core/types/tokens';
+import { User } from '../../core/types/user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PublicService {
-  private baseUrl = 'http://localhost:3000/auth';
-  private http = inject(HttpClient);
-  private userState = inject(UserState);
-  private tokensState = inject(TokensState);
+  private httpClient = inject(HttpClient);
+  private baseUrl = 'http://localhost:3000/auth/';
+  private baseHeaders = new HttpHeaders({ 'No-Auth': 'true' });
+
+  private authState = inject(AuthState);
+
+  private refreshAuth = (res: { tokens: Tokens; user: User }) => {
+    this.authState.setUser(res.user);
+    this.authState.setTokens(res.tokens);
+  };
 
   public login(email: string, password: string) {
-    return this.http
+    return this.httpClient
       .post<{ tokens: Tokens; user: User }>(
-        `${this.baseUrl}/login`,
-        {
-          email,
-          password,
-        },
-        { headers: { 'No-Auth': 'True' } }
+        this.baseUrl + 'login',
+        { email, password },
+        { headers: this.baseHeaders }
       )
-      .pipe(
-        tap((response) => {
-          this.userState.setState(response.user);
-          this.tokensState.setState(response.tokens);
-        })
-      );
+      .pipe(tap(this.refreshAuth));
   }
 
-  public register(user: User & { password: string }) {
-    return this.http.post(
-      `${this.baseUrl}/register`,
-      {
-        email: user.email,
-        password: user.password,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      },
-      { headers: { 'No-Auth': 'True' } }
-    );
+  public register(name: string, email: string, password: string) {
+    return this.httpClient
+      .post<{ tokens: Tokens; user: User }>(
+        this.baseUrl + 'register',
+        { name, email, password },
+        { headers: this.baseHeaders }
+      )
+      .pipe(tap(this.refreshAuth));
   }
 
-  public refresh(refreshToken: Pick<Tokens, 'refresh'>) {
-    return this.http.post(
-      `${this.baseUrl}/refresh`,
-      {
-        refreshToken: refreshToken,
-      },
-      { headers: { 'No-Auth': 'True' } }
-    );
+  public refresh(refreshToken: string) {
+    return this.httpClient
+      .post<Pick<Tokens, 'accessToken'>>(
+        this.baseUrl + 'refresh',
+        { refreshToken },
+        { headers: this.baseHeaders }
+      )
+      .pipe(tap((res) => this.authState.setAccessToken(res.accessToken)));
   }
 }

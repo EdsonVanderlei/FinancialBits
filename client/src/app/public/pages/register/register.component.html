@@ -1,72 +1,51 @@
-<mat-card>
-  <mat-card-header>
-    <mat-card-title>Register</mat-card-title>
-    <button
-      mat-icon-button
-      type="submit"
-      routerLink="../login"
-      class="back-button"
-    >
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-  </mat-card-header>
-  <mat-card-content>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <mat-form-field appearance="outline" color="accent">
-        <mat-label>First Name</mat-label>
-        <input matInput formControlName="firstName" type="text" />
-      </mat-form-field>
-      <mat-form-field appearance="outline" color="accent">
-        <mat-label>Last Name</mat-label>
-        <input matInput formControlName="lastName" type="text" />
-      </mat-form-field>
-      <mat-form-field appearance="outline" color="accent" class="span-2">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email" type="text" />
-      </mat-form-field>
-      <mat-form-field appearance="outline" color="accent" class="span-2">
-        <mat-label>Password</mat-label>
-        <input
-          matInput
-          formControlName="password"
-          [type]="showPassword ? 'text' : 'password'"
-        />
-        <button
-          matSuffix
-          mat-icon-button
-          type="button"
-          (click)="$event.stopPropagation(); showPassword = !showPassword"
-        >
-          <mat-icon>{{
-            showPassword ? "visibility_off" : "visibility_on"
-          }}</mat-icon>
-        </button>
-      </mat-form-field>
-      <mat-form-field appearance="outline" color="accent" class="span-2">
-        <mat-label>Confirm Password</mat-label>
-        <input
-          matInput
-          formControlName="confirmPassword"
-          [type]="showPassword ? 'text' : 'password'"
-        />
-      </mat-form-field>
+<main>
+  <app-card class="card">
+    <header class="mb-8 flex justify-between">
+      <span class="text-4xl font-bold">Registrar</span>
       <button
+        pButton
+        pRipple
+        icon="pi pi-arrow-left"
+        class="p-button-text"
+        routerLink="../login"
+      ></button>
+    </header>
+    <form class="grid gap-4" [formGroup]="form" (ngSubmit)="submit()">
+      <div appFormField>
+        <label for="name">Name</label>
+        <input pInputText id="name" formControlName="name" />
+      </div>
+      <div appFormField>
+        <label for="email">Email</label>
+        <input pInputText id="email" formControlName="email" />
+      </div>
+      <div appFormField>
+        <label for="password">Password</label>
+        <p-password
+          inputId="password"
+          formControlName="password"
+          [feedback]="false"
+          [toggleMask]="true"
+          [style]="{ width: '100%' }"
+          [inputStyle]="{ width: '100%' }"
+        />
+      </div>
+      <button
+        pButton
+        pRipple
         type="submit"
-        style="display: none"
+        label="Enviar"
+        class="mt-2 w-full"
         [disabled]="form.invalid"
       ></button>
+      <button
+        pButton
+        pRipple
+        type="button"
+        label="Voltar"
+        routerLink="../login"
+        class="p-button-text w-full"
+      ></button>
     </form>
-  </mat-card-content>
-  <mat-card-actions>
-    <button
-      mat-flat-button
-      color="primary"
-      type="submit"
-      class="submit-button"
-      [disabled]="form.invalid"
-      (click)="onSubmit()"
-    >
-      Submit
-    </button>
-  </mat-card-actions>
-</mat-card>
+  </app-card>
+</main>

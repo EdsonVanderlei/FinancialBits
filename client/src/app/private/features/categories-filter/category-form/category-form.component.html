@@ -1,0 +1,55 @@
+<form class="grid gap-4" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div appFormField>
+    <label for="name">Nome</label>
+    <input pInputText id="name" formControlName="name" />
+  </div>
+  <div appFormField>
+    <label for="color">Cor</label>
+    <p-dropdown
+      appendTo="body"
+      optionValue="value"
+      optionLabel="key"
+      formControlName="color"
+      styleClass="w-full"
+      [options]="colors"
+    >
+      <ng-template pTemplate="selectedItem" let-selectedItem>
+        @if (selectedItem) {
+            <div class="flex items-center gap-2">
+                <div
+                  class="h-4 w-4 rounded-full"
+                  [style.backgroundColor]="selectedItem.value"
+                ></div>
+                <div>{{ selectedItem.key }}</div>
+              </div>
+        }
+      </ng-template>
+      <ng-template pTemplate="item" let-cor>
+        <div class="flex items-center gap-2">
+          <div
+            class="h-4 w-4 rounded-full"
+            [style.backgroundColor]="cor.value"
+          ></div>
+          <div>{{ cor.key }}</div>
+        </div>
+      </ng-template></p-dropdown
+    >
+  </div>
+  <div class="mt-2 flex items-center justify-end">
+    <button
+      pButton
+      pRipple
+      type="button"
+      class="p-button-text"
+      label="Cancelar"
+      (click)="onCancel()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      type="submit"
+      label="Enviar"
+      [disabled]="form.invalid"
+    ></button>
+  </div>
+</form>

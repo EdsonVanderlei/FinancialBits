@@ -1,5 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
-@import 'assets/styles/theme.scss';
+@tailwind utilities;
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@import "primeng/resources/themes/aura-dark-noir/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+
+:root {
+  --border: 1px solid var(--surface-border);
+}
+
+body {
+  margin: 0;
+  background-color: light-dark(#fff, #000);
+}

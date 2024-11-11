@@ -1,0 +1,64 @@
+<!-- <app-card>
+</app-card> -->
+<div appFormField>
+  <label for="wallets">{{baseTitle}}</label>
+  <p-multiSelect
+    #multiSelect
+    inputId="wallets"
+    optionLabel="name"
+    optionValue="id"
+    styleClass="w-full"
+    [disabled]="loading()"
+    [options]="wallets()"
+    [ngModel]="selectedWallets()"
+    (ngModelChange)="selectedWalletsChange($event)"
+  >
+    <ng-template let-wallet pTemplate="item">
+      <div class="mr-[-0.5rem] flex w-full items-center">
+        <span>{{ wallet.name }}</span>
+        <span class="flex-1"></span>
+        <p-button
+          severity="secondary"
+          size="small"
+          icon="pi pi-pencil"
+          [text]="true"
+          [rounded]="true"
+          (onClick)="this.onEvent($event); this.onUpdate(wallet)"
+        />
+        <p-button
+          severity="secondary"
+          size="small"
+          icon="pi pi-trash"
+          [text]="true"
+          [rounded]="true"
+          (onClick)="this.onEvent($event); this.onDelete(wallet)"
+        />
+      </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        class="p-button-secondary w-full justify-center gap-2 rounded-t-none"
+        (click)="this.onEvent($event); this.onCreate()"
+      >
+        <span class="pi pi-plus"></span>
+        <span>Nova Carteira</span>
+      </button>
+    </ng-template>
+  </p-multiSelect>
+</div>
+
+<p-confirmDialog />
+
+<p-dialog
+  [modal]="true"
+  [draggable]="false"
+  [header]="formTitle"
+  [(visible)]="formVisible"
+>
+  <app-wallet-form
+    [value]="formValue"
+    (submitEvent)="onSave($event)"
+    (cancelEvent)="closeForm()"
+  />
+</p-dialog>

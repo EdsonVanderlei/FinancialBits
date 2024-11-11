@@ -1,0 +1,16 @@
+export const colors = [
+  { value: '#f97316', key: 'Orange' },
+  { value: '#f59e0b', key: 'Amber' },
+  { value: '#eab308', key: 'Yellow' },
+  { value: '#84cc16', key: 'Lime' },
+  { value: '#10b981', key: 'Emerald' },
+  { value: '#14b8a6', key: 'Teal' },
+  { value: '#06b6d4', key: 'Cyan' },
+  { value: '#0ea5e9', key: 'Sky' },
+  { value: '#3b82f6', key: 'Blue' },
+  { value: '#6366f1', key: 'Indigo' },
+  { value: '#8b5cf6', key: 'Violet' },
+  { value: '#a855f7', key: 'Purple' },
+  { value: '#d946ef', key: 'Fuchsia' },
+  { value: '#ec4899', key: 'Pink' },
+];

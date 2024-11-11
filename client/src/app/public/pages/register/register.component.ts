@@ -1,54 +1,48 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { DividerModule } from 'primeng/divider';
+import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
 import { PublicService } from '../../services/public.service';
-import { first } from 'rxjs';
+import { CardComponent } from '../../../shared/components/card.component';
+import { FormFieldDirective } from '../../../shared/directives/form-field.directive';
 
 @Component({
-  standalone: true,
   selector: 'app-register',
+  standalone: true,
   imports: [
-    RouterLink,
     ReactiveFormsModule,
-    MatCardModule,
-    MatInputModule,
-    MatIconModule,
-    MatButtonModule,
+    InputTextModule,
+    PasswordModule,
+    ButtonModule,
+    DividerModule,
+    RouterLink,
+    CardComponent,
+    FormFieldDirective,
   ],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss',
+  styleUrl: './../../styles/wrapper.scss',
 })
 export class RegisterComponent {
-  private formBuilder = inject(FormBuilder);
+  private router = inject(Router);
   private publicService = inject(PublicService);
 
-  public showPassword: boolean = false;
-
-  public form = this.formBuilder.group({
-    firstName: ['', [Validators.required]],
-    lastName: '',
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(5)]],
-    confirmPassword: ['', [Validators.required, Validators.minLength(5)]],
+  public form = inject(FormBuilder).group({
+    name: ['', Validators.required],
+    email: ['', Validators.email],
+    password: ['', Validators.required],
   });
 
-  public onSubmit() {
-    const value = this.form.value;
-
+  public submit() {
+    const values = this.form.value;
+    if (!values.name || !values.email || !values.password) return;
     this.publicService
-      .register({
-        email: value.email!,
-        password: value.password!,
-        firstName: value.firstName!,
-        lastName: value.lastName ?? undefined,
-      })
-      .pipe(first())
-      .subscribe((res) => {
-        console.log('res', res);
+      .register(values.name, values.email, values.password)
+      .subscribe(() => {
+        this.router.navigate(['private']);
       });
   }
 }

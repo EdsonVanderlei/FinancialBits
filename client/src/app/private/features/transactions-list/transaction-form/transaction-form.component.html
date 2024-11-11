@@ -1,0 +1,106 @@
+<form class="grid gap-4" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div appFormField>
+    <label for="title">Título</label>
+    <input pInputText id="title" formControlName="title" />
+  </div>
+  <div class="grid grid-cols-2 gap-4">
+    <div appFormField>
+      <label for="date">Data</label>
+      <p-calendar
+        appendTo="body"
+        inputId="date"
+        dateFormat="dd/mm/yy"
+        styleClass="w-full"
+        inputStyleClass="w-full"
+        formControlName="date"
+      />
+    </div>
+    <div appFormField>
+      <label for="value">Valor</label>
+      <p-inputNumber
+        mode="currency"
+        [currency]="localeId"
+        [allowEmpty]="false"
+        [showButtons]="true"
+        styleClass="w-full"
+        inputStyleClass="text-right"
+        buttonLayout="horizontal"
+        spinnerMode="horizontal"
+        incrementButtonIcon="pi pi-plus"
+        decrementButtonIcon="pi pi-minus"
+        inputId="value"
+        formControlName="value"
+      />
+    </div>
+  </div>
+  <div class="grid grid-cols-2 gap-4">
+    <div appFormField>
+      <label for="category">Categoria</label>
+      <p-dropdown
+        appendTo="body"
+        optionValue="id"
+        optionLabel="name"
+        styleClass="w-full"
+        inputId="category"
+        formControlName="categoryId"
+        [lazy]="true"
+        [options]="categoriesOpts()"
+      >
+        <ng-template pTemplate="selectedItem" let-category>
+          <div class="flex w-full items-center gap-2">
+            @if (category.color) {
+              <div
+                class="h-5 w-5 rounded-full"
+                [style.backgroundColor]="category.color"
+              ></div>
+            }
+            <span [class.text-neutral-500]="!category.color">
+              {{ category.name }}
+            </span>
+          </div>
+        </ng-template>
+        <ng-template let-category pTemplate="item">
+          <div class="flex w-full items-center gap-2">
+            <div
+              class="h-5 w-5 rounded-full"
+              [style.backgroundColor]="category.color"
+            ></div>
+            <span [class.text-neutral-500]="!category.color">
+              {{ category.name }}
+            </span>
+          </div>
+        </ng-template>
+      </p-dropdown>
+    </div>
+    <div appFormField>
+      <label for="wallet">Carteira</label>
+      <p-dropdown
+        appendTo="body"
+        optionValue="id"
+        optionLabel="name"
+        styleClass="w-full"
+        inputId="wallet"
+        formControlName="walletId"
+        [lazy]="true"
+        [options]="wallets()"
+      />
+    </div>
+  </div>
+  <div class="mt-2 flex items-center justify-end">
+    <button
+      pButton
+      pRipple
+      type="button"
+      class="p-button-text"
+      label="Cancelar"
+      (click)="onCancel()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      type="submit"
+      label="Enviar"
+      [disabled]="form.invalid || !this.form.get('walletId')?.value"
+    ></button>
+  </div>
+</form>
