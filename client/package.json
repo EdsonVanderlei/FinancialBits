@@ -2,8 +2,7 @@
   "name": "financial-bits-client",
   "version": "0.0.0",
   "scripts": {
-    "start": "ng serve --open --configuration development",
-    "start:docker": "ng serve --open --configuration development --host 0.0.0.0"
+    "start": "ng serve --open --configuration development"
   },
   "private": true,
   "dependencies": {
